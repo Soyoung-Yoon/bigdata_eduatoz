@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>빅데이터 분석기사 필수 암기 공식</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d14;--surface:#131827;--border:#243050;--gold:#f5c842;--teal:#38e8c8;--rose:#f0506e;--blue:#5b9cf6;--lav:#b48bff;--grn:#3ecf8e;--text:#e2e8f8;--dim:#6b7fa0;--card:#141929;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;}
+header{text-align:center;padding:2rem 1rem 1.2rem;background:linear-gradient(180deg,#0e1525 0%,var(--bg) 100%);border-bottom:1px solid var(--border);position:relative;}
+header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal),var(--lav));}
+header h1{font-size:clamp(1.2rem,3vw,1.8rem);font-weight:900;background:linear-gradient(135deg,var(--gold) 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+header p{color:var(--dim);font-size:.82rem;margin-top:.4rem;}
+.mbar{display:flex;gap:.5rem;padding:.7rem 1.1rem;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+.mbtn{padding:.38rem 1rem;border-radius:20px;border:1px solid var(--border);cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:.77rem;color:var(--dim);background:transparent;transition:all .2s;white-space:nowrap;}
+.mbtn.on,.mbtn:hover{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700;}
+.mhint{font-size:.73rem;color:var(--dim);margin-left:auto;}
+nav{display:flex;flex-wrap:wrap;gap:.35rem;padding:.65rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+nav button{background:transparent;border:1px solid var(--border);color:var(--dim);padding:.28rem .72rem;border-radius:16px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:.73rem;transition:all .2s;white-space:nowrap;}
+nav button:hover,nav button.on{background:var(--teal);border-color:var(--teal);color:#000;font-weight:700;}
+main{max-width:1200px;margin:0 auto;padding:1.3rem;}
+.sec{display:none;}.sec.show{display:block;animation:fi .25s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.stitle{font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem;}
+.stitle::after{content:'';flex:1;height:1px;background:var(--border);}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem;}
+.fc{border-radius:11px;border:1px solid var(--border);background:var(--card);transition:border-color .2s,box-shadow .2s;}
+.fc:hover{border-color:var(--teal);box-shadow:0 5px 20px rgba(0,0,0,.35);}
+.fh{display:flex;justify-content:space-between;align-items:center;padding:.7rem .95rem;border-bottom:1px solid var(--border);}
+.ftit{font-size:.83rem;font-weight:700;}
+.badge{font-size:.61rem;padding:.16rem .52rem;border-radius:10px;font-weight:700;white-space:nowrap;}
+.bg{background:rgba(245,200,66,.14);color:var(--gold);border:1px solid rgba(245,200,66,.3);}
+.bt{background:rgba(56,232,200,.11);color:var(--teal);border:1px solid rgba(56,232,200,.25);}
+.br{background:rgba(240,80,110,.12);color:var(--rose);border:1px solid rgba(240,80,110,.25);}
+.bb{background:rgba(91,156,246,.12);color:var(--blue);border:1px solid rgba(91,156,246,.25);}
+.bl{background:rgba(180,139,255,.12);color:var(--lav);border:1px solid rgba(180,139,255,.25);}
+.fbody{padding:.85rem .95rem;}
+.fform{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;padding:.75rem .85rem;text-align:center;min-height:50px;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;overflow-x:auto;font-size:.97em;}
+.fnote{font-size:.76rem;color:var(--dim);line-height:1.6;}
+.fnote strong{color:var(--gold);font-weight:700;}
+.fnote .R{color:var(--rose);font-weight:700;}
+.fnote .T{color:var(--teal);font-weight:700;}
+/* flash */
+.fctrl{display:flex;align-items:center;gap:.9rem;padding:.8rem 0;margin-bottom:.9rem;flex-wrap:wrap;}
+.fctrl button{background:transparent;border:1px solid var(--border);color:var(--dim);padding:.38rem .9rem;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:.77rem;transition:all .2s;}
+.fctrl button:hover{border-color:var(--gold);color:var(--gold);}
+.pbar{flex:1;height:4px;background:var(--border);border-radius:2px;min-width:80px;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:2px;transition:width .4s;}
+.pcnt{font-size:.77rem;color:var(--dim);white-space:nowrap;font-family:'JetBrains Mono',monospace;}
+.flgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1.1rem;}
+.flwrap{perspective:800px;cursor:pointer;}
+.flinner{position:relative;width:100%;min-height:175px;transform-style:preserve-3d;transition:transform .52s cubic-bezier(.4,0,.2,1);border-radius:11px;}
+.flwrap.flipped .flinner{transform:rotateY(180deg);}
+.flfront,.flback{position:absolute;inset:0;backface-visibility:hidden;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.95rem 1rem;border:1px solid var(--border);}
+.flfront{background:linear-gradient(135deg,#141929 0%,#1a2340 100%);}
+.flback{background:linear-gradient(135deg,#0e1c2a 0%,#0f2535 100%);border-color:var(--teal);transform:rotateY(180deg);}
+.flq{font-size:.86rem;font-weight:700;text-align:center;color:var(--text);}
+.flhint{font-size:.66rem;color:var(--dim);margin-top:.75rem;}
+.fla{font-size:.93em;text-align:center;width:100%;overflow-x:auto;}
+.fln{font-size:.71rem;color:var(--teal);text-align:center;margin-top:.45rem;line-height:1.5;}
+/* confusion matrix */
+.cmg{display:grid;grid-template-columns:auto 1fr 1fr;gap:3px;margin:.6rem 0;font-size:.74rem;}
+.cmc{padding:.48rem;border-radius:5px;text-align:center;line-height:1.3;}
+.cmh{background:rgba(255,255,255,.05);color:var(--dim);font-weight:700;}
+.cmtp{background:rgba(62,207,142,.2);color:var(--grn);font-weight:700;}
+.cmfn{background:rgba(240,80,110,.15);color:var(--rose);}
+.cmfp{background:rgba(240,80,110,.15);color:var(--rose);}
+.cmtn{background:rgba(56,232,200,.12);color:var(--teal);font-weight:700;}
+/* model tree */
+.mtree{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.8rem;margin-top:.5rem;}
+.tbox{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;}
+.tbox h4{font-size:.79rem;font-weight:700;margin-bottom:.5rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
+.tbox ul{list-style:none;}
+.tbox li{font-size:.75rem;color:var(--dim);padding:.17rem 0;line-height:1.5;}
+.tbox li strong{color:var(--text);}
+/* full table */
+.ftbl{width:100%;border-collapse:collapse;font-size:.79rem;margin-bottom:1.5rem;}
+.ftbl th{background:rgba(245,200,66,.13);color:var(--gold);padding:.48rem .7rem;text-align:left;border-bottom:1px solid var(--border);font-weight:700;white-space:nowrap;}
+.ftbl td{padding:.48rem .7rem;border-bottom:1px solid var(--border);color:var(--dim);vertical-align:middle;}
+.ftbl td:first-child{color:var(--text);font-weight:600;white-space:nowrap;}
+.ftbl .tc{text-align:center;}
+.ftbl tr:last-child td{border-bottom:none;}
+.ftbl .catr td{background:rgba(56,232,200,.05);color:var(--teal);font-weight:700;font-size:.74rem;letter-spacing:.06em;padding:.35rem .7rem;}
+.nptbl{width:100%;border-collapse:collapse;font-size:.77rem;}
+.nptbl th{background:rgba(91,156,246,.13);color:var(--blue);padding:.42rem .65rem;text-align:left;border-bottom:1px solid var(--border);font-weight:700;}
+.nptbl td{padding:.42rem .65rem;border-bottom:1px solid var(--border);color:var(--dim);vertical-align:middle;}
+.nptbl td:first-child{color:var(--text);font-weight:700;}
+.nptbl tr:last-child td{border-bottom:none;}
+@media(max-width:600px){.fg,.flgrid,.mtree{grid-template-columns:1fr;}nav{padding:.5rem;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>📐 빅데이터 분석기사 필수 암기 공식</h1>
+  <p>학습 모드 · 플래시카드 암기 · 전체 공식 표 | MathJax 수식 완벽 렌더링</p>
+</header>
+<div class="mbar">
+  <button class="mbtn on" id="btn-study" onclick="setMode('study')">📖 학습 모드</button>
+  <button class="mbtn" id="btn-flash" onclick="setMode('flash')">🃏 플래시카드 (암기)</button>
+  <button class="mbtn" id="btn-table" onclick="setMode('table')">📋 전체 공식 표</button>
+  <span class="mhint">🃏 카드를 클릭하면 뒤집혀요</span>
+</div>
+<nav id="mnav">
+  <button class="on" onclick="showSec('s1')">통계 기초</button>
+  <button onclick="showSec('s2')">확률·분포</button>
+  <button onclick="showSec('s3')">이산형 분포</button>
+  <button onclick="showSec('s4')">표본분포·추정</button>
+  <button onclick="showSec('s5')">회귀·규제</button>
+  <button onclick="showSec('s6')">분류 평가지표</button>
+  <button onclick="showSec('s7')">거리·연관분석</button>
+  <button onclick="showSec('s8')">모형 종합 정리</button>
+  <button onclick="showSec('s9')">가설검정 로드맵</button>
+</nav>
+<main>
+
+<!-- ===== S1 ===== -->
+<div class="sec show" id="s1">
+  <div class="stitle">통계 기초 공식</div>
+  <div class="fg" id="s1-sg">
+    <div class="fc"><div class="fh"><span class="ftit">이상값 검출 — ESD</span><span class="badge br">이상값</span></div><div class="fbody"><div class="fform">\(\mu - 3\sigma < \text{정상} < \mu + 3\sigma\)</div><div class="fnote"><strong>μ</strong>: 평균, <strong>σ</strong>: 표준편차</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">이상값 검출 — IQR 방법</span><span class="badge br">이상값</span></div><div class="fbody"><div class="fform">\(Q_1 - 1.5\!\times\! IQR < \text{정상} < Q_3 + 1.5\!\times\! IQR\)</div><div class="fnote"><strong>IQR</strong> = Q3 − Q1 (데이터 가운데 50%)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">Min-Max 정규화</span><span class="badge bt">스케일링</span></div><div class="fbody"><div class="fform">\(X' = \dfrac{X - X_{min}}{X_{max} - X_{min}}\)</div><div class="fnote">결과: <span class="T">0 ~ 1</span> 범위 변환</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">Z-Score 표준화</span><span class="badge bt">스케일링</span></div><div class="fbody"><div class="fform">\(Z' = \dfrac{X - \mu}{\sigma}\)</div><div class="fnote">평균=0, 분산=1. <span class="T">단위 없음(약분됨)</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">피어슨 상관계수</span><span class="badge bg">상관</span></div><div class="fbody"><div class="fform">\(r = \dfrac{cov(x,y)}{\sigma_x \sigma_y}\)</div><div class="fnote">범위: <strong>−1 ≤ r ≤ 1</strong>. 등간·비율척도. <span class="R">이상값에 민감</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">표본 공분산</span><span class="badge bg">상관</span></div><div class="fbody"><div class="fform">\(cov(x,y) = \dfrac{\sum(x_i-\bar{x})(y_i-\bar{y})}{n-1}\)</div><div class="fnote">모집단: 분모 N / <strong>표본: 분모 n−1</strong></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">산술·조화·기하 평균</span><span class="badge bb">평균</span></div><div class="fbody"><div class="fform">\(\bar{x}=\dfrac{\sum x_i}{n}\quad H=\dfrac{n}{\sum\frac{1}{x_i}}\quad G=\!\left(\prod x_i\right)^{1/n}\)</div><div class="fnote"><strong>조화</strong>: 평균 속도 / <strong>기하</strong>: 물가·성장률</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">표본 분산·표준편차·변동계수</span><span class="badge bb">산포</span></div><div class="fbody"><div class="fform">\(s^2=\dfrac{\sum(x_i-\bar{x})^2}{n-1}\quad s=\sqrt{s^2}\quad CV=\dfrac{s}{\bar{x}}\)</div><div class="fnote"><span class="R">분모 = n−1</span> (자유도). CV는 음수 없음</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">왜도별 대소 관계</span><span class="badge bl">분포</span></div><div class="fbody"><div class="fform">\(\text{음의 왜도: } Mean \lt Median \lt Mode\)<br style="margin:4px">\(\text{양의 왜도: } Mode \lt Median \lt Mean\)</div><div class="fnote"><span class="T">정규분포</span>: 왜도 = 첨도 = 0 (초과 첨도 기준)</div></div></div>
+  </div>
+  <div id="s1-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s1')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s1-pf" style="width:0%"></div></div><span class="pcnt" id="s1-pc">0/0 뒤집음</span><button onclick="resetF('s1')">↺ 리셋</button></div><div class="flgrid" id="s1-fg"></div></div>
+</div>
+
+<!-- ===== S2 ===== -->
+<div class="sec" id="s2">
+  <div class="stitle">확률 · 분포 공식</div>
+  <div class="fg" id="s2-sg">
+    <div class="fc"><div class="fh"><span class="ftit">조건부 확률</span><span class="badge bg">확률</span></div><div class="fbody"><div class="fform">\(P(A|B)=\dfrac{P(A\cap B)}{P(B)},\quad P(B)>0\)</div><div class="fnote"><strong>~일 때(~중에서)</strong> ~일 확률</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">독립·배반·종속 사건</span><span class="badge bg">확률</span></div><div class="fbody"><div class="fform">\(\text{독립: }P(A\cap B)=P(A)\cdot P(B)\)<br>\(\text{배반: }P(A\cap B)=0\)<br>\(\text{종속: }P(A\cap B)=P(A|B)\cdot P(B)\)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">베이즈 정리</span><span class="badge bl">베이즈</span></div><div class="fbody"><div class="fform">\(P(A|B)=\dfrac{P(B|A)\cdot P(A)}{P(B)}\)</div><div class="fnote">전확률: \(P(B)=\sum P(B|A_i)\cdot P(A_i)\)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">확률변수의 분산</span><span class="badge bb">분포</span></div><div class="fbody"><div class="fform">\(Var(X)=E(X^2)-\{E(X)\}^2\)<br>\(\sigma(X)=\sqrt{Var(X)}\)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">기댓값의 성질</span><span class="badge bb">기댓값</span></div><div class="fbody"><div class="fform">\(E(aX\pm b)=aE(X)\pm b\)<br>\(E(aX\pm bY)=aE(X)\pm bE(Y)\)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">분산·표준편차의 성질</span><span class="badge bb">분산</span></div><div class="fbody"><div class="fform">\(Var(aX\pm b)=a^2 Var(X)\)<br>\(Var(aX\pm bY)=a^2Var(X)\pm b^2Var(Y)\)<br>\(\sigma(aX+b)=|a|\sigma(X)\)</div></div></div>
+  </div>
+  <div id="s2-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s2')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s2-pf" style="width:0%"></div></div><span class="pcnt" id="s2-pc">0/0 뒤집음</span><button onclick="resetF('s2')">↺ 리셋</button></div><div class="flgrid" id="s2-fg"></div></div>
+</div>
+
+<!-- ===== S3 ===== -->
+<div class="sec" id="s3">
+  <div class="stitle">이산형 확률분포 공식</div>
+  <div class="fg" id="s3-sg">
+    <div class="fc"><div class="fh"><span class="ftit">베르누이 분포</span><span class="badge bt">이산</span></div><div class="fbody"><div class="fform">\(E(X)=p\qquad Var(X)=pq\)</div><div class="fnote">1회 시행, 성공(1)/실패(0). q=1−p</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">이항 분포</span><span class="badge bt">이산</span></div><div class="fbody"><div class="fform">\(P(K\!=\!k)=\binom{n}{k}p^k(1\!-\!p)^{n-k}\)<br>\(E(X)=np\qquad Var(X)=np(1-p)\)</div><div class="fnote">n번 독립 반복, 성공확률 일정</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">기하 분포</span><span class="badge bt">이산</span></div><div class="fbody"><div class="fform">\(P(X\!=\!x)=(1\!-\!p)^{x-1}p\)<br>\(E(X)=\dfrac{1}{p}\qquad Var(X)=\dfrac{1-p}{p^2}\)</div><div class="fnote">처음 성공이 나올 때까지 시도 횟수</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">포아송 분포</span><span class="badge bt">이산</span></div><div class="fbody"><div class="fform">\(P(X\!=\!k)=\dfrac{e^{-\lambda}\lambda^k}{k!}\)<br>\(E(X)=\lambda\qquad Var(X)=\lambda\)</div><div class="fnote">단위 시간/공간 발생 횟수. <span class="R">모수 1개(λ)</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">이항분포 정규근사 (중심극한정리)</span><span class="badge bl">근사</span></div><div class="fbody"><div class="fform">\(B(n,p)\xrightarrow{n\to\infty}N(np,\;npq)\)</div><div class="fnote">n≥30이면 <span class="T">표본평균의 분포가 정규분포에 근사</span></div></div></div>
+  </div>
+  <div id="s3-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s3')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s3-pf" style="width:0%"></div></div><span class="pcnt" id="s3-pc">0/0 뒤집음</span><button onclick="resetF('s3')">↺ 리셋</button></div><div class="flgrid" id="s3-fg"></div></div>
+</div>
+
+<!-- ===== S4 ===== -->
+<div class="sec" id="s4">
+  <div class="stitle">표본분포 · 추정 · 검정통계량</div>
+  <div class="fg" id="s4-sg">
+    <div class="fc"><div class="fh"><span class="ftit">표본평균의 분포</span><span class="badge bg">표본분포</span></div><div class="fbody"><div class="fform">\(\bar{X}\sim N\!\left(\mu,\;\dfrac{\sigma^2}{n}\right)\quad SE=\dfrac{\sigma}{\sqrt{n}}\)</div><div class="fnote">유한 모집단: \(SE=\sqrt{\dfrac{N-n}{N-1}}\cdot\dfrac{\sigma}{\sqrt{n}}\)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">신뢰구간 · 오차한계</span><span class="badge bg">추정</span></div><div class="fbody"><div class="fform">\(\bar{x}\pm z\cdot\dfrac{\sigma}{\sqrt{n}}\)<br>95%: \(z=1.96\quad\) 99%: \(z=2.576\)</div><div class="fnote"><span class="R">오차한계 = 임계값 × 표준오차</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">Z-검정 통계량</span><span class="badge bb">검정</span></div><div class="fbody"><div class="fform">\(Z=\dfrac{\bar{x}-\mu_0}{\sigma/\sqrt{n}}\)</div><div class="fnote">모분산 <span class="T">알 때</span> 또는 대표본(n≥30)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">t-검정 통계량</span><span class="badge bb">검정</span></div><div class="fbody"><div class="fform">\(t=\dfrac{\bar{x}-\mu_0}{s/\sqrt{n}}\)</div><div class="fnote">모분산 <span class="R">모를 때</span>, 소표본. 자유도 = n−1</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">카이제곱 · F 검정통계량</span><span class="badge bl">검정</span></div><div class="fbody"><div class="fform">\(\chi^2=\dfrac{(n-1)s^2}{\sigma_0^2}\qquad F=\dfrac{s_1^2}{s_2^2}\)</div><div class="fnote"><strong>χ²</strong>: 분산 1개 / <strong>F</strong>: 분산 2개 비교·ANOVA</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">카이제곱 검정통계량 (독립성·동질성)</span><span class="badge bl">카이제곱</span></div><div class="fbody"><div class="fform">\(\chi^2=\sum\dfrac{(O_i-E_i)^2}{E_i}\quad E=\dfrac{\text{행합}\times\text{열합}}{\text{전체}}\)</div><div class="fnote">자유도: (행수−1)×(열수−1)</div></div></div>
+  </div>
+  <div id="s4-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s4')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s4-pf" style="width:0%"></div></div><span class="pcnt" id="s4-pc">0/0 뒤집음</span><button onclick="resetF('s4')">↺ 리셋</button></div><div class="flgrid" id="s4-fg"></div></div>
+</div>
+
+<!-- ===== S5 ===== -->
+<div class="sec" id="s5">
+  <div class="stitle">회귀분석 · 규제 모형 공식</div>
+  <div class="fg" id="s5-sg">
+    <div class="fc"><div class="fh"><span class="ftit">결정계수 R²</span><span class="badge bg">회귀</span></div><div class="fbody"><div class="fform">\(R^2=\dfrac{SSR}{SST}=1-\dfrac{SSE}{SST}\)</div><div class="fnote"><span class="T">1에 가까울수록</span> 좋음. 독립변수 많아지면 커짐</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">MAE · MSE · RMSE</span><span class="badge br">회귀평가</span></div><div class="fbody"><div class="fform">\(MAE=\dfrac{\sum|y_i-\hat{y}_i|}{n}\quad MSE=\dfrac{\sum(y_i-\hat{y}_i)^2}{n}\)<br>\(RMSE=\sqrt{MSE}\)</div><div class="fnote"><span class="R">0에 가까울수록</span> 좋음. MAE: 이상치 영향 적음</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">MAPE · MSLE · RMSLE</span><span class="badge br">회귀평가</span></div><div class="fbody"><div class="fform">\(MAPE=\dfrac{100\%}{n}\sum\!\left|\dfrac{y_i-\hat{y}_i}{y_i}\right|\)<br>\(MSLE=\dfrac{\sum(\log(\hat{y}_i{+}1)-\log(y_i{+}1))^2}{n}\)</div><div class="fnote">MSLE: <span class="R">음수 불가(log 사용)</span>. 작게 예측에 큰 패널티</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">Lasso (L1 규제)</span><span class="badge bl">규제</span></div><div class="fbody"><div class="fform">\(J=RSS+\lambda\sum_{j=1}^{p}|\beta_j|\)</div><div class="fnote"><span class="T">절댓값(L1)</span>. 계수가 <span class="R">0이 될 수 있음 → 변수 선택</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">Ridge (L2 규제)</span><span class="badge bl">규제</span></div><div class="fbody"><div class="fform">\(J=RSS+\lambda\sum_{j=1}^{p}\beta_j^2\)</div><div class="fnote"><span class="T">제곱(L2)</span>. 계수가 <span class="R">0에 가까워지나 0 되지 않음</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">로지스틱 회귀 — Odds · Sigmoid</span><span class="badge bg">분류</span></div><div class="fbody"><div class="fform">\(odds=\dfrac{p}{1-p}\quad logit=\log(odds)\)<br>\(P(Y=1)=\dfrac{1}{1+e^{-z}}\)</div><div class="fnote">x₁이 1단위 증가 → odds는 <strong>e^β₁</strong>배 증가</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">Odds Ratio</span><span class="badge bg">로지스틱</span></div><div class="fbody"><div class="fform">\(OR=\dfrac{a/b}{c/d}=\dfrac{ad}{bc}\)</div><div class="fnote">OR &gt; 1: odds 증가 / OR &lt; 1: odds 감소</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">지니 지수 · 엔트로피 지수</span><span class="badge bt">의사결정나무</span></div><div class="fbody"><div class="fform">\(Gini=1-\sum P_i^2\quad Entropy=-\sum P_i\log_2 P_i\)</div><div class="fnote">CART: <strong>Gini</strong> / C5.0: <strong>Entropy</strong> / CHAID: <strong>χ²</strong></div></div></div>
+  </div>
+  <div id="s5-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s5')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s5-pf" style="width:0%"></div></div><span class="pcnt" id="s5-pc">0/0 뒤집음</span><button onclick="resetF('s5')">↺ 리셋</button></div><div class="flgrid" id="s5-fg"></div></div>
+</div>
+
+<!-- ===== S6 ===== -->
+<div class="sec" id="s6">
+  <div class="stitle">분류 평가지표 · 혼동행렬</div>
+  <div id="s6-sg">
+    <div class="cmg">
+      <div class="cmc cmh">실제↓ 예측→</div><div class="cmc cmh">TRUE (양성)</div><div class="cmc cmh">FALSE (음성)</div>
+      <div class="cmc cmh">TRUE (양성)</div><div class="cmc cmtp">TP</div><div class="cmc cmfn">FN (2종 오류)</div>
+      <div class="cmc cmh">FALSE (음성)</div><div class="cmc cmfp">FP (1종 오류)</div><div class="cmc cmtn">TN</div>
+    </div>
+    <div class="fg" style="margin-top:1rem">
+      <div class="fc"><div class="fh"><span class="ftit">재현율 · 민감도 (Recall)</span><span class="badge br">⭐핵심</span></div><div class="fbody"><div class="fform">\(Recall=\dfrac{TP}{TP+FN}\)</div><div class="fnote">분모 = <span class="R">실제 양성</span>. "실Sen" — 실제 기준</div></div></div>
+      <div class="fc"><div class="fh"><span class="ftit">정밀도 (Precision)</span><span class="badge br">⭐핵심</span></div><div class="fbody"><div class="fform">\(Precision=\dfrac{TP}{TP+FP}\)</div><div class="fnote">분모 = <span class="R">예측 양성</span>. "예Pre" — 예측 기준</div></div></div>
+      <div class="fc"><div class="fh"><span class="ftit">정확도 · 특이도 · FP Rate</span><span class="badge bg">평가</span></div><div class="fbody"><div class="fform">\(Accuracy=\dfrac{TP+TN}{TP+TN+FP+FN}\)<br>\(Specificity=\dfrac{TN}{TN+FP}\quad FP\,Rate=\dfrac{FP}{TN+FP}\)</div><div class="fnote"><span class="T">FP Rate = 1 − Specificity</span></div></div></div>
+      <div class="fc"><div class="fh"><span class="ftit">F1 Score · Fβ Score</span><span class="badge bt">F-Score</span></div><div class="fbody"><div class="fform">\(F1=\dfrac{2\cdot Prec\cdot Rec}{Prec+Rec}\)<br>\(F_\beta=(1+\beta^2)\dfrac{Prec\cdot Rec}{\beta^2 Prec+Rec}\)</div><div class="fnote">조화평균. β&gt;1: 재현율 강조</div></div></div>
+      <div class="fc"><div class="fh"><span class="ftit">ROC 곡선 · AUC</span><span class="badge bl">ROC</span></div><div class="fbody"><div class="fform">\(X=FP\,Rate,\quad Y=Sensitivity\)<br>\(\text{Perfect: }(FP\,Rate,\,Recall)=(0,1)\)</div><div class="fnote">AUC: <span class="T">1에 가까울수록</span> 좋음. C 작아지면 → 특이도↓ 민감도↑</div></div></div>
+    </div>
+  </div>
+  <div id="s6-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s6')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s6-pf" style="width:0%"></div></div><span class="pcnt" id="s6-pc">0/0 뒤집음</span><button onclick="resetF('s6')">↺ 리셋</button></div><div class="flgrid" id="s6-fg"></div></div>
+</div>
+
+<!-- ===== S7 ===== -->
+<div class="sec" id="s7">
+  <div class="stitle">거리 측도 · 연관분석 공식</div>
+  <div class="fg" id="s7-sg">
+    <div class="fc"><div class="fh"><span class="ftit">유클리드 · 맨해튼 · 민코프스키</span><span class="badge bt">거리</span></div><div class="fbody"><div class="fform">\(Euclidean=\sqrt{\sum(x_i-y_i)^2}\)<br>\(Manhattan=\sum|x_i-y_i|\)<br>\(Minkowski=\!\left(\sum|x_i-y_i|^p\right)^{1/p}\)</div><div class="fnote">A(3,3)→B(5,2): 맨해튼=<span class="T">3</span>, 유클리드=<span class="T">√5</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">코사인 유사도</span><span class="badge bt">거리</span></div><div class="fbody"><div class="fform">\(\cos(A,B)=\dfrac{A\cdot B}{\|A\|\|B\|}=\dfrac{\sum A_i B_i}{\sqrt{\sum A_i^2}\cdot\sqrt{\sum B_i^2}}\)</div><div class="fnote">두 벡터 사잇각. 텍스트 유사도에 사용</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">지지도 · 신뢰도 · 향상도</span><span class="badge bg">연관분석</span></div><div class="fbody"><div class="fform">\(\text{지지도}=P(A\cap B)\)<br>\(\text{신뢰도}=\dfrac{P(A\cap B)}{P(A)}\)<br>\(\text{향상도}=\dfrac{P(A\cap B)}{P(A)P(B)}\)</div><div class="fnote">향상도 &gt;1: 양의 관계 / =1: 무관 / &lt;1: 음의 관계</div></div></div>
+  </div>
+  <div id="s7-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s7')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s7-pf" style="width:0%"></div></div><span class="pcnt" id="s7-pc">0/0 뒤집음</span><button onclick="resetF('s7')">↺ 리셋</button></div><div class="flgrid" id="s7-fg"></div></div>
+</div>
+
+<!-- ===== S8 ===== -->
+<div class="sec" id="s8">
+  <div class="stitle">분석 모형 종류 총정리</div>
+  <div class="mtree">
+    <div class="tbox"><h4 style="color:var(--gold)">📘 지도학습 — 회귀 (연속형)</h4><ul><li><strong>단순/다중 선형 회귀</strong></li><li><strong>다항 회귀</strong></li><li><strong>Lasso</strong> (L1, 변수 선택)</li><li><strong>Ridge</strong> (L2, 다중공선성 완화)</li><li><strong>ElasticNet</strong> (L1+L2 혼합)</li></ul></div>
+    <div class="tbox"><h4 style="color:var(--rose)">📕 지도학습 — 분류 (범주형)</h4><ul><li><strong>로지스틱 회귀</strong> (이항·다항분류)</li><li><strong>KNN</strong> (lazy learning)</li><li><strong>Decision Tree</strong> (CART, C5.0, CHAID)</li><li><strong>SVM</strong> (커널 트릭, 소프트마진)</li><li><strong>앙상블</strong>: Bagging, Boosting, Voting, Stacking</li><li><strong>ANN / MLP</strong> (다층퍼셉트론)</li></ul></div>
+    <div class="tbox"><h4 style="color:var(--teal)">📗 비지도학습 — 군집</h4><ul><li>계층적: <strong>단일·완전·평균·중심·와드</strong> 연결법</li><li>비계층적: <strong>K-means</strong>, K-medoids, DBSCAN, EM</li><li>비지도 신경망: <strong>SOM</strong></li></ul></div>
+    <div class="tbox"><h4 style="color:var(--lav)">📙 딥러닝 · 기타</h4><ul><li><strong>DNN</strong> (심층신경망)</li><li><strong>CNN</strong> (이미지, 합성곱)</li><li><strong>RNN / LSTM(3Gate) / GRU(2Gate)</strong></li><li><strong>GAN</strong> (생성자+판별자)</li><li><strong>Autoencoder</strong> (비지도, 차원축소)</li><li><strong>전이학습, 강화학습</strong></li><li>연관: <strong>Apriori, FP-Growth</strong></li></ul></div>
+  </div>
+</div>
+
+<!-- ===== S9 ===== -->
+<div class="sec" id="s9">
+  <div class="stitle">가설검정 선택 로드맵</div>
+  <div class="fg" id="s9-sg">
+    <div class="fc"><div class="fh"><span class="ftit">종속변수 범주형 → 카이제곱</span><span class="badge br">범주형</span></div><div class="fbody"><div class="fform">\(\chi^2=\sum\dfrac{(O_i-E_i)^2}{E_i}\)</div><div class="fnote">명목·서열 척도, 모집단 수 무관</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">모분산 알 때 → Z-검정</span><span class="badge bt">연속형</span></div><div class="fbody"><div class="fform">\(Z=\dfrac{\bar{x}-\mu_0}{\sigma/\sqrt{n}}\)</div><div class="fnote">1·2표본 Z. 모분산 <span class="T">알 때</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">모분산 모를 때 → t-검정</span><span class="badge bt">연속형</span></div><div class="fbody"><div class="fform">\(t=\dfrac{\bar{x}-\mu_0}{s/\sqrt{n}}\)</div><div class="fnote">1표본 t, 2표본 t(독립), Paired t(대응)</div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">K개(≥3) 집단 평균 → ANOVA</span><span class="badge bg">ANOVA</span></div><div class="fbody"><div class="fform">\(F=\dfrac{MSR}{MSE}=\dfrac{SSR/p}{SSE/(N-p-1)}\)</div><div class="fnote">가정: <span class="R">독립성, 정규성, 등분산성</span></div></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">비모수 검정 대응표</span><span class="badge bl">비모수</span></div><div class="fbody"><table class="nptbl"><tr><th>집단</th><th>비모수</th><th>대응 모수</th></tr><tr><td>1</td><td>Wilcoxon Signed Rank</td><td>1 sample t</td></tr><tr><td>2 독립</td><td>Mann-Whitney U</td><td>2 sample t</td></tr><tr><td>2 대응</td><td>Wilcoxon Signed Rank</td><td>Paired t</td></tr><tr><td>K 독립</td><td>Kruskal-Wallis</td><td>ANOVA</td></tr><tr><td>K 대응</td><td>Friedman</td><td>반복ANOVA</td></tr></table></div></div>
+    <div class="fc"><div class="fh"><span class="ftit">등분산 · 정규성 검정</span><span class="badge bb">사전검정</span></div><div class="fbody"><div class="fform">\(\text{등분산: Levene, Bartlett}\quad F=s_1^2/s_2^2\)</div><div class="fnote">정규성: QQ Plot, Shapiro-Wilk, K-S Test, Anderson-Darling</div></div></div>
+  </div>
+  <div id="s9-fa" style="display:none"><div class="fctrl"><button onclick="shuffleF('s9')">🔀 섞기</button><div class="pbar"><div class="pfill" id="s9-pf" style="width:0%"></div></div><span class="pcnt" id="s9-pc">0/0 뒤집음</span><button onclick="resetF('s9')">↺ 리셋</button></div><div class="flgrid" id="s9-fg"></div></div>
+</div>
+
+<!-- ===== 전체 공식 표 ===== -->
+<div id="tbl-mode" style="display:none">
+  <div class="stitle">전체 필수 공식 한눈에 보기</div>
+  <table class="ftbl">
+    <tr><th>분류</th><th>공식명</th><th class="tc">공식</th><th>핵심 특징</th></tr>
+    <tr><td colspan="4" class="catr">── 통계 기초 ─────────────────────────────</td></tr>
+    <tr><td>이상값</td><td>ESD</td><td class="tc">\(\mu\pm3\sigma\)</td><td>μ:평균, σ:표준편차</td></tr>
+    <tr><td>이상값</td><td>IQR 방법</td><td class="tc">\(Q_1-1.5\cdot IQR \sim Q_3+1.5\cdot IQR\)</td><td>IQR=Q3-Q1</td></tr>
+    <tr><td>스케일링</td><td>Min-Max 정규화</td><td class="tc">\(\frac{X-X_{min}}{X_{max}-X_{min}}\)</td><td>결과: 0~1 범위</td></tr>
+    <tr><td>스케일링</td><td>Z-Score 표준화</td><td class="tc">\(\frac{X-\mu}{\sigma}\)</td><td>평균0, 분산1, 단위 없음</td></tr>
+    <tr><td>상관</td><td>피어슨 상관계수</td><td class="tc">\(\frac{cov(x,y)}{\sigma_x\sigma_y}\)</td><td>-1~1, 이상치에 민감</td></tr>
+    <tr><td>상관</td><td>표본 공분산</td><td class="tc">\(\frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{n-1}\)</td><td>분모=n-1</td></tr>
+    <tr><td>평균</td><td>산술평균</td><td class="tc">\(\sum x_i / n\)</td><td>일반 평균</td></tr>
+    <tr><td>평균</td><td>조화평균</td><td class="tc">\(n / \sum(1/x_i)\)</td><td>평균 속도 계산</td></tr>
+    <tr><td>평균</td><td>기하평균</td><td class="tc">\((\prod x_i)^{1/n}\)</td><td>물가 상승률·경제 성장률</td></tr>
+    <tr><td>산포</td><td>표본 분산</td><td class="tc">\(\sum(x_i-\bar{x})^2 / (n-1)\)</td><td>분모=n-1 (자유도)</td></tr>
+    <tr><td>산포</td><td>변동계수(CV)</td><td class="tc">\(s/\bar{x}\)</td><td>음수 없음</td></tr>
+    <tr><td colspan="4" class="catr">── 확률 ──────────────────────────────────</td></tr>
+    <tr><td>확률</td><td>조건부 확률</td><td class="tc">\(P(A\cap B)/P(B)\)</td><td>P(B)&gt;0 조건</td></tr>
+    <tr><td>확률</td><td>독립사건</td><td class="tc">\(P(A\cap B)=P(A)\cdot P(B)\)</td><td>서로 영향 없음</td></tr>
+    <tr><td>확률</td><td>배반사건</td><td class="tc">\(P(A\cap B)=0\)</td><td>교집합=공집합</td></tr>
+    <tr><td>확률</td><td>베이즈 정리</td><td class="tc">\(P(B|A)\cdot P(A)/P(B)\)</td><td>기저율 반영</td></tr>
+    <tr><td>기댓값</td><td>E(aX±b)</td><td class="tc">\(aE(X)\pm b\)</td><td>선형성</td></tr>
+    <tr><td>분산</td><td>Var(aX±b)</td><td class="tc">\(a^2 Var(X)\)</td><td>상수 b는 영향 없음</td></tr>
+    <tr><td>분산</td><td>Var(aX±bY)</td><td class="tc">\(a^2Var(X)\pm b^2Var(Y)\)</td><td>독립일 때 성립</td></tr>
+    <tr><td>분산</td><td>Var(X) 계산</td><td class="tc">\(E(X^2)-\{E(X)\}^2\)</td><td>핵심 계산 공식</td></tr>
+    <tr><td colspan="4" class="catr">── 이산형 확률분포 ───────────────────────</td></tr>
+    <tr><td>이산분포</td><td>베르누이</td><td class="tc">\(E=p,\quad Var=pq\)</td><td>1회 시행</td></tr>
+    <tr><td>이산분포</td><td>이항분포 E·Var</td><td class="tc">\(E=np,\quad Var=np(1-p)\)</td><td>n회 독립 반복</td></tr>
+    <tr><td>이산분포</td><td>이항분포 PMF</td><td class="tc">\(\binom{n}{k}p^k(1-p)^{n-k}\)</td><td>k번 성공 확률</td></tr>
+    <tr><td>이산분포</td><td>기하분포</td><td class="tc">\(E=1/p,\quad Var=(1-p)/p^2\)</td><td>첫 성공까지 횟수</td></tr>
+    <tr><td>이산분포</td><td>포아송 PMF</td><td class="tc">\(e^{-\lambda}\lambda^k/k!\)</td><td>단위 시간/공간 발생 수</td></tr>
+    <tr><td>이산분포</td><td>포아송 E·Var</td><td class="tc">\(E=\lambda,\quad Var=\lambda\)</td><td>모수 1개(λ)</td></tr>
+    <tr><td colspan="4" class="catr">── 표본분포 · 추정 · 검정 ────────────────</td></tr>
+    <tr><td>표본분포</td><td>표본평균 분포</td><td class="tc">\(\bar{X}\sim N(\mu,\sigma^2/n)\)</td><td>표준오차=σ/√n</td></tr>
+    <tr><td>추정</td><td>신뢰구간</td><td class="tc">\(\bar{x}\pm z\cdot\sigma/\sqrt{n}\)</td><td>95%:z=1.96, 99%:z=2.576</td></tr>
+    <tr><td>검정</td><td>Z-검정</td><td class="tc">\((\bar{x}-\mu_0)/(\sigma/\sqrt{n})\)</td><td>모분산 알 때</td></tr>
+    <tr><td>검정</td><td>t-검정</td><td class="tc">\((\bar{x}-\mu_0)/(s/\sqrt{n})\)</td><td>모분산 모를 때, 자유도n-1</td></tr>
+    <tr><td>검정</td><td>F-검정</td><td class="tc">\(s_1^2/s_2^2\)</td><td>분산 2개 비교, ANOVA</td></tr>
+    <tr><td>검정</td><td>카이제곱 통계량</td><td class="tc">\(\sum(O_i-E_i)^2/E_i\)</td><td>자유도=(행-1)×(열-1)</td></tr>
+    <tr><td>검정</td><td>카이제곱 기댓값</td><td class="tc">\(\text{행합}\times\text{열합}/\text{전체}\)</td><td>기댓값 합=관측도수 합</td></tr>
+    <tr><td colspan="4" class="catr">── 회귀분석 · 규제 ──────────────────────</td></tr>
+    <tr><td>회귀평가</td><td>결정계수 R²</td><td class="tc">\(SSR/SST\)</td><td>1에 가까울수록 좋음</td></tr>
+    <tr><td>회귀평가</td><td>MAE</td><td class="tc">\(\sum|y_i-\hat{y}_i|/n\)</td><td>이상치 영향 적음</td></tr>
+    <tr><td>회귀평가</td><td>MSE</td><td class="tc">\(\sum(y_i-\hat{y}_i)^2/n\)</td><td>이상치 민감, 1미만 오차→더 작아짐</td></tr>
+    <tr><td>회귀평가</td><td>RMSE</td><td class="tc">\(\sqrt{MSE}\)</td><td>MSE의 이상치 민감함 보완</td></tr>
+    <tr><td>회귀평가</td><td>MAPE</td><td class="tc">\(\frac{100\%}{n}\sum|y_i-\hat{y}_i|/y_i\)</td><td>백분율 오차, 음수 가능</td></tr>
+    <tr><td>회귀평가</td><td>MSLE</td><td class="tc">\(\sum(\log(\hat{y}+1)-\log(y+1))^2/n\)</td><td>음수 불가, 작게 예측에 큰 패널티</td></tr>
+    <tr><td>규제</td><td>Lasso (L1)</td><td class="tc">\(RSS+\lambda\sum|\beta_j|\)</td><td>계수가 0이 될 수 있음→변수 선택</td></tr>
+    <tr><td>규제</td><td>Ridge (L2)</td><td class="tc">\(RSS+\lambda\sum\beta_j^2\)</td><td>계수 0에 가까워지나 0이 되지 않음</td></tr>
+    <tr><td>로지스틱</td><td>Sigmoid</td><td class="tc">\(1/(1+e^{-z})\)</td><td>logit을 0~1 확률로 변환</td></tr>
+    <tr><td>로지스틱</td><td>Odds Ratio</td><td class="tc">\(ad/bc\)</td><td>OR&gt;1: 증가 / OR&lt;1: 감소</td></tr>
+    <tr><td>의사결정나무</td><td>Gini 지수</td><td class="tc">\(1-\sum P_i^2\)</td><td>CART 분류나무 분리 기준</td></tr>
+    <tr><td>의사결정나무</td><td>Entropy 지수</td><td class="tc">\(-\sum P_i\log_2 P_i\)</td><td>C5.0 분리 기준</td></tr>
+    <tr><td colspan="4" class="catr">── 분류 평가지표 ─────────────────────────</td></tr>
+    <tr><td>분류평가</td><td>재현율(Recall)</td><td class="tc">\(TP/(TP+FN)\)</td><td>분모=실제 양성. "실Sen"</td></tr>
+    <tr><td>분류평가</td><td>정밀도(Precision)</td><td class="tc">\(TP/(TP+FP)\)</td><td>분모=예측 양성. "예Pre"</td></tr>
+    <tr><td>분류평가</td><td>정확도(Accuracy)</td><td class="tc">\((TP+TN)/(TP+TN+FP+FN)\)</td><td>전체 중 올바른 예측</td></tr>
+    <tr><td>분류평가</td><td>특이도(Specificity)</td><td class="tc">\(TN/(TN+FP)\)</td><td>FP Rate = 1 - Specificity</td></tr>
+    <tr><td>분류평가</td><td>F1 Score</td><td class="tc">\(2\cdot Prec\cdot Rec/(Prec+Rec)\)</td><td>Precision·Recall 조화평균</td></tr>
+    <tr><td>분류평가</td><td>FP Rate</td><td class="tc">\(FP/(TN+FP)\)</td><td>ROC 곡선 X축</td></tr>
+    <tr><td colspan="4" class="catr">── 거리 측도 · 연관분석 ──────────────────</td></tr>
+    <tr><td>거리</td><td>유클리드</td><td class="tc">\(\sqrt{\sum(x_i-y_i)^2}\)</td><td>직선 거리</td></tr>
+    <tr><td>거리</td><td>맨해튼</td><td class="tc">\(\sum|x_i-y_i|\)</td><td>격자 거리</td></tr>
+    <tr><td>거리</td><td>민코프스키</td><td class="tc">\((\sum|x_i-y_i|^p)^{1/p}\)</td><td>유클리드·맨해튼의 일반형</td></tr>
+    <tr><td>거리</td><td>코사인 유사도</td><td class="tc">\(A\cdot B/(\|A\|\|B\|)\)</td><td>두 벡터 사잇각, 텍스트 유사도</td></tr>
+    <tr><td>연관분석</td><td>지지도</td><td class="tc">\(P(A\cap B)\)</td><td>동시 발생 비율</td></tr>
+    <tr><td>연관분석</td><td>신뢰도</td><td class="tc">\(P(A\cap B)/P(A)\)</td><td>A 발생 시 B 발생 확률</td></tr>
+    <tr><td>연관분석</td><td>향상도</td><td class="tc">\(P(A\cap B)/(P(A)P(B))\)</td><td>&gt;1:양의 관계 / =1:무관 / &lt;1:음의 관계</td></tr>
+  </table>
+</div>
+
+</main>
+<script>
+// ── 상수 ──────────────────────────────────
+const SECS=['s1','s2','s3','s4','s5','s6','s7','s8','s9'];
+let mode='study', curSec='s1';
+const FC={};  // flipCount per sec
+const FS={};  // flipState[sec][i]
+
+// ── 플래시카드 데이터 ──────────────────────
+const FD={
+  s1:[
+    {q:'ESD 정상데이터 범위는?',a:'\\(\\mu-3\\sigma < \\text{정상} < \\mu+3\\sigma\\)',n:'μ:평균, σ:표준편차'},
+    {q:'IQR 이상값 정상 범위는?',a:'\\(Q_1-1.5\\cdot IQR \\sim Q_3+1.5\\cdot IQR\\)',n:'IQR=Q3-Q1 (가운데 50%)'},
+    {q:'Min-Max 정규화 공식은?',a:'\\(X\'=\\dfrac{X-X_{min}}{X_{max}-X_{min}}\\)',n:'결과: 0~1 범위'},
+    {q:'Z-Score 표준화 공식은?',a:'\\(Z\'=\\dfrac{X-\\mu}{\\sigma}\\)',n:'평균=0, 분산=1, 단위 없음'},
+    {q:'피어슨 상관계수 공식은?',a:'\\(r=\\dfrac{cov(x,y)}{\\sigma_x\\sigma_y}\\)',n:'−1≤r≤1, 이상치에 민감'},
+    {q:'표본 분산 공식은?',a:'\\(s^2=\\dfrac{\\sum(x_i-\\bar{x})^2}{n-1}\\)',n:'분모=n−1 (자유도)'},
+    {q:'변동계수(CV) 공식은?',a:'\\(CV=s/\\bar{x}\\)',n:'음수 없음'},
+    {q:'음의 왜도일 때 대소 관계는?',a:'\\(Mean < Median < Mode\\)',n:'왼쪽 꼬리가 긴 분포'},
+    {q:'양의 왜도일 때 대소 관계는?',a:'\\(Mode < Median < Mean\\)',n:'오른쪽 꼬리가 긴 분포'},
+    {q:'조화평균은 언제 사용?',a:'\\(H=n/\\sum(1/x_i)\\)',n:'평균 속도 계산에 사용'},
+  ],
+  s2:[
+    {q:'조건부 확률 P(A|B)는?',a:'\\(P(A|B)=P(A\\cap B)/P(B)\\)',n:'P(B)>0 조건'},
+    {q:'독립사건의 P(A∩B)는?',a:'\\(P(A\\cap B)=P(A)\\cdot P(B)\\)',n:'서로 영향 없는 사건'},
+    {q:'배반사건의 특징은?',a:'\\(P(A\\cap B)=0\\)',n:'교집합=공집합'},
+    {q:'베이즈 정리 공식은?',a:'\\(P(A|B)=\\dfrac{P(B|A)\\cdot P(A)}{P(B)}\\)',n:'기저율 반영'},
+    {q:'Var(aX±b)는?',a:'\\(a^2 Var(X)\\)',n:'상수 b는 분산에 영향 없음'},
+    {q:'Var(aX±bY)는?',a:'\\(a^2Var(X)\\pm b^2Var(Y)\\)',n:'독립일 때 성립'},
+    {q:'E(aX±b)는?',a:'\\(aE(X)\\pm b\\)',n:'기댓값의 선형성'},
+    {q:'Var(X)를 기댓값으로 표현하면?',a:'\\(E(X^2)-\\{E(X)\\}^2\\)',n:'분산 계산의 핵심'},
+  ],
+  s3:[
+    {q:'베르누이 분포 E·Var는?',a:'\\(E=p,\\quad Var=pq\\)',n:'1회 시행, 성공(1)/실패(0)'},
+    {q:'이항분포 E·Var는?',a:'\\(E=np,\\quad Var=np(1-p)\\)',n:'n번 독립 반복, 성공확률 일정'},
+    {q:'기하분포 E·Var는?',a:'\\(E=1/p,\\quad Var=(1-p)/p^2\\)',n:'처음 성공까지 시도 횟수'},
+    {q:'포아송 분포 PMF는?',a:'\\(P(X=k)=e^{-\\lambda}\\lambda^k/k!\\)',n:'E(X)=Var(X)=λ, 모수 1개'},
+    {q:'이항분포의 정규근사는?',a:'\\(B(n,p)\\approx N(np,npq)\\)',n:'n≥30이면 중심극한정리 적용'},
+    {q:'포아송에서 확률이 최대인 k는?',a:'k = λ',n:'k가 커질수록 확률은 0에 접근'},
+  ],
+  s4:[
+    {q:'표본평균의 분포는?',a:'\\(\\bar{X}\\sim N(\\mu,\\sigma^2/n)\\)',n:'표준오차=σ/√n'},
+    {q:'95% 신뢰구간의 임계값(z)은?',a:'z = 1.96',n:'90%:1.645 / 99%:2.576'},
+    {q:'신뢰구간 공식은?',a:'\\(\\bar{x}\\pm z\\cdot\\sigma/\\sqrt{n}\\)',n:'오차한계=임계값×표준오차'},
+    {q:'Z-검정 통계량은?',a:'\\(Z=(\\bar{x}-\\mu_0)/(\\sigma/\\sqrt{n})\\)',n:'모분산 알 때 또는 대표본'},
+    {q:'t-검정 통계량은?',a:'\\(t=(\\bar{x}-\\mu_0)/(s/\\sqrt{n})\\)',n:'모분산 모를 때, 자유도=n-1'},
+    {q:'F-검정 통계량은?',a:'\\(F=s_1^2/s_2^2\\)',n:'두 분산 비교, ANOVA에 사용'},
+    {q:'카이제곱 검정통계량은?',a:'\\(\\chi^2=\\sum(O_i-E_i)^2/E_i\\)',n:'자유도=(행수-1)×(열수-1)'},
+    {q:'카이제곱 기댓값(E) 계산법은?',a:'\\(E=\\text{행합}\\times\\text{열합}/\\text{전체}\\)',n:'기댓값 합=관측도수 합'},
+  ],
+  s5:[
+    {q:'결정계수 R² 공식은?',a:'\\(R^2=SSR/SST=1-SSE/SST\\)',n:'1에 가까울수록 설명력 높음'},
+    {q:'MAE 공식은?',a:'\\(MAE=\\sum|y_i-\\hat{y}_i|/n\\)',n:'이상치 영향 적음, 0에 가까울수록 좋음'},
+    {q:'MSE 공식은?',a:'\\(MSE=\\sum(y_i-\\hat{y}_i)^2/n\\)',n:'이상치 민감, 1미만 오차→더 작아짐'},
+    {q:'RMSE 공식은?',a:'\\(RMSE=\\sqrt{MSE}\\)',n:'MSE의 이상치 민감함 보완'},
+    {q:'MAPE 공식은?',a:'\\(MAPE=\\frac{100\\%}{n}\\sum|y_i-\\hat{y}_i|/y_i\\)',n:'오차의 백분율, 음수 가능'},
+    {q:'Lasso(L1) 목적함수는?',a:'\\(RSS+\\lambda\\sum|\\beta_j|\\)',n:'계수가 0이 될 수 있음→변수 선택'},
+    {q:'Ridge(L2) 목적함수는?',a:'\\(RSS+\\lambda\\sum\\beta_j^2\\)',n:'계수 0에 가까워지나 0이 되지 않음'},
+    {q:'Sigmoid 함수 공식은?',a:'\\(P(Y=1)=1/(1+e^{-z})\\)',n:'logit(z)을 0~1 확률로 변환'},
+    {q:'Odds Ratio 공식은?',a:'\\(OR=ad/bc\\)',n:'OR>1: 증가 / OR<1: 감소'},
+    {q:'Gini 지수 공식은?',a:'\\(Gini=1-\\sum P_i^2\\)',n:'CART 분류나무 분리 기준'},
+    {q:'Entropy 지수 공식은?',a:'\\(Entropy=-\\sum P_i\\log_2 P_i\\)',n:'C5.0 분류나무 분리 기준'},
+  ],
+  s6:[
+    {q:'재현율(Recall) 공식은?',a:'\\(Recall=TP/(TP+FN)\\)',n:'분모=실제 양성. "실Sen"'},
+    {q:'정밀도(Precision) 공식은?',a:'\\(Precision=TP/(TP+FP)\\)',n:'분모=예측 양성. "예Pre"'},
+    {q:'정확도(Accuracy) 공식은?',a:'\\(Accuracy=(TP+TN)/(TP+TN+FP+FN)\\)',n:'전체 중 올바른 예측'},
+    {q:'특이도(Specificity) 공식은?',a:'\\(Specificity=TN/(TN+FP)\\)',n:'FP Rate = 1 - Specificity'},
+    {q:'F1 Score 공식은?',a:'\\(F1=2\\cdot Prec\\cdot Rec/(Prec+Rec)\\)',n:'Precision·Recall의 조화평균'},
+    {q:'ROC 곡선의 X축·Y축은?',a:'X축: FP Rate, Y축: 민감도(Recall)',n:'Perfect Classifier: (FP Rate, Recall)=(0,1)'},
+    {q:'FP Rate 공식은?',a:'\\(FP/(TN+FP)\\)',n:'= 1 - 특이도. ROC 곡선 X축'},
+    {q:'Cutoff C가 작아지면?',a:'민감도 ↑, 특이도 ↓',n:'C=1: 민감도=0, 특이도=1'},
+  ],
+  s7:[
+    {q:'유클리드 거리 공식은?',a:'\\(\\sqrt{\\sum(x_i-y_i)^2}\\)',n:'직선 거리'},
+    {q:'맨해튼 거리 공식은?',a:'\\(\\sum|x_i-y_i|\\)',n:'A(3,3)→B(5,2): |3-5|+|3-2|=3'},
+    {q:'코사인 유사도 공식은?',a:'\\(A\\cdot B/(\\|A\\|\\|B\\|)\\)',n:'두 벡터 사잇각 기반 유사도'},
+    {q:'연관분석 지지도는?',a:'\\(P(A\\cap B)\\)',n:'A와 B가 동시에 포함된 거래 수 / 전체'},
+    {q:'연관분석 신뢰도는?',a:'\\(P(A\\cap B)/P(A)\\)',n:'A 발생 시 B 발생 확률'},
+    {q:'연관분석 향상도는?',a:'\\(P(A\\cap B)/(P(A)P(B))\\)',n:'>1:양의 관계 / =1:무관 / <1:음의 관계'},
+  ],
+  s9:[
+    {q:'가설검정 절차 4단계는?',a:'가설 설정 → 유의수준 설정 → 검정통계량 산출 → 기각/채택 판단',n:'p-value ≤ α 이면 귀무가설 기각'},
+    {q:'제1종 오류(α)란?',a:'귀무가설이 참인데 기각되는 오류',n:'p-value = 제1종 오류를 범할 확률'},
+    {q:'제2종 오류(β)란?',a:'귀무가설이 거짓인데 채택되는 오류',n:''},
+    {q:'K개(≥3) 집단 평균 비교 검정은?',a:'One-way ANOVA',n:'가정: 독립성, 정규성, 등분산성'},
+    {q:'2개 독립 표본의 비모수 검정은?',a:'Mann-Whitney U test',n:''},
+    {q:'K개 독립 표본의 비모수 검정은?',a:'Kruskal-Wallis H Test',n:'ANOVA의 비모수 버전'},
+    {q:'정규성 검정 4가지는?',a:'QQ Plot, Shapiro-Wilk, K-S Test, Anderson-Darling',n:''},
+    {q:'등분산 검정 방법은?',a:'Levene, Bartlett / F=s₁²/s₂²',n:'2개 분산 비교'},
+  ],
+};
+
+// ── 섹션 전환 (핵심 수정: 항상 완전 초기화) ──
+function showSec(sid){
+  // 1. 모든 섹션 숨기기
+  SECS.forEach(s=>{
+    const el=document.getElementById(s);
+    if(el){el.classList.remove('show');}
+    // 각 섹션의 study/flash 영역 초기화
+    const sg=document.getElementById(s+'-sg');
+    const fa=document.getElementById(s+'-fa');
+    if(sg) sg.style.display='';
+    if(fa) fa.style.display='none';
+  });
+  document.getElementById('tbl-mode').style.display='none';
+
+  // 2. 네비 버튼 업데이트
+  document.querySelectorAll('#mnav button').forEach((b,i)=>{
+    b.classList.toggle('on',SECS[i]===sid);
+  });
+
+  curSec=sid;
+
+  // 3. 테이블 모드면 표만 표시
+  if(mode==='table'){
+    document.getElementById('tbl-mode').style.display='block';
+    MathJax.typesetPromise();
+    return;
+  }
+
+  // 4. 해당 섹션 표시
+  const target=document.getElementById(sid);
+  if(target) target.classList.add('show');
+
+  // 5. 모드에 따라 study / flash 영역 전환
+  const sg=document.getElementById(sid+'-sg');
+  const fa=document.getElementById(sid+'-fa');
+  if(mode==='study'){
+    if(sg) sg.style.display='';
+    if(fa) fa.style.display='none';
+  } else {
+    if(sg) sg.style.display='none';
+    if(fa){ fa.style.display=''; buildFlash(sid); }
+  }
+
+  MathJax.typesetPromise();
+}
+
+// ── 모드 전환 ────────────────────────────
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.mbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('btn-'+m).classList.add('on');
+  showSec(curSec);
+}
+
+// ── 플래시카드 빌드 (항상 새로 그림) ──────
+function buildFlash(sid){
+  const data=FD[sid];
+  if(!data) return;
+  FS[sid]=Array(data.length).fill(false);
+  FC[sid]=0;
+  const grid=document.getElementById(sid+'-fg');
+  if(!grid) return;
+  grid.innerHTML='';
+  data.forEach((item,i)=>{
+    const w=document.createElement('div');
+    w.className='flwrap';
+    w.innerHTML=`<div class="flinner">
+      <div class="flfront"><div class="flq">${item.q}</div><div class="flhint">👆 클릭하면 정답이 나와요</div></div>
+      <div class="flback"><div class="fla">${item.a}</div>${item.n?`<div class="fln">💡 ${item.n}</div>`:''}</div>
+    </div>`;
+    w.addEventListener('click',()=>{
+      const flipped=!FS[sid][i];
+      FS[sid][i]=flipped;
+      w.classList.toggle('flipped',flipped);
+      FC[sid]=FS[sid].filter(Boolean).length;
+      updProg(sid,data.length);
+    });
+    grid.appendChild(w);
+  });
+  updProg(sid,data.length);
+  MathJax.typesetPromise();
+}
+
+function updProg(sid,total){
+  const cnt=FC[sid]||0;
+  const pf=document.getElementById(sid+'-pf');
+  const pc=document.getElementById(sid+'-pc');
+  if(pf) pf.style.width=total>0?(cnt/total*100)+'%':'0%';
+  if(pc) pc.textContent=cnt+'/'+total+' 뒤집음';
+}
+
+function shuffleF(sid){
+  const data=[...(FD[sid]||[])].sort(()=>Math.random()-.5);
+  FS[sid]=Array(data.length).fill(false);
+  FC[sid]=0;
+  const grid=document.getElementById(sid+'-fg');
+  if(!grid) return;
+  grid.innerHTML='';
+  data.forEach((item,i)=>{
+    const w=document.createElement('div');
+    w.className='flwrap';
+    w.innerHTML=`<div class="flinner">
+      <div class="flfront"><div class="flq">${item.q}</div><div class="flhint">👆 클릭하면 정답이 나와요</div></div>
+      <div class="flback"><div class="fla">${item.a}</div>${item.n?`<div class="fln">💡 ${item.n}</div>`:''}</div>
+    </div>`;
+    w.addEventListener('click',()=>{
+      const flipped=!FS[sid][i];
+      FS[sid][i]=flipped;
+      w.classList.toggle('flipped',flipped);
+      FC[sid]=FS[sid].filter(Boolean).length;
+      updProg(sid,data.length);
+    });
+    grid.appendChild(w);
+  });
+  updProg(sid,data.length);
+  MathJax.typesetPromise();
+}
+
+function resetF(sid){ buildFlash(sid); }
+</script>
+</body>
+</html>

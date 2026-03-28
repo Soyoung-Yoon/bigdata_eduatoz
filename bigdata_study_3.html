@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>빅데이터 분석기사 3과목 학습 카드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14; --surface: #161b27; --surface2: #1e2638; --border: #2a3550;
+    --accent: #7c4fff; --accent2: #ff9f4f; --accent3: #4fffb4; --accent4: #ff4f7c;
+    --text: #e8edf8; --text-dim: #7a8baa; --star: #ff9f4f;
+    --tag-blue: #2a1a6e; --tag-green: #0f3d2e; --tag-yellow: #3d2e0f; --tag-red: #3d0f1a; --tag-purple: #2a1060;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  header { padding: 2.5rem 2rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border); position: relative; background: linear-gradient(180deg, #130e20 0%, var(--bg) 100%); }
+  header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3)); }
+  header h1 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  header p { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem; }
+  nav { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; }
+  nav button { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 0.32rem 0.75rem; border-radius: 20px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-size: 0.76rem; transition: all 0.2s; white-space: nowrap; }
+  nav button:hover, nav button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  main { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .section-title { font-size: 1.05rem; font-weight: 700; color: var(--accent2); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 1rem; }
+  .topic-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .topic-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); border-color: var(--accent); }
+  .topic-card.imp-1 { background: #161c2a; }
+  .topic-card.imp-2 { background: #171b30; }
+  .topic-card.imp-3 { background: #151830; }
+  .topic-card.imp-4 { background: #141535; }
+  .topic-card.imp-5 { background: #110e38; border-color: #3a1a7a; }
+  .card-header { padding: 0.9rem 1rem 0.6rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+  .card-header h3 { font-size: 0.9rem; font-weight: 700; line-height: 1.35; flex: 1; }
+  .stars { font-size: 0.7rem; color: var(--star); white-space: nowrap; padding-top: 2px; }
+  .card-keywords { padding: 0 1rem 0.7rem; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .kw-tag { font-size: 0.67rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: var(--tag-purple); color: var(--accent); border: 1px solid rgba(124,79,255,0.25); }
+  .kw-tag.green { background: var(--tag-green); color: var(--accent3); border-color: rgba(79,255,180,0.25); }
+  .kw-tag.yellow { background: var(--tag-yellow); color: var(--accent2); border-color: rgba(255,159,79,0.25); }
+  .kw-tag.red { background: var(--tag-red); color: var(--accent4); border-color: rgba(255,79,124,0.25); }
+  .card-footer { padding: 0.5rem 1rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; }
+  .expand-icon { transition: transform 0.3s; }
+  .topic-card.open .expand-icon { transform: rotate(180deg); }
+  .detail-panel { display: none; padding: 1rem; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+  .topic-card.open .detail-panel { display: block; animation: fadeIn 0.25s ease; }
+  .detail-panel ul { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+  .detail-panel li { font-size: 0.81rem; line-height: 1.6; padding: 0.5rem 0.7rem; background: rgba(255,255,255,0.03); border-left: 2px solid var(--border); border-radius: 0 6px 6px 0; }
+  .detail-panel li.hl { border-left-color: var(--accent); }
+  .detail-panel li.hl2 { border-left-color: var(--accent2); }
+  .detail-panel li.hl3 { border-left-color: var(--accent3); }
+  .detail-panel li.hl4 { border-left-color: var(--accent4); }
+  strong.key { color: var(--accent2); font-weight: 700; }
+  strong.key2 { color: var(--accent3); font-weight: 700; }
+  strong.key3 { color: var(--accent4); font-weight: 700; }
+  strong.key4 { color: var(--accent); font-weight: 700; }
+  .formula-box { margin-top: 0.6rem; padding: 0.6rem 0.9rem; background: rgba(124,79,255,0.07); border: 1px solid rgba(124,79,255,0.25); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #c0a0ff; line-height: 1.9; }
+  .formula-box .label { font-family: 'Noto Sans KR', sans-serif; font-size: 0.71rem; color: var(--text-dim); margin-bottom: 0.3rem; font-weight: 700; letter-spacing: 0.05em; }
+  .related-box { margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: rgba(255,159,79,0.06); border: 1px solid rgba(255,159,79,0.2); border-radius: 8px; }
+  .related-box h4 { font-size: 0.71rem; color: var(--accent2); margin-bottom: 0.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .related-box p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+  .related-box span { color: var(--accent3); font-weight: 600; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 0.77rem; margin-top: 0.6rem; }
+  .mini-table th { background: rgba(124,79,255,0.15); color: var(--accent); padding: 0.4rem 0.6rem; text-align: left; font-weight: 700; }
+  .mini-table td { padding: 0.38rem 0.6rem; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
+  .mini-table td strong { color: var(--text); }
+  .mini-table tr:last-child td { border-bottom: none; }
+  /* Quiz */
+  .quiz-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; position: relative; }
+  .quiz-num { font-size: 0.7rem; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-bottom: 0.5rem; }
+  .quiz-q { font-size: 0.88rem; font-weight: 600; line-height: 1.55; margin-bottom: 0.9rem; }
+  .quiz-options { display: flex; flex-direction: column; gap: 0.4rem; }
+  .quiz-opt { padding: 0.5rem 0.9rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.81rem; transition: all 0.2s; background: rgba(255,255,255,0.02); text-align: left; font-family: 'Noto Sans KR', sans-serif; color: var(--text); }
+  .quiz-opt:hover { border-color: var(--accent); background: rgba(124,79,255,0.1); }
+  .quiz-opt.correct { background: rgba(79,255,180,0.1); border-color: var(--accent3); color: var(--accent3); }
+  .quiz-opt.wrong { background: rgba(255,79,124,0.1); border-color: var(--accent4); color: var(--accent4); }
+  .quiz-opt.reveal-correct { background: rgba(79,255,180,0.08); border-color: var(--accent3); }
+  .quiz-explain { display: none; margin-top: 0.8rem; padding: 0.7rem 0.9rem; background: rgba(255,159,79,0.07); border: 1px solid rgba(255,159,79,0.25); border-radius: 8px; font-size: 0.8rem; line-height: 1.55; color: var(--text-dim); }
+  .quiz-explain.show { display: block; }
+  .quiz-explain strong { color: var(--accent2); }
+  .quiz-tag { position: absolute; top: 1rem; right: 1rem; font-size: 0.64rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(124,79,255,0.15); color: var(--accent); font-weight: 700; }
+  #score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+  #score-bar span { font-size: 0.82rem; color: var(--text-dim); }
+  #score-display { font-size: 1.1rem; font-weight: 900; color: var(--accent3); font-family: 'JetBrains Mono', monospace; }
+  #reset-btn { margin-left: auto; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 0.35rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  #reset-btn:hover { border-color: var(--accent4); color: var(--accent4); }
+  .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; flex: 1; min-width: 80px; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.78em; }
+  @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } nav { padding: 0.6rem; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>🤖 빅데이터 분석기사 3과목 키워드 학습</h1>
+  <p>머신러닝 · 딥러닝 · 회귀 · 분류 · 군집 · 시계열 · 자연어 | 주제 클릭 → 세부 내용 · ★ 중요도 · 퀴즈</p>
+</header>
+<nav id="main-nav">
+  <button class="active" onclick="showSection('s1')">머신러닝 개요·학습유형</button>
+  <button onclick="showSection('s2')">모델 구축·검증방법</button>
+  <button onclick="showSection('s3')">회귀분석</button>
+  <button onclick="showSection('s4')">벌점화회귀·로지스틱</button>
+  <button onclick="showSection('s5')">의사결정나무·SVM·kNN</button>
+  <button onclick="showSection('s6')">앙상블</button>
+  <button onclick="showSection('s7')">인공신경망·딥러닝</button>
+  <button onclick="showSection('s8')">군집분석</button>
+  <button onclick="showSection('s9')">연관분석</button>
+  <button onclick="showSection('s10')">모수·비모수 추론·ANOVA</button>
+  <button onclick="showSection('s11')">시계열 분석</button>
+  <button onclick="showSection('s12')">자연어·텍스트 분석</button>
+  <button onclick="showSection('quiz')">📝 연습 문제</button>
+</nav>
+<main>
+
+<!-- S1: 머신러닝 개요 -->
+<div class="section active" id="s1">
+  <div class="section-title">머신러닝 개요 · 학습 유형</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>지도학습 vs 비지도학습 vs 준지도학습</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">지도학습</span><span class="kw-tag yellow">비지도학습</span><span class="kw-tag green">준지도학습</span></div>
+      <div class="card-footer"><span>핵심 분류</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">지도학습</strong> — 모든 데이터에 <strong class="key3">정답(레이블)이 필요</strong>
+            <br>• 회귀: 연속형 자료 예측 (집값, 선형 회귀, Lasso, Ridge, ElasticNet)
+            <br>• 분류: 범주형 자료 예측 (손글씨 숫자, 이메일 스팸, 로지스틱 회귀)
+            <br>• 회귀·분류 모두: 인공신경망(MLP), 의사결정나무, SVM, k-NN, 앙상블
+          </li>
+          <li class="hl2"><strong class="key2">비지도학습</strong> — <strong class="key3">정답(레이블) 없이</strong> 데이터만으로 구조·패턴 학습
+            <br>• 군집: K-means, DBSCAN, SOM
+            <br>• 연관: 상품 구매 연관성 분석, Apriori, FP-Growth
+            <br>• 차원 축소: 주성분 분석, 오토인코더
+          </li>
+          <li class="hl3"><strong class="key3">준지도학습</strong> — 정답이 표시된 데이터 + 표시되지 않은 데이터를 <strong class="key3">모두</strong> 훈련에 사용</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>딥러닝 유형</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">CNN</span><span class="kw-tag yellow">GAN</span><span class="kw-tag green">RNN</span><span class="kw-tag red">강화학습</span></div>
+      <div class="card-footer"><span>딥러닝 종류</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">CNN</strong> — 이미지 처리. 예: 얼굴 인식 보안 게이트</li>
+          <li class="hl2"><strong class="key2">GAN</strong> — 이미지 생성. 예: 피카소 화풍 그림 생성</li>
+          <li class="hl3"><strong class="key3">RNN</strong> — 자연어 처리. 예: 영화 감상평 긍정/부정 판단</li>
+          <li class="hl4"><strong class="key4">강화학습</strong> — 인공지능이 환경에서 특정 목표 달성을 위해 시행착오를 통해 스스로 학습. 예: 공장 로봇 훈련</li>
+          <li class="hl"><strong class="key">전이학습</strong> — 미리 학습된 모델의 지식을 새로운 문제에 적용하는 학습 기법</li>
+        </ul>
+        <div class="related-box">
+          <h4>🔗 인공지능 계층 구조</h4>
+          <p><span>인공지능 ⊃ 머신러닝 ⊃ 딥러닝</span><br>
+          약인공지능: 자의식 없음, 특정 영역에만 활용 (왓슨, 알파고, 자율주행)<br>
+          강인공지능: 스스로 데이터를 찾아 학습 가능 — 아직 큰 성과 없는 상태</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S2: 모델 구축·검증 -->
+<div class="section" id="s2">
+  <div class="section-title">모델 구축 절차 · 검증 방법</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>분석모형 구축 절차</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">분석기획</span><span class="kw-tag yellow">모델링</span><span class="kw-tag green">운영화</span></div>
+      <div class="card-footer"><span>구축 절차</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">분석모형 구축 절차</strong>: 분석 요건 정의 → 모델링 → 검증 및 테스트 → 운영화 및 적용</li>
+          <li class="hl2"><strong class="key2">기계학습 모델 구축 절차</strong>: 과제 정의 → 데이터 수집 → EDA 및 데이터 전처리 → 모델 학습 → 모델 성능평가</li>
+          <li class="hl3"><strong class="key3">데이터 분석 모델링 절차</strong>: 모델링 마트 설계 → 탐색적 분석 → 모델링 → 성능평가 → 운영 테스트</li>
+          <li>주의: <strong class="key3">설명력이 매우 높은 모형은 예측력이 떨어질 수 있음(Overfitting)</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>홀드아웃(Hold-out) vs K-Fold 교차검증</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">홀드아웃</span><span class="kw-tag yellow">K-Fold</span><span class="kw-tag green">LOOCV</span></div>
+      <div class="card-footer"><span>검증 방법 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">홀드아웃</strong>: 2개(훈련·평가) 또는 3개(훈련·검증·평가)로 분리. 랜덤 추출. 훈련과 평가 데이터는 <strong class="key3">겹칠 수 없음</strong>. 검증 데이터: 과대적합 여부 확인, Early Stopping, 하이퍼파라미터 조정에 사용</li>
+          <li class="hl2"><strong class="key2">K-Fold</strong>: Shuffle 후 K개 동일 크기 셋, (K-1)개 학습셋 + 1개 검증셋으로 K번 반복. <strong class="key3">K-Fold는 홀드아웃보다 느림</strong>. 과대적합 방지. <strong class="key2">분류: Stratified K-Fold 사용</strong>. 데이터 충분하지 않을 때 사용. 시계열 데이터: 시간순으로 나누어 검증</li>
+          <li class="hl3"><strong class="key3">LOOCV</strong>: K=n인 교차검증. 데이터 수가 적을 때 사용. 두 분석가가 <strong class="key3">동일한 결과</strong>를 얻을 수 있음</li>
+        </ul>
+        <div class="related-box">
+          <h4>🔗 부트스트랩(Bootstrap)</h4>
+          <p>관측치를 한 번 이상 훈련용으로 사용하는 <span>복원추출법</span> 기반 평가 방법<br>
+          특정 표본이 뽑히지 않을 확률: d = (1 - 1/N)ⁿ</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S3: 회귀분석 -->
+<div class="section" id="s3">
+  <div class="section-title">회귀분석</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>회귀모형의 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">단순선형</span><span class="kw-tag yellow">다중선형</span><span class="kw-tag green">다항</span><span class="kw-tag red">로지스틱</span></div>
+      <div class="card-footer"><span>회귀 유형</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">단순 선형 회귀</strong> — 독립변수 1개, 종속변수와 1차 선형 관계</li>
+          <li class="hl2"><strong class="key2">다중 선형 회귀</strong> — 독립변수 2개 이상, 1차 선형 관계. 잔차의 자유도 = 표본 크기 – 독립변수 수 – 1</li>
+          <li class="hl3"><strong class="key3">다항 회귀</strong> — 독립변수 1개 이상, 종속변수와 2차 이상(곡선) 관계</li>
+          <li class="hl4"><strong class="key4">로지스틱 회귀</strong> — <strong class="key3">종속변수가 범주형</strong>인 경우</li>
+        </ul>
+        <div class="related-box">
+          <h4>⚠️ 시험 포인트</h4>
+          <p>변수 조합이 달라지거나 조건이 달라지면 <span>회귀계수가 달라짐</span><br>
+          → 다중회귀 결과를 보고 <span>단순회귀 결과를 알 수 없음</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>회귀모형의 5가지 가정</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">선형성</span><span class="kw-tag yellow">독립성</span><span class="kw-tag green">정규성</span><span class="kw-tag red">등분산성</span></div>
+      <div class="card-footer"><span>회귀 가정</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">선형성</strong> — 독립변수의 변화에 따라 종속변수도 변화하는 선형모형</li>
+          <li class="hl2"><strong class="key2">독립성</strong> — 잔차와 독립변수의 값이 관련되어 있지 않음</li>
+          <li class="hl3"><strong class="key3">정규성(Normality)</strong> — 잔차항이 정규분포를 이뤄야 함</li>
+          <li class="hl4"><strong class="key4">등분산성</strong> — 독립변수의 모든 값에 대해 잔차항들의 분포는 동일한 분산</li>
+          <li class="hl"><strong class="key">비상관성</strong> — 관측치들의 잔차들끼리 상관이 없어야 함</li>
+        </ul>
+        <div class="related-box">
+          <h4>📊 모델 진단 그래프 해석</h4>
+          <p>Normal Q-Q: <span>정규성</span> / Scale-Location: <span>등분산성</span><br>
+          Residuals vs Leverage: <span>영향점</span> / Residuals vs Fitted: <span>선형성·등분산성</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>회귀모형 유의성 검정</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">F통계량</span><span class="kw-tag yellow">결정계수 R²</span><span class="kw-tag green">p-value</span></div>
+      <div class="card-footer"><span>유의성 검정</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">모형 유의성</strong>: F 통계량 사용. <strong class="key2">p-value ≤ 유의수준</strong> → 귀무가설 기각 → 유의미</li>
+          <li class="hl2"><strong class="key2">회귀계수 유의성</strong>: 회귀계수의 t값. p-value ≤ 유의수준 → 유의미</li>
+          <li class="hl3"><strong class="key3">결정계수(R²)</strong> = SSR/SST = 1 - (SSE/SST). <strong class="key3">0~1 사이, 1에 가까울수록 높은 설명력</strong>. 독립변수가 많아지면 커짐</li>
+          <li class="hl"><strong class="key">절편</strong>: 독립변수가 모두 0일 때 종속변수의 예상값</li>
+          <li><strong class="key2">기울기 회귀계수</strong>: 양수이면 종속변수 증가, 음수이면 감소</li>
+        </ul>
+        <div class="related-box">
+          <h4>📋 ANOVA 분산분석표 (p=절편 제외 회귀계수 수)</h4>
+          <p>Regression: df=p, Sum Sq=SSR, Mean Sq=MSR=SSR/p, F=MSR/MSE<br>
+          Residuals: df=N-p-1, Sum Sq=SSE, Mean Sq=MSE=SSE/(N-p-1)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-3" onclick="toggleCard(this)">
+      <div class="card-header"><h3>정규성 검정 기법</h3><div class="stars">★★★☆☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">Shapiro-Wilk</span><span class="kw-tag yellow">K-S Test</span><span class="kw-tag green">Q-Q Plot</span></div>
+      <div class="card-footer"><span>정규성 검정</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl">정규성 검정 기법: <strong class="key">Normal Q-Q Plot</strong>, Histogram, <strong class="key2">Shapiro-Wilk Test</strong>, <strong class="key3">Kolmogorov-Smirnov Test</strong>, Anderson-Darling Test</li>
+          <li class="hl4"><strong class="key3">과대적합</strong>: 일반화 성능이 낮은 상태. <strong class="key3">비선형 모형에서 더 쉽게 발생</strong>. 훈련 성능이 평가 성능보다 많이 낮은 상태</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S4: 벌점화회귀·로지스틱 -->
+<div class="section" id="s4">
+  <div class="section-title">벌점화 회귀(규제 모형) · 로지스틱 회귀</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>Lasso vs Ridge vs ElasticNet</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag red">Lasso(L1)</span><span class="kw-tag yellow">Ridge(L2)</span><span class="kw-tag green">ElasticNet</span></div>
+      <div class="card-footer"><span>벌점화 회귀 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl">벌점화 회귀: 회귀계수의 크기에 벌점(Penalty)을 부여하여 계수의 변동폭(분산)을 줄이고, 약간의 편향(Bias)을 허용하여 <strong class="key">과대적합 방지</strong></li>
+          <li class="hl4"><strong class="key3">Lasso(L1 norm)</strong> — 절댓값 사용. <strong class="key3">회귀계수가 0이 되거나 0에 가깝게 됨 → 변수 선택 효과</strong></li>
+          <li class="hl2"><strong class="key2">Ridge(L2 norm)</strong> — 제곱 사용. <strong class="key2">회귀계수가 0에 가까워질 뿐 0은 되지 않음</strong></li>
+          <li class="hl3"><strong class="key3">람다(λ)값이 클수록</strong> 패널티를 강하게 준 것</li>
+          <li class="hl"><strong class="key">다중공선성 문제를 완화</strong>하는 데 활용 가능</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>로지스틱 회귀 모형</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">sigmoid</span><span class="kw-tag yellow">odds</span><span class="kw-tag green">logit</span><span class="kw-tag red">MLE</span></div>
+      <div class="card-footer"><span>로지스틱 회귀 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">로지스틱 회귀</strong>: 지도학습, <strong class="key2">이항분류 및 다항분류</strong>에 사용. 종속변수: 범주형(이산형), 이항분포. 0~1 출력. 대표적인 <strong class="key">일반화 선형모형</strong></li>
+          <li class="hl2"><strong class="key">추정 방법</strong>: 최대우도법(MLE), 가중최소자승법(WLS), 카이제곱 검정</li>
+          <li class="hl3"><strong class="key3">승산(odds)</strong> = 성공확률/실패확률 (0 &lt; odds &lt; ∞)</li>
+          <li class="hl4"><strong class="key4">logit</strong> = log(odds) = z = β₀ + β₁x₁, (-∞ &lt; logit &lt; ∞). x₁이 1단위 증가하면 odds는 e^β₁만큼 증가</li>
+          <li class="hl"><strong class="key">승산비(odds ratio)</strong>: 1보다 크면 odds 증가, 1보다 작으면 odds 감소</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">sigmoid 함수 (0~1 변환)</div>
+          P(Y=1) = 1 / (1 + e⁻ᶻ)
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>일반화 선형모형 · 더미변수</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">링크함수</span><span class="kw-tag yellow">더미변수</span><span class="kw-tag green">교호작용항</span></div>
+      <div class="card-footer"><span>일반화 선형모형</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">일반화 선형모형(GLM)</strong>: 종속변수가 <strong class="key2">정규분포를 따르지 않는 경우</strong>에도 사용 가능한 확장된 선형모형. 3요소: 확률분포, 선형예측자, 링크함수</li>
+          <li class="hl2"><strong class="key2">링크함수</strong>: 포아송분포→log함수, <strong class="key3">이항분포→로짓</strong>, 정규분포→항등함수</li>
+          <li class="hl3"><strong class="key3">더미변수</strong>: 범주형 변수를 0과 1로 변환. gender=0이면 y=β₀, gender=1이면 y=β₀+β₁</li>
+          <li class="hl"><strong class="key">교호작용항</strong>: 한 변수의 효과가 다른 변수의 수준에 따라 달라지는 관계. 교호작용항이 유의하다 = 두 변수의 효과가 독립적이지 않다</li>
+          <li><strong class="key4">유의하지 않더라도 회귀식에서 제거하지 않음</strong></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S5: 의사결정나무·SVM·kNN -->
+<div class="section" id="s5">
+  <div class="section-title">의사결정나무 · SVM · k-NN</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>의사결정나무 특징과 결정규칙</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">비모수</span><span class="kw-tag yellow">분할규칙</span><span class="kw-tag green">가지치기</span><span class="kw-tag red">과대적합</span></div>
+      <div class="card-footer"><span>의사결정나무 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">특징</strong>: 분류·예측 모두 가능. <strong class="key2">비모수 방법(정규성 가정 불필요)</strong>. 해석 용이. 수치형·범주형 모두 사용. 과대적합 우려. 주요 알고리즘: CART, C5.0, C4.5, CHAID</li>
+          <li class="hl2"><strong class="key2">분할규칙</strong>: 부모마디보다 자식마디의 <strong class="key2">순수도가 증가</strong>하도록 분기 (불순도 감소, 동질성 증가). 자식 노드에 한 가지 종류의 클래스가 존재할 때까지 분리</li>
+          <li class="hl3"><strong class="key3">정지규칙</strong>: 깊이 최대이면 멈춤, 마지막 가지 개수가 일정 미만이면 멈춤, 불순도 개선 없으면 멈춤. <strong class="key3">뿌리 노드만 남는 이유: 변별력 있는 변수가 없어서</strong></li>
+          <li class="hl4"><strong class="key4">가지치기규칙</strong>: 복잡한 트리 간단히 → <strong class="key4">과대적합 방지</strong>, 일반화 성능 향상. 비용 함수 최소화</li>
+        </ul>
+        <div class="related-box">
+          <h4>📊 분리 기준</h4>
+          <p><span>분류나무</span>: 지니 지수, 엔트로피 지수, 카이제곱 통계량(p-value)<br>
+          지니 지수 = 1 - Σ(각 범주별 데이터 수/전체 데이터 수)²<br>
+          <span>회귀나무</span>: F-통계량(p-value), 분산 감소량</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>SVM(Support Vector Machine)</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">커널 트릭</span><span class="kw-tag yellow">소프트 마진</span><span class="kw-tag red">과적합</span></div>
+      <div class="card-footer"><span>SVM 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">SVM</strong>: 지도학습. 이진분류, 다항분류, 회귀(SVR) 모두 사용. <strong class="key3">설명력이 부족함</strong></li>
+          <li class="hl2">노이즈 많은 데이터에 <strong class="key3">과적합</strong> 위험. 속도가 느린 편</li>
+          <li class="hl3"><strong class="key3">커널 트릭</strong>: 비선형 데이터셋 분류를 위한 고차원 특징 공간으로 사상</li>
+          <li class="hl4"><strong class="key4">소프트 마진</strong>: 일부 오차를 허용하는 유연한 경계 설정</li>
+          <li class="hl"><strong class="key">SVM에서 가중치 벡터는 초평면과 직교, 편향은 offset 결정</strong></li>
+          <li class="hl2"><strong class="key2">RBF(가우시안) 커널</strong>: 하이퍼파라미터 C, gamma. <strong class="key3">gamma 값이 클수록 과적합 위험</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>k-NN (k-Nearest Neighbors)</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">lazy learning</span><span class="kw-tag yellow">hyperparameter k</span><span class="kw-tag red">과대적합</span></div>
+      <div class="card-footer"><span>k-NN 특징</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">k-NN</strong>: lazy learning(인스턴스 러닝). 새로운 데이터에 대해 이웃 k개의 가장 가까운 멤버들과 비교하여 결과 판단</li>
+          <li class="hl3"><strong class="key3">이상값의 영향: K가 작을 때 더 크게 나타남 → 과대적합은 K가 작을 때 심함</strong></li>
+          <li class="hl2"><strong class="key2">스케일링이 중요</strong>. k: 하이퍼파라미터</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S6: 앙상블 -->
+<div class="section" id="s6">
+  <div class="section-title">앙상블 모형</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>앙상블 종류: Bagging vs Boosting vs Stacking</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">Bagging(분산감소)</span><span class="kw-tag yellow">Boosting(편향감소)</span><span class="kw-tag green">Stacking</span></div>
+      <div class="card-footer"><span>앙상블 유형 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">Voting</strong>: 동일 데이터셋, 서로 다른 여러 알고리즘. Hard voting(빈도수), Soft voting(확률)</li>
+          <li class="hl2"><strong class="key2">Bagging(분산 감소)</strong>: 동일 알고리즘, <strong class="key2">복원추출(부트스트랩)</strong> 표본에 <strong class="key2">병렬</strong>로 학습, 결과 평균(다수결). 서로 다른 데이터셋, 동일 알고리즘. 모델: Random Forest, Extra Trees, Bagged SVM, Bagged k-NN</li>
+          <li class="hl3"><strong class="key3">Pasting</strong>: Bagging과 비슷하지만 <strong class="key3">비복원추출</strong> 방식</li>
+          <li class="hl4"><strong class="key4">Boosting(편향 감소)</strong>: 여러 모델 <strong class="key4">순차적</strong> 학습. 잘못 분류된 데이터에 가중치 부여. <strong class="key3">이상치에 약함</strong>. 이전 학습 결과를 반영(약학습기→강학습기). 모델: AdaBoost, Gradient Boost, XGBoost, LightGBM, CatBoost</li>
+          <li class="hl"><strong class="key">Stacking</strong>: 서로 다른 여러 알고리즘 모델들의 예측 결과를 새로운 데이터로 사용해 <strong class="key">메타 모델</strong>을 학습시켜 최종 결과 도출</li>
+        </ul>
+        <div class="related-box">
+          <h4>⚠️ 앙상블 특징</h4>
+          <p>여러 분류 모형 결합 → 정확도 향상. 해석력은 낮음.<br>
+          단일 모델보다 성능 높지만 <span>"항상"</span> 좋은 것은 아님.<br>
+          과적합 감소 효과(일반화된 모형)</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S7: 인공신경망·딥러닝 -->
+<div class="section" id="s7">
+  <div class="section-title">인공신경망(ANN) · 딥러닝</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>인공신경망(ANN) 구조와 학습</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">가중치</span><span class="kw-tag yellow">역전파</span><span class="kw-tag green">기울기 소실</span></div>
+      <div class="card-footer"><span>ANN 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">ANN</strong>: 분류·예측 모두 가능. 입력층·은닉층·출력층 구성. 각 층 완전 연결</li>
+          <li class="hl2"><strong class="key2">MLP 가중치 수</strong> = (입력노드×은닉노드) + (은닉노드×출력노드)</li>
+          <li class="hl3"><strong class="key3">단층퍼셉트론(SLP)</strong>: OR, AND, NOR 학습 가능 / <strong class="key3">MLP</strong>: XOR 학습 가능</li>
+          <li class="hl4"><strong class="key3">기울기 소실</strong>: 다층신경망에서 역전파 알고리즘이 입력층으로 갈수록 Gradient가 점차 0에 수렴하여 weight가 업데이트되지 않는 현상. <strong class="key3">다층신경망에서 sigmoid를 활성화 함수로 사용했기 때문에 발생!</strong></li>
+          <li class="hl"><strong class="key">역전파 알고리즘</strong>: 출력층 오차를 입력층 방향으로 역전파하면서, 손실 함수를 편미분(기울기 계산)하고 손실이 감소하는 방향으로 가중치를 조정</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">ANN 학습 공식</div>
+          weighted_sum = w₁x₁ + w₂x₂ + … + b<br>
+          output = activation_function(weighted_sum)
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>활성화 함수 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">sigmoid</span><span class="kw-tag yellow">softmax</span><span class="kw-tag green">ReLU</span><span class="kw-tag">tanh</span></div>
+      <div class="card-footer"><span>활성화 함수 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <table class="mini-table">
+          <tr><th>함수</th><th>범위</th><th>특징·용도</th></tr>
+          <tr><td><strong>항등함수</strong></td><td>(-∞,∞)</td><td>회귀 출력층</td></tr>
+          <tr><td><strong>sigmoid</strong></td><td>0~1</td><td>2개 범주, 0에서 기울기 최대, 기울기 소실 유발</td></tr>
+          <tr><td><strong>softmax</strong></td><td>0~1</td><td>3개 이상 범주, 각 범주 사후 확률 제공</td></tr>
+          <tr><td><strong>tanh</strong></td><td>-1~1</td><td>—</td></tr>
+          <tr><td><strong>ReLU</strong></td><td>0 or x</td><td>가중치 업데이트 빠름, x&lt;0이면 0출력, x≥0이면 x출력</td></tr>
+        </table>
+        <ul style="margin-top:0.6rem">
+          <li class="hl3"><strong class="key3">은닉층 없고 출력층만 + sigmoid = 로지스틱 모형</strong></li>
+          <li class="hl4">활성화 함수가 없으면 모든 층이 선형 함수 → <strong class="key3">심층 구조의 의미 사라짐</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>경사하강법 옵티마이저 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">SGD</span><span class="kw-tag yellow">Adam</span><span class="kw-tag green">Momentum</span><span class="kw-tag">AdaGrad</span></div>
+      <div class="card-footer"><span>Optimizer 분류</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">기울기 수정</strong>: BGD, SGD, Momentum, NAG</li>
+          <li class="hl2"><strong class="key2">학습률 수정</strong>: AdaGrad, AdaDelta, RMSProp</li>
+          <li class="hl3"><strong class="key3">기울기·학습률 모두 수정</strong>: Adam, Nadam</li>
+          <li class="hl4"><strong class="key4">SGD(확률적 경사하강법)</strong>: 전체 데이터 중 일부 랜덤 추출, 미니배치 사용. 진동 문제, 기울기 노이즈 문제</li>
+          <li class="hl"><strong class="key">Momentum</strong>: 기울기에 관성 부여 → <strong class="key2">지역최소 극복</strong>, 전역최소 탐색</li>
+          <li>학습률 작으면: 안정적이지만 <strong class="key3">수렴 속도 느림</strong> / 크면: 빠르지만 <strong class="key3">발산 위험</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>과적합 방지 방안 · 딥러닝 모델</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">Dropout</span><span class="kw-tag yellow">CNN</span><span class="kw-tag green">LSTM</span><span class="kw-tag red">GAN</span></div>
+      <div class="card-footer"><span>과적합 방지·딥러닝 모델</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">과적합 방지</strong>: 매개변수·Hidden 수 줄임, 데이터 증강, Epoch 수 줄임, Early Stopping, Regularization(L1/L2), <strong class="key2">Dropout, DropConnect, Batch Normalization</strong></li>
+          <li class="hl2"><strong class="key2">CNN</strong>: 이미지·영상 처리. 공간적 특성 추출 특화. Convolution, Padding, Stride</li>
+          <li class="hl3"><strong class="key3">LSTM(3개 Gate), GRU(2개 Gate)</strong>: RNN의 일종. 시계열·자연어에서 시간 의존성 처리</li>
+          <li class="hl4"><strong class="key4">GAN</strong>: 생성자와 판별자가 경쟁하며 데이터 생성. 이미지 생성 분야 활용</li>
+          <li class="hl"><strong class="key">오토인코더</strong>: 비지도 학습. 인코딩→디코딩. 차원 축소, 노이즈 제거, 이상치 탐지. <strong class="key2">디코더 출력노드 수 = 인코더 입력노드 수</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-3" onclick="toggleCard(this)">
+      <div class="card-header"><h3>Transformer · NLP 모델 · GNN</h3><div class="stars">★★★☆☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">Transformer</span><span class="kw-tag yellow">BERT·GPT</span><span class="kw-tag green">YOLO</span><span class="kw-tag">GNN</span></div>
+      <div class="card-footer"><span>최신 딥러닝 모델</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">Transformer</strong>: 문장 내 단어 간 상관관계를 직접 모델링. Self Attention, Positional Embedding, Multi-head Attention 사용. <strong class="key3">RNN 기술 사용하지 않음</strong></li>
+          <li class="hl2"><strong class="key2">자연어</strong>: Transformer, GPT, BERT, BART</li>
+          <li class="hl3"><strong class="key3">이미지</strong>: CNN, VGGNet, ResNet, MobileNet, YOLO(위치·클래스 동시 예측, 실시간 객체 탐지)</li>
+          <li class="hl4"><strong class="key4">GNN(Graph Neural Network)</strong>: 그래프 형태 관계형 데이터(노드 간 연결 구조) 학습. 소셜 네트워크 추천 시스템, 지식 그래프 링크 예측 등에 활용</li>
+          <li class="hl"><strong class="key">Seq2Seq</strong>: 인코더(입력 시퀀스→단일 벡터), 디코더(단일 벡터→출력 시퀀스). <strong class="key2">컨텍스트 벡터</strong>: 인코더의 마지막 은닉 상태. 어텐션(Attention): 긴 시퀀스에서 정보 희석 문제 보완</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S8: 군집분석 -->
+<div class="section" id="s8">
+  <div class="section-title">군집분석</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>거리 측도 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">유클리드</span><span class="kw-tag yellow">맨해튼</span><span class="kw-tag green">코사인 유사도</span><span class="kw-tag">자카드</span></div>
+      <div class="card-footer"><span>거리 측도 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <div class="formula-box">
+          <div class="label">유클리드 거리</div>
+          d(x,y) = √Σ(xᵢ-yᵢ)²<br>
+          <div class="label" style="margin-top:0.4rem">맨해튼(Manhattan) 거리</div>
+          d(x,y) = Σ|xᵢ-yᵢ|<br>
+          <div class="label" style="margin-top:0.4rem">민코프스키(Minkowski) 거리</div>
+          d(x,y) = (Σ|xᵢ-yᵢ|ᵖ)^(1/p)
+        </div>
+        <ul style="margin-top:0.6rem">
+          <li class="hl"><strong class="key">통계적 거리</strong>: 표준화, 마할라노비스</li>
+          <li class="hl2"><strong class="key2">자카드 거리</strong>: 범주형 데이터에서 사용</li>
+          <li class="hl3"><strong class="key3">코사인 거리</strong>: 두 벡터 사이의 사잇각으로 구한 유사도</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>계층적 군집 연결법 5가지</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">최단</span><span class="kw-tag yellow">최장</span><span class="kw-tag green">중심</span><span class="kw-tag">와드</span><span class="kw-tag red">평균</span></div>
+      <div class="card-footer"><span>계층적 군집 연결법</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key3">계층적 군집</strong>: <strong class="key3">사전에 군집 수를 설정하지 않아도 됨</strong>. 한 번 군집이 형성되면 다른 군집으로 이동 불가</li>
+          <li class="hl"><strong class="key">최단(단일) 연결법</strong>: 거리가 가장 가까운 데이터(<strong class="key2">최솟값</strong>) 사용</li>
+          <li class="hl2"><strong class="key2">최장(완전) 연결법</strong>: 거리가 가장 먼 데이터(<strong class="key3">최댓값</strong>) 사용</li>
+          <li class="hl3"><strong class="key3">중심 연결법</strong>: 두 군집의 중심 간 거리 사용</li>
+          <li class="hl4"><strong class="key4">와드 연결법</strong>: 군집 내 편차 제곱합 사용 (편차 = 데이터 - 평균)</li>
+          <li class="hl"><strong class="key">평균 연결법</strong>: 모든 항목에 대한 거리 평균. 계산량이 많아질 수 있고 <strong class="key2">이상치에 덜 민감</strong></li>
+        </ul>
+        <div class="related-box">
+          <h4>📊 덴드로그램</h4>
+          <p>Y축 특정값에서 X축 방향으로 직선을 그어 만나는 <span>선의 개수 = 군집의 개수</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>K-means · DBSCAN · SOM</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">K-means</span><span class="kw-tag yellow">DBSCAN</span><span class="kw-tag green">SOM</span><span class="kw-tag red">엘보우 기법</span></div>
+      <div class="card-footer"><span>비계층적 군집</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">K-means</strong>: k개 클러스터로 나누는 중심 기반 군집. <strong class="key2">계층적보다 빠름</strong>. 한 번 군집 형성 후에도 다른 군집으로 <strong class="key2">이동 가능</strong>. K가 크다고 항상 좋은 것은 아님(과적합 위험). <strong class="key3">K-median</strong>: 중앙값 사용</li>
+          <li class="hl2"><strong class="key2">엘보우 기법</strong>: 각 K에 대한 군집 내 편차 제곱합 계산 후 그래프로 나타내어 <strong class="key2">곡선이 완만해지는 지점</strong>을 최적의 K값으로 선택</li>
+          <li class="hl3"><strong class="key3">DBSCAN</strong>: 밀도 기반 군집. <strong class="key3">군집 수(초매개변수)를 직접 설정하지 않아도 됨</strong>. 임의적 모양의 군집 분석에 적합</li>
+          <li class="hl4"><strong class="key4">SOM(자기 조직화 지도)</strong>: 입력층 + 2차원 격자 형태의 경쟁층. 전방패스의 경쟁학습으로 속도 빠름. 입력층 뉴런과 경쟁층 뉴런은 완전 연결</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S9: 연관분석 -->
+<div class="section" id="s9">
+  <div class="section-title">연관 분석</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>연관규칙 측정지표: 지지도·신뢰도·향상도</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">지지도</span><span class="kw-tag yellow">신뢰도</span><span class="kw-tag green">향상도</span></div>
+      <div class="card-footer"><span>연관규칙 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">연관분석</strong>: 항목들 간 '조건-결과' 패턴 발견. <strong class="key2">장바구니 분석</strong>. <strong class="key3">비목적성 분석</strong></li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">지지도(Support)</div>
+          P(A∩B) = A와 B 동시 포함 거래 수 / 전체 거래 수<br>
+          <div class="label" style="margin-top:0.4rem">신뢰도(Confidence, A→B)</div>
+          P(B|A) = P(A∩B) / P(A) = A·B 동시 포함 / A 포함 거래 수<br>
+          <div class="label" style="margin-top:0.4rem">향상도(Lift)</div>
+          P(B|A) / P(B) = P(A∩B) / (P(A)·P(B))
+        </div>
+        <ul style="margin-top:0.6rem">
+          <li class="hl2"><strong class="key2">향상도 &gt; 1</strong>: 연관성 높음, 양의 관계</li>
+          <li class="hl"><strong class="key">향상도 = 1</strong>: 두 품목 사이 상호 관계 없음</li>
+          <li class="hl4"><strong class="key3">향상도 &lt; 1</strong>: 음의 상관관계</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>Apriori vs FP-Growth</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag red">Apriori(비효율)</span><span class="kw-tag green">FP-Growth(효율)</span></div>
+      <div class="card-footer"><span>연관분석 알고리즘</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">Apriori</strong>: 가능한 모든 후보 항목 집합을 생성해 검사. <strong class="key3">비효율적, 큰 데이터셋에 부적합</strong></li>
+          <li class="hl3"><strong class="key3">FP-Growth</strong>: 후보 집합을 생성하지 않고 FP-tree와 node, link 자료구조 활용. <strong class="key2">효율적으로 빈발 항목집합 찾기, 큰 데이터셋에 적합</strong></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S10: 모수·비모수 추론 -->
+<div class="section" id="s10">
+  <div class="section-title">모수적 추론 · 비모수적 추론 · ANOVA</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>ANOVA, MANOVA, ANCOVA 비교</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">일원ANOVA</span><span class="kw-tag yellow">이원ANOVA</span><span class="kw-tag green">MANOVA</span><span class="kw-tag red">ANCOVA</span></div>
+      <div class="card-footer"><span>분산분석 유형</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <table class="mini-table">
+          <tr><th>분석 방법</th><th>범주형 독립</th><th>연속형 종속</th><th>기타</th></tr>
+          <tr><td><strong>일원ANOVA</strong></td><td>1개</td><td>1개</td><td>—</td></tr>
+          <tr><td><strong>이원ANOVA</strong></td><td>2개</td><td>1개</td><td>—</td></tr>
+          <tr><td><strong>일원MANOVA</strong></td><td>1개</td><td>2개 이상</td><td>—</td></tr>
+          <tr><td><strong>이원MANOVA</strong></td><td>2개</td><td>2개 이상</td><td>—</td></tr>
+          <tr><td><strong>일원ANCOVA</strong></td><td>1개</td><td>1개</td><td>연속형 공변량 1개 이상</td></tr>
+        </table>
+        <ul style="margin-top:0.6rem">
+          <li class="hl"><strong class="key">모수적 추론</strong>: 모집단이 특정 분포를 따른다고 가정. <strong class="key2">등간척도·비율척도</strong> 사용</li>
+          <li class="hl2">평균 검정: t-검정(단일·대응·독립 표본), Z-검정, <strong class="key2">ANOVA 검정(K개 집단)</strong></li>
+          <li class="hl3">분산 검정: <strong class="key3">F-검정(2개 분산)</strong>, <strong class="key3">카이제곱 검정(1개 분산)</strong></li>
+          <li class="hl4"><strong class="key4">대응 표본 t-검정</strong>: 동일 개체에 처리 전/후 자료. 가능한 동일 특성의 두 개체에 서로 다른 처리를 하고 효과를 비교할 때 사용</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>비모수적 추론 종류 비교</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">Wilcoxon</span><span class="kw-tag yellow">Mann-Whitney</span><span class="kw-tag green">Kruskal-Wallis</span></div>
+      <div class="card-footer"><span>비모수 검정 비교표</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">비모수적 추론</strong>: 모집단 분포에 대해 <strong class="key3">제약을 가하지 않음</strong>. 분포 형태에 관한 검정. 순위·부호·중앙값 이용</li>
+        </ul>
+        <table class="mini-table" style="margin-top:0.5rem">
+          <tr><th>집단</th><th>비모수(서열척도)</th><th>모수(정규분포)</th></tr>
+          <tr><td><strong>1</strong></td><td>Wilcoxon Signed Rank test</td><td>One sample t-test</td></tr>
+          <tr><td><strong>2(독립)</strong></td><td>Mann-Whitney U test, Wilcoxon Rank Sum test</td><td>Two sample t-test</td></tr>
+          <tr><td><strong>2(대응)</strong></td><td>Wilcoxon Signed Rank, Sign test</td><td>Paired t-test</td></tr>
+          <tr><td><strong>K(독립)</strong></td><td>Kruskal-Wallis test (중앙값)</td><td>ANOVA test</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>카이제곱 검정 · K-S 적합도 검정</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">동질성·독립성</span><span class="kw-tag yellow">K-S Test</span><span class="kw-tag green">적합도</span></div>
+      <div class="card-footer"><span>검정 종류</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">카이제곱 검정(동질성·독립성)</strong>: 기대도수와 관측도수의 차이가 커지면 카이제곱 통계량도 커짐. 기대도수 합 = 관측도수 합. 자유도 = (행의 수-1)×(열의 수-1)</li>
+          <li class="hl2"><strong class="key2">카이제곱 적합도 검정</strong>: <strong class="key2">이산 확률분포</strong>(이항, 포아송)의 적합도 검정</li>
+          <li class="hl3"><strong class="key3">K-S 적합도 검정</strong>: <strong class="key3">연속 확률분포</strong>의 적합도 검정. 원자료를 그대로 사용, 구간 분할 불필요. <strong class="key3">K-S 통계량이 작을수록 두 분포가 유사</strong>. 표본 크기가 크면 민감해짐</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">카이제곱 검정통계량</div>
+          χ² = Σ (관측값 - 기댓값)² / 기댓값<br>
+          기댓값 = 행의 합 × 열의 합 / 전체 표본 수
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>나이브 베이즈 모델 · 베이즈 정리</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">사전확률</span><span class="kw-tag yellow">사후확률</span><span class="kw-tag green">나이브 베이즈</span></div>
+      <div class="card-footer"><span>베이즈 기반 분류</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">나이브 베이즈</strong>: 이항 분류·다중 클래스 분류 처리. <strong class="key2">각 특징이 클래스 조건하에 독립적이라는 가정</strong>. 선형 분류기처럼 작동. 각 클래스에 대해 독립적으로 확률 계산 후 가장 높은 확률 클래스 선택</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">베이즈 정리(전확률의 법칙 적용)</div>
+          P(A₁|B) = P(B|A₁)·P(A₁) / [P(B|A₁)·P(A₁) + P(B|A₂)·P(A₂)]<br>
+          <div class="label" style="margin-top:0.4rem">나이브 베이즈 가정</div>
+          P(A|X,Y) = P(X|A)·P(Y|A)·P(A) / P(X,Y)
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S11: 시계열 -->
+<div class="section" id="s11">
+  <div class="section-title">시계열 분석</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>시계열 정상성(Stationarity)</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">정상성</span><span class="kw-tag yellow">차분</span><span class="kw-tag green">백색잡음</span></div>
+      <div class="card-footer"><span>정상성 개념</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">정상성 조건</strong>:
+            <br>• 평균은 모든 시점 t에 대해 일정: E(xₜ) = μ
+            <br>• 분산은 모든 시점 t에 대해 일정: Var(xₜ) = σ²
+            <br>• 공분산은 시점에 의존하지 않고 <strong class="key2">시차에만 의존</strong>: Cov(xₜ₊ₕ, xₜ) = γₕ
+          </li>
+          <li class="hl2"><strong class="key2">정상 시계열 전환</strong>:
+            <br>• 평균 일정하지 않은 경우 → <strong class="key2">차분</strong>
+            <br>• 계절성이 있는 경우 → <strong class="key2">계절 차분</strong>
+            <br>• 분산이 일정하지 않은 경우 → <strong class="key2">자연 로그(변환)</strong>
+          </li>
+          <li class="hl3"><strong class="key3">백색잡음(White Noise)</strong>: 자기상관이 전혀 없는 경우. 서로 독립. 평균=0, 분산 일정, 자기공분산=0. <strong class="key3">정상성 만족</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>시계열 모형: AR · MA · ARIMA</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">AR(ACF)</span><span class="kw-tag yellow">MA(PACF)</span><span class="kw-tag green">ARIMA</span></div>
+      <div class="card-footer"><span>시계열 모형</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">AR 모형</strong>: 백색 잡음의 현재 값과 자기 자신의 과거 값의 선형 가중 값. <strong class="key2">정상 확률 모형(조건부 정상 시계열)</strong>. <strong class="key3">ACF가 지수적 감소</strong></li>
+          <li class="hl2"><strong class="key2">MA 모형</strong>: 현시점 자료가 유한 개의 과거 백색잡음의 선형결합. <strong class="key2">정상 시계열</strong>. <strong class="key3">PACF가 지수적 감소</strong></li>
+          <li class="hl4"><strong class="key3">ARIMA 모형</strong>: <strong class="key3">비정상시계열 모형</strong>. 차분/변환을 통해 AR, MA, ARMA 모형으로 정상화. 예: ARIMA(1,2,3) → 2번 차분 → ARMA(1,3)</li>
+        </ul>
+        <div class="related-box">
+          <h4>📊 분해 시계열 요인</h4>
+          <p><span>추세요인</span> · <span>계절요인</span>(고정된 주기) · <span>순환요인</span>(알려지지 않은 주기) · <span>불규칙요인</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>이동평균법 · 지수 평활법</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">이동평균법</span><span class="kw-tag yellow">지수평활법</span><span class="kw-tag green">평활상수 α</span></div>
+      <div class="card-footer"><span>예측 기법</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">이동평균법</strong>: 과거 데이터에 <strong class="key2">동일한 가중치</strong>. 추세·주기 측정. 계절·불규칙 성분 제거</li>
+          <li class="hl2"><strong class="key2">지수 평활법</strong>: <strong class="key2">최근 관측치에 높은 가중치</strong>. 추세가 없는 데이터에 사용</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">지수 평활법 공식</div>
+          Fₜ = α·Yₜ + (1-α)·Fₜ₋₁<br>
+          (Fₜ: t시점 예측치, Yₜ: t시점 관측치, α: 지수평활상수)
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S12: 자연어·텍스트 -->
+<div class="section" id="s12">
+  <div class="section-title">자연어 처리 · 텍스트 분석</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>자연어 분석 4단계</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">형태소</span><span class="kw-tag yellow">구문</span><span class="kw-tag green">의미</span><span class="kw-tag red">화용</span></div>
+      <div class="card-footer"><span>자연어 분석 절차</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">형태소 분석</strong>: 문장을 형태소라는 최소 의미 단위로 분리. POS Tagging</li>
+          <li class="hl2"><strong class="key2">구문 분석</strong>: 문장의 문법 구조를 분석해 구문 트리로 나타냄 (Parsing)</li>
+          <li class="hl3"><strong class="key3">의미 분석</strong>: 분석 결과에 해석을 가하여 문장이 가진 의미를 파악</li>
+          <li class="hl4"><strong class="key4">화용 분석</strong>: 문맥을 통해 문장의 의미와 화자의 의도를 파악</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>텍스트 전처리 기법</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">토큰화</span><span class="kw-tag yellow">불용어 제거</span><span class="kw-tag green">어간 추출</span><span class="kw-tag">POS Tagging</span></div>
+      <div class="card-footer"><span>텍스트 전처리</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">토큰화</strong>: 코퍼스를 토큰으로 나누는 작업 (토큰: 의미를 갖는 가장 작은 단위)</li>
+          <li class="hl2"><strong class="key2">불용어 제거</strong>: Be동사, 전치사, 관사 등 자주 쓰이나 중요하지 않은 단어 제거</li>
+          <li class="hl3"><strong class="key3">어간 추출(Stemming)</strong>: 어형이 변형된 단어로부터 접사(-ed, -ly 등)를 제거하고 어간 분리</li>
+          <li class="hl4"><strong class="key4">품사 태깅(POS Tagging)</strong>: 각 단어에 품사 정보를 부여</li>
+          <li class="hl"><strong class="key">표제어 추출</strong>: 품사 정보를 이용해 다양한 형태로 활용된 단어의 원형 추출</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>단어 벡터화 기법</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">Bag of Words</span><span class="kw-tag yellow">TF-IDF</span><span class="kw-tag green">Word2Vec</span></div>
+      <div class="card-footer"><span>텍스트 벡터화</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">Bag of Words</strong>: <strong class="key3">단어 순서를 고려하지 않고</strong> 출현 빈도에만 집중</li>
+          <li class="hl2"><strong class="key2">TF-IDF</strong>: 어떤 단어가 <strong class="key2">특정 문서 내에서 얼마나 중요한지</strong>를 나타내는 통계적 수치</li>
+          <li class="hl3"><strong class="key3">Word Embedding</strong>: 단어의 의미를 실수값의 집합인 <strong class="key3">밀집 벡터</strong> 형태로 표현. 유사도 값이 클수록 두 벡터 간 유사도가 더 높음. 가까운 거리 = 의미적으로 유사</li>
+          <li class="hl"><strong class="key">Word2Vec</strong>: Word Embedding의 대표적인 방법 중 하나</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-3" onclick="toggleCard(this)">
+      <div class="card-header"><h3>소셜 미디어 분석 · 사회 관계망</h3><div class="stars">★★★☆☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">중심성</span><span class="kw-tag yellow">워드클라우드</span><span class="kw-tag green">토픽모델링</span></div>
+      <div class="card-footer"><span>소셜 분석</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">소셜 미디어 분석 종류</strong>: 네트워크 분석, 워드 클라우드 분석, 텍스트 분석, 감성 분석, 토픽 모델링</li>
+          <li class="hl2"><strong class="key2">사회 관계망 분석 주요 요소 — 중심성</strong>:
+            <br>• 연결 중심성
+            <br>• 근접 중심성
+            <br>• 매개 중심성
+            <br>• <strong class="key3">위세 중심성(=고유벡터 중심성)</strong>
+          </li>
+          <li class="hl3"><strong class="key3">밀도</strong>: 서로 간 얼마나 많은 관계를 맺고 있는가를 표현하는 연결 정도</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="section" id="quiz">
+  <div class="section-title">📝 연습 문제</div>
+  <div id="score-bar">
+    <span>현재 점수</span>
+    <div id="score-display">0 / 0</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <button id="reset-btn" onclick="resetQuiz()">다시 풀기</button>
+  </div>
+  <div id="quiz-container"></div>
+</div>
+
+</main>
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const ids = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','s12','quiz'];
+  document.querySelectorAll('nav button')[ids.indexOf(id)].classList.add('active');
+}
+function toggleCard(el) { el.classList.toggle('open'); }
+
+const quizData = [
+  { q: "비지도학습에 해당하는 알고리즘으로 올바르게 묶인 것은?", opts: ["K-means, Apriori, PCA","로지스틱 회귀, SVM, k-NN","랜덤 포레스트, AdaBoost, XGBoost","CNN, RNN, Transformer"], ans: 0, explain: "<strong>비지도학습</strong>: 군집(K-means, DBSCAN, SOM), 연관(Apriori, FP-Growth), 차원 축소(PCA, 오토인코더). 나머지는 모두 지도학습 또는 딥러닝 모델입니다.", tag: "학습 유형" },
+  { q: "K-Fold 교차검증에 대한 설명으로 옳지 않은 것은?", opts: ["홀드아웃보다 속도가 느리다","분류 문제에서는 Stratified K-Fold를 사용한다","각 Fold는 K-1번 학습에 사용된다","LOOCV는 K=n인 경우로 데이터가 많을 때 권장된다"], ans: 3, explain: "<strong>LOOCV</strong>는 K=n인 교차검증으로, <strong>데이터 수가 적을 때</strong> 사용합니다. 데이터가 많을 때는 계산 비용이 매우 크기 때문에 권장되지 않습니다.", tag: "검증 방법" },
+  { q: "회귀모형의 가정 중 '관측치들의 잔차들끼리 상관이 없어야 한다'는 조건은?", opts: ["선형성","독립성","등분산성","비상관성"], ans: 3, explain: "<strong>비상관성</strong>: 관측치들의 잔차들끼리 상관이 없어야 함. 독립성: 잔차와 독립변수의 값이 관련되어 있지 않음. 이 둘을 혼동하지 않도록 주의!", tag: "회귀분석" },
+  { q: "Lasso 회귀와 Ridge 회귀의 차이점으로 올바른 것은?", opts: ["Lasso는 L2 norm, Ridge는 L1 norm을 사용한다","Lasso는 회귀계수가 0에 가까워질 뿐 0이 되지 않는다","Ridge는 L2 norm을 사용하며 회귀계수가 0이 되지 않는다","람다값이 작을수록 패널티를 강하게 준 것이다"], ans: 2, explain: "<strong>Ridge(L2)</strong>: 회귀계수가 0에 가까워질 뿐 0은 되지 않음. <strong>Lasso(L1)</strong>: 회귀계수가 0이 되거나 0에 가깝게 됨(변수 선택 효과). 람다값이 클수록 패널티 강함.", tag: "벌점화 회귀" },
+  { q: "로지스틱 회귀에서 sigmoid 함수의 역할은?", opts: ["선형 예측자 z를 0~1 범위의 확률로 변환","z값을 -∞~∞ 범위로 변환","분류 결과를 정수로 변환","특성 벡터를 고차원으로 사상"], ans: 0, explain: "<strong>sigmoid 함수</strong>: P(Y=1) = 1/(1+e⁻ᶻ). 선형 예측자 z(-∞~∞)를 0~1 범위의 확률로 변환합니다. logit은 odds의 로그로 z=β₀+β₁x₁ 형태입니다.", tag: "로지스틱 회귀" },
+  { q: "의사결정나무에서 분류나무의 분리 기준으로 사용되지 않는 것은?", opts: ["지니 지수","엔트로피 지수","카이제곱 통계량","F-통계량"], ans: 3, explain: "<strong>F-통계량</strong>과 분산 감소량은 <strong>회귀나무</strong>의 분리 기준입니다. 분류나무의 분리 기준: 지니 지수, 엔트로피 지수, 카이제곱 통계량(p-value).", tag: "의사결정나무" },
+  { q: "앙상블 기법 중 Boosting에 대한 설명으로 옳은 것은?", opts: ["복원추출로 여러 데이터셋을 만들어 병렬로 학습한다","이상치에 강하며 분산을 감소시키는 것이 목적이다","잘못 분류된 데이터에 가중치를 부여하여 순차적으로 학습한다","서로 다른 알고리즘의 예측 결과로 메타 모델을 학습한다"], ans: 2, explain: "<strong>Boosting</strong>: 여러 모델을 순차적으로 학습. 잘못 분류된 데이터에 가중치를 부여. 이상치에 약함. 편향 감소가 목적. Bagging은 병렬 학습·분산 감소, Stacking은 메타 모델 학습.", tag: "앙상블" },
+  { q: "인공신경망에서 기울기 소실(Gradient Vanishing) 문제의 주된 원인은?", opts: ["학습률이 너무 크게 설정된 경우","다층신경망에서 활성화 함수로 sigmoid를 사용한 경우","배치 크기가 너무 작은 경우","은닉층 수가 너무 적은 경우"], ans: 1, explain: "기울기 소실은 <strong>다층신경망에서 sigmoid를 활성화 함수로 사용했기 때문</strong>에 발생합니다. 역전파 알고리즘이 입력층으로 갈수록 Gradient가 0에 수렴하여 weight가 업데이트되지 않는 현상입니다.", tag: "인공신경망" },
+  { q: "계층적 군집 분석에서 '와드 연결법'의 기준은?", opts: ["거리가 가장 가까운 데이터를 사용","거리가 가장 먼 데이터를 사용","두 군집의 중심 간 거리를 사용","군집 내 편차 제곱합을 사용"], ans: 3, explain: "<strong>와드 연결법</strong>: 군집 내 편차 제곱합을 사용하여 거리 행렬 수정. 최단=최솟값, 최장=최댓값, 중심=중심 간 거리, 평균=거리 평균.", tag: "군집분석" },
+  { q: "연관분석에서 향상도(Lift)가 1보다 클 때의 의미는?", opts: ["두 품목 사이에 상호 관계가 없음","서로 음의 상관관계","연관성 높음, 서로 양의 관계","신뢰도가 낮아 신뢰할 수 없음"], ans: 2, explain: "<strong>향상도 &gt; 1</strong>: 연관성 높음, 양의 관계 / <strong>향상도 = 1</strong>: 상호 관계 없음 / <strong>향상도 &lt; 1</strong>: 음의 상관관계.", tag: "연관분석" },
+  { q: "ARIMA 모형에 대한 설명으로 옳은 것은?", opts: ["정상 시계열 모형이다","차분/변환을 통해 정상화한다","ACF가 지수적으로 감소한다","PACF가 지수적으로 감소한다"], ans: 1, explain: "<strong>ARIMA 모형</strong>은 <strong>비정상시계열 모형</strong>이며, 차분/변환을 통해 AR, MA, ARMA 모형으로 정상화합니다. ARIMA(1,2,3)은 2번 차분 → ARMA(1,3)이 됩니다. ACF 지수적 감소=AR, PACF 지수적 감소=MA.", tag: "시계열" },
+  { q: "TF-IDF에 대한 설명으로 가장 적절한 것은?", opts: ["단어의 순서를 고려하여 출현 빈도를 측정한다","특정 단어가 특정 문서 내에서 얼마나 중요한지를 나타내는 통계적 수치","단어를 실수값의 밀집 벡터로 표현하는 방법","단어 간 의미적 유사성을 계산하는 방법"], ans: 1, explain: "<strong>TF-IDF</strong>: 여러 문서 중 어떤 단어가 특정 문서 내에서 얼마나 중요한지를 나타내는 통계적 수치. Bag of Words는 순서 무시·빈도만, Word Embedding은 밀집 벡터 표현.", tag: "텍스트 분석" },
+  { q: "비모수 검정에서 두 독립 표본의 중심 위치를 비교할 때 사용하는 검정은?", opts: ["Kruskal-Wallis test","Wilcoxon Signed Rank test","Mann-Whitney U test","Kolmogorov-Smirnov test"], ans: 2, explain: "<strong>Mann-Whitney U test (Wilcoxon Rank Sum test)</strong>: 2개 독립 표본의 비모수 검정. Wilcoxon Signed Rank test: 1개 표본 또는 2개 대응 표본. Kruskal-Wallis: K개 독립 표본.", tag: "비모수 추론" },
+  { q: "DBSCAN 군집 알고리즘의 특징으로 옳지 않은 것은?", opts: ["밀도 기반 군집 기법이다","군집 수(초매개변수)를 사전에 설정해야 한다","임의적 모양의 군집 분석에 적합하다","노이즈 포인트를 식별할 수 있다"], ans: 1, explain: "<strong>DBSCAN</strong>은 밀도 기반 군집 기법으로, <strong>군집 수를 직접 설정하지 않아도 됩니다</strong>. K-means는 k를 사전에 설정해야 합니다. 계층적 군집도 사전 설정이 불필요합니다.", tag: "군집분석" },
+  { q: "카이제곱 검정에서 자유도(df)를 구하는 공식은?", opts: ["n - 1","(행의 수) × (열의 수)","(행의 수 - 1) × (열의 수 - 1)","표본 크기 - 독립변수 수 - 1"], ans: 2, explain: "카이제곱 검정(동질성·독립성)의 자유도: <strong>(행의 수 - 1) × (열의 수 - 1)</strong>. n-1은 t-검정의 자유도, 마지막은 다중 회귀의 잔차 자유도입니다.", tag: "카이제곱 검정" }
+];
+
+let score = 0, answered = 0;
+function renderQuiz() {
+  const c = document.getElementById('quiz-container');
+  c.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.innerHTML = `
+      <div class="quiz-num">Q${i+1}</div>
+      <div class="quiz-tag">${q.tag}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((opt,j) => `<button class="quiz-opt" onclick="checkAns(${i},${j})" id="opt-${i}-${j}"><span style="font-family:'JetBrains Mono',monospace;font-size:0.78em">${['①','②','③','④'][j]}</span> ${opt}</button>`).join('')}
+      </div>
+      <div class="quiz-explain" id="explain-${i}">${q.explain}</div>`;
+    c.appendChild(card);
+  });
+  updateScore();
+}
+function checkAns(qi, oi) {
+  const q = quizData[qi];
+  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(o => o.disabled = true);
+  const sel = document.getElementById(`opt-${qi}-${oi}`);
+  const cor = document.getElementById(`opt-${qi}-${q.ans}`);
+  cor.classList.add(oi === q.ans ? 'correct' : 'reveal-correct');
+  if (oi !== q.ans) sel.classList.add('wrong');
+  else score++;
+  answered++;
+  document.getElementById(`explain-${qi}`).classList.add('show');
+  updateScore();
+}
+function updateScore() {
+  document.getElementById('score-display').textContent = `${score} / ${answered}`;
+  document.getElementById('progress-fill').style.width = (answered / quizData.length * 100) + '%';
+}
+function resetQuiz() { score = 0; answered = 0; renderQuiz(); }
+renderQuiz();
+</script>
+</body>
+</html>

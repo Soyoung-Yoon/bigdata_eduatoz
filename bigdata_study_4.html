@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>빅데이터 분석기사 4과목 학습 카드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14; --surface: #161b27; --surface2: #1e2638; --border: #2a3550;
+    --accent: #00c8aa; --accent2: #ffd166; --accent3: #06d6a0; --accent4: #ef476f;
+    --text: #e8edf8; --text-dim: #7a8baa; --star: #ffd166;
+    --tag-teal: #0a2f2b; --tag-yellow: #3d2e0f; --tag-red: #3d0f1a; --tag-blue: #0f1e3d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+  header { padding: 2.5rem 2rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border); position: relative; background: linear-gradient(180deg, #0a1e1c 0%, var(--bg) 100%); }
+  header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent4)); }
+  header h1 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  header p { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem; }
+  nav { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; }
+  nav button { background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 0.32rem 0.8rem; border-radius: 20px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-size: 0.76rem; transition: all 0.2s; white-space: nowrap; }
+  nav button:hover, nav button.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+  main { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .section-title { font-size: 1.05rem; font-weight: 700; color: var(--accent2); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(285px, 1fr)); gap: 1rem; }
+  .topic-card { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .topic-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); border-color: var(--accent); }
+  .topic-card.imp-1 { background: #141e1c; }
+  .topic-card.imp-2 { background: #121e1c; }
+  .topic-card.imp-3 { background: #101c1e; }
+  .topic-card.imp-4 { background: #0f1c20; }
+  .topic-card.imp-5 { background: #0d1e22; border-color: #0a4040; }
+  .card-header { padding: 0.9rem 1rem 0.6rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+  .card-header h3 { font-size: 0.9rem; font-weight: 700; line-height: 1.35; flex: 1; }
+  .stars { font-size: 0.7rem; color: var(--star); white-space: nowrap; padding-top: 2px; }
+  .card-keywords { padding: 0 1rem 0.7rem; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .kw-tag { font-size: 0.67rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: var(--tag-teal); color: var(--accent); border: 1px solid rgba(0,200,170,0.25); }
+  .kw-tag.yellow { background: var(--tag-yellow); color: var(--accent2); border-color: rgba(255,209,102,0.25); }
+  .kw-tag.red { background: var(--tag-red); color: var(--accent4); border-color: rgba(239,71,111,0.25); }
+  .kw-tag.blue { background: var(--tag-blue); color: #7ab3f7; border-color: rgba(122,179,247,0.25); }
+  .card-footer { padding: 0.5rem 1rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; }
+  .expand-icon { transition: transform 0.3s; }
+  .topic-card.open .expand-icon { transform: rotate(180deg); }
+  .detail-panel { display: none; padding: 1rem; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+  .topic-card.open .detail-panel { display: block; animation: fadeIn 0.25s ease; }
+  .detail-panel ul { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+  .detail-panel li { font-size: 0.81rem; line-height: 1.6; padding: 0.5rem 0.7rem; background: rgba(255,255,255,0.03); border-left: 2px solid var(--border); border-radius: 0 6px 6px 0; }
+  .detail-panel li.hl { border-left-color: var(--accent); }
+  .detail-panel li.hl2 { border-left-color: var(--accent2); }
+  .detail-panel li.hl3 { border-left-color: var(--accent3); }
+  .detail-panel li.hl4 { border-left-color: var(--accent4); }
+  strong.key { color: var(--accent2); font-weight: 700; }
+  strong.key2 { color: var(--accent3); font-weight: 700; }
+  strong.key3 { color: var(--accent4); font-weight: 700; }
+  strong.key4 { color: var(--accent); font-weight: 700; }
+  .formula-box { margin-top: 0.6rem; padding: 0.65rem 0.9rem; background: rgba(0,200,170,0.06); border: 1px solid rgba(0,200,170,0.22); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent3); line-height: 1.9; }
+  .formula-box .label { font-family: 'Noto Sans KR', sans-serif; font-size: 0.71rem; color: var(--text-dim); margin-bottom: 0.3rem; font-weight: 700; letter-spacing: 0.05em; }
+  .related-box { margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: rgba(255,209,102,0.06); border: 1px solid rgba(255,209,102,0.2); border-radius: 8px; }
+  .related-box h4 { font-size: 0.71rem; color: var(--accent2); margin-bottom: 0.4rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .related-box p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+  .related-box span { color: var(--accent); font-weight: 600; }
+  .warn-box { margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: rgba(239,71,111,0.07); border: 1px solid rgba(239,71,111,0.22); border-radius: 8px; }
+  .warn-box h4 { font-size: 0.71rem; color: var(--accent4); margin-bottom: 0.4rem; font-weight: 700; letter-spacing: 0.05em; }
+  .warn-box p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.55; }
+  .warn-box span { color: var(--accent4); font-weight: 600; }
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 0.77rem; margin-top: 0.6rem; }
+  .mini-table th { background: rgba(0,200,170,0.12); color: var(--accent); padding: 0.4rem 0.6rem; text-align: left; font-weight: 700; }
+  .mini-table td { padding: 0.38rem 0.6rem; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
+  .mini-table td strong { color: var(--text); }
+  .mini-table tr:last-child td { border-bottom: none; }
+  /* Confusion Matrix */
+  .cm-grid { display: grid; grid-template-columns: auto 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 3px; margin-top: 0.6rem; font-size: 0.73rem; }
+  .cm-cell { padding: 0.45rem 0.5rem; border-radius: 4px; text-align: center; line-height: 1.3; }
+  .cm-header { background: rgba(255,255,255,0.05); color: var(--text-dim); font-weight: 700; }
+  .cm-tp { background: rgba(6,214,160,0.2); color: var(--accent3); font-weight: 700; }
+  .cm-fn { background: rgba(239,71,111,0.15); color: var(--accent4); font-weight: 600; }
+  .cm-fp { background: rgba(239,71,111,0.15); color: var(--accent4); font-weight: 600; }
+  .cm-tn { background: rgba(0,200,170,0.12); color: var(--accent); font-weight: 700; }
+  /* Quiz */
+  .quiz-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; position: relative; }
+  .quiz-num { font-size: 0.7rem; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-bottom: 0.5rem; }
+  .quiz-q { font-size: 0.88rem; font-weight: 600; line-height: 1.55; margin-bottom: 0.9rem; }
+  .quiz-options { display: flex; flex-direction: column; gap: 0.4rem; }
+  .quiz-opt { padding: 0.5rem 0.9rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.81rem; transition: all 0.2s; background: rgba(255,255,255,0.02); text-align: left; font-family: 'Noto Sans KR', sans-serif; color: var(--text); }
+  .quiz-opt:hover { border-color: var(--accent); background: rgba(0,200,170,0.08); }
+  .quiz-opt.correct { background: rgba(6,214,160,0.1); border-color: var(--accent3); color: var(--accent3); }
+  .quiz-opt.wrong { background: rgba(239,71,111,0.1); border-color: var(--accent4); color: var(--accent4); }
+  .quiz-opt.reveal-correct { background: rgba(6,214,160,0.08); border-color: var(--accent3); }
+  .quiz-explain { display: none; margin-top: 0.8rem; padding: 0.7rem 0.9rem; background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.25); border-radius: 8px; font-size: 0.8rem; line-height: 1.55; color: var(--text-dim); }
+  .quiz-explain.show { display: block; }
+  .quiz-explain strong { color: var(--accent2); }
+  .quiz-tag { position: absolute; top: 1rem; right: 1rem; font-size: 0.64rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(0,200,170,0.12); color: var(--accent); font-weight: 700; }
+  #score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+  #score-bar span { font-size: 0.82rem; color: var(--text-dim); }
+  #score-display { font-size: 1.1rem; font-weight: 900; color: var(--accent3); font-family: 'JetBrains Mono', monospace; }
+  #reset-btn { margin-left: auto; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 0.35rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
+  #reset-btn:hover { border-color: var(--accent4); color: var(--accent4); }
+  .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; flex: 1; min-width: 80px; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.78em; }
+  @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } nav { padding: 0.6rem; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 빅데이터 분석기사 4과목 키워드 학습</h1>
+  <p>모델 평가 · 혼동행렬 · ROC · 하이퍼파라미터 · 시각화 · 인포그래픽 · 분석 결과 활용 | ★ 중요도 · 퀴즈</p>
+</header>
+<nav id="main-nav">
+  <button class="active" onclick="showSection('s1')">회귀모형 평가지표</button>
+  <button onclick="showSection('s2')">혼동행렬·분류 평가지표</button>
+  <button onclick="showSection('s3')">ROC 곡선·군집 평가</button>
+  <button onclick="showSection('s4')">하이퍼파라미터·편향-분산</button>
+  <button onclick="showSection('s5')">분석모형 해석·평가 기준</button>
+  <button onclick="showSection('s6')">시각화 유형</button>
+  <button onclick="showSection('s7')">인포그래픽</button>
+  <button onclick="showSection('s8')">분석 결과 활용·리모델링</button>
+  <button onclick="showSection('quiz')">📝 연습 문제</button>
+</nav>
+<main>
+
+<!-- S1: 회귀모형 평가지표 -->
+<div class="section active" id="s1">
+  <div class="section-title">회귀모형 평가지표 — 식 암기 필수!</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>회귀 평가지표 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">MAE</span><span class="kw-tag">MSE</span><span class="kw-tag yellow">RMSE</span><span class="kw-tag">MAPE</span><span class="kw-tag yellow">R²</span></div>
+      <div class="card-footer"><span>회귀 평가 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">오차 지표</strong>: MAE, MSE, RMSE, MSLE, RMSLE, MPE, MAPE → <strong class="key3">0에 가까울수록 좋은 성능</strong></li>
+          <li class="hl2"><strong class="key2">설명력 지표</strong>: 결정계수(R²), 수정 결정계수(Adjusted R²) → <strong class="key2">1에 가까울수록 좋은 성능</strong></li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">MAE (평균 절대 오차)</div>
+          MAE = Σ|yᵢ - ŷᵢ| / n<br>
+          <div class="label" style="margin-top:0.45rem">MSE (평균 제곱 오차)</div>
+          MSE = Σ(yᵢ - ŷᵢ)² / n<br>
+          <div class="label" style="margin-top:0.45rem">RMSE (MSE의 제곱근)</div>
+          RMSE = √MSE<br>
+          <div class="label" style="margin-top:0.45rem">MAPE (평균 절대 백분율 오차)</div>
+          MAPE = (100%/n) × Σ|yᵢ - ŷᵢ| / yᵢ<br>
+          <div class="label" style="margin-top:0.45rem">MPE (평균 백분율 오차)</div>
+          MPE = (100%/n) × Σ(yᵢ - ŷᵢ) / yᵢ<br>
+          <div class="label" style="margin-top:0.45rem">결정계수 R²</div>
+          R² = SSR/SST = 1 - SSE/SST
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>모형별 평가지표 정리</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">회귀</span><span class="kw-tag">분류</span><span class="kw-tag red">군집</span></div>
+      <div class="card-footer"><span>모형별 평가지표</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <table class="mini-table">
+          <tr><th>모형</th><th>주요 평가지표</th></tr>
+          <tr><td><strong>회귀모형</strong></td><td>MAE, MSE, RMSE, MSLE, RMSLE, MAPE, R², Adjusted R²</td></tr>
+          <tr><td><strong>분류모형</strong></td><td>정확도, 정밀도, 재현율(민감도), AUC, F1-Score, 오분류율, FP-Rate</td></tr>
+          <tr><td><strong>군집모형</strong></td><td>실루엣 계수, 던 지수(Dunn Index)</td></tr>
+          <tr><td><strong>연관분석</strong></td><td>지지도, 신뢰도, 향상도</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S2: 혼동행렬·분류 평가지표 -->
+<div class="section" id="s2">
+  <div class="section-title">혼동행렬(Confusion Matrix) · 분류 평가지표</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>혼동행렬 구조 완전 정리</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">TP</span><span class="kw-tag red">FP(1종)</span><span class="kw-tag red">FN(2종)</span><span class="kw-tag">TN</span></div>
+      <div class="card-footer"><span>혼동행렬 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <div class="cm-grid">
+          <div class="cm-cell cm-header">실제↓ 예측→</div>
+          <div class="cm-cell cm-header">TRUE(양성)</div>
+          <div class="cm-cell cm-header">FALSE(음성)</div>
+          <div class="cm-cell cm-header">TRUE(양성)</div>
+          <div class="cm-cell cm-tp">TP</div>
+          <div class="cm-cell cm-fn">FN<br><small>(2종 오류)</small></div>
+          <div class="cm-cell cm-header">FALSE(음성)</div>
+          <div class="cm-cell cm-fp">FP<br><small>(1종 오류)</small></div>
+          <div class="cm-cell cm-tn">TN</div>
+        </div>
+        <ul style="margin-top:0.7rem">
+          <li class="hl"><strong class="key">민감도(Sensitivity) = 재현율(Recall) = TP Rate</strong> = TP / (TP+FN)</li>
+          <li class="hl2"><strong class="key2">특이도(Specificity)</strong> = TN / (TN+FP)</li>
+          <li class="hl3"><strong class="key3">정밀도(Precision)</strong> = TP / (TP+FP)</li>
+          <li class="hl"><strong class="key">정확도(Accuracy)</strong> = (TP+TN) / (TP+TN+FP+FN)</li>
+          <li class="hl4"><strong class="key3">FP Rate</strong> = FP / (TN+FP) = 1 - 특이도</li>
+          <li class="hl4"><strong class="key3">오분류율(Error Rate)</strong> = (FP+FN) / (TP+TN+FP+FN)</li>
+          <li><strong class="key4">FN Rate</strong> = FN / (TP+FN)</li>
+        </ul>
+        <div class="warn-box" style="margin-top:0.7rem">
+          <h4>⚠️ 시험 포인트 — 외우기: "실Sen 예Pre"</h4>
+          <p><span>재현율(Recall)</span>: 실제 양성 중 양성으로 예측한 비율 (분모=실제 양성)<br>
+          <span>정밀도(Precision)</span>: 양성으로 예측한 것 중 실제 양성인 비율 (분모=예측 양성)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>F1 Score · Fβ Score</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">F1 Score</span><span class="kw-tag">Fβ Score</span><span class="kw-tag red">불균형 데이터</span></div>
+      <div class="card-footer"><span>F-Score 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">F1 Score</strong>: 정밀도와 재현율의 <strong class="key2">조화평균</strong>. 불균형 데이터 상황에서 유용. 두 지표에 <strong class="key2">동등한 가중치</strong></li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">F1 Score</div>
+          F1 = 2 × Precision × Recall / (Precision + Recall)<br>
+          <div class="label" style="margin-top:0.45rem">Fβ Score (β에 따라 재현율에 가중치)</div>
+          Fβ = (1+β²) × Precision×Recall / (β²×Precision + Recall)
+        </div>
+        <ul style="margin-top:0.6rem">
+          <li class="hl2"><strong class="key2">Fβ Score</strong>: β값에 따라 <strong class="key2">재현율에 더 큰 가중치</strong>를 두는 방식. 재현율에 정밀도의 β배만큼 가중치 부여</li>
+          <li class="hl4">β &gt; 1: 재현율을 더 중요시 / β &lt; 1: 정밀도를 더 중요시 / β = 1: F1 Score</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>Cutoff에 따른 민감도·특이도 변화</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">C=0</span><span class="kw-tag yellow">C=0.5</span><span class="kw-tag red">C=1</span></div>
+      <div class="card-footer"><span>Cutoff 특성</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">C = 1</strong>: 모든 예측을 <strong class="key3">음성</strong> 클래스로 분류 → <strong class="key3">민감도=0, 특이도=1</strong></li>
+          <li class="hl3"><strong class="key2">C = 0</strong>: 모든 예측을 <strong class="key2">양성</strong> 클래스로 분류 → <strong class="key2">민감도=1, 특이도=0</strong></li>
+          <li class="hl"><strong class="key">C = 0.5</strong>: 민감도와 특이도는 데이터의 양성/음성 비율과 모델 성능에 따라 달라짐</li>
+          <li class="hl2"><strong class="key3">C가 작아지면 특이도는 감소하고, 민감도는 증가</strong></li>
+        </ul>
+        <div class="warn-box">
+          <h4>⚠️ 시험 포인트</h4>
+          <p>교차점이 <span>반드시 C=0.5인 것은 아니며</span>, C=0.5에서 민감도=특이도라고 <span>단정할 수 없음!</span></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S3: ROC·군집 평가 -->
+<div class="section" id="s3">
+  <div class="section-title">ROC 곡선 · AUC · 군집 평가지표</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>ROC 곡선 · AUC</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">FP Rate(X축)</span><span class="kw-tag yellow">민감도(Y축)</span><span class="kw-tag green">AUC</span></div>
+      <div class="card-footer"><span>ROC 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">ROC 곡선</strong>: <strong class="key2">X축 = FP Rate(1종 오류 비율)</strong>, <strong class="key2">Y축 = 민감도(TP Rate)</strong>. 이 두 평가 값의 관계로 모형 평가</li>
+          <li class="hl2">Curve 범위:
+            <br>• (민감도, FP-Rate): <strong class="key2">(0,0)~(1,1)</strong>이 시작과 끝
+            <br>• (민감도, 특이도): <strong class="key2">(0,1)~(1,0)</strong>이 시작과 끝
+          </li>
+          <li class="hl3"><strong class="key3">AUC</strong>: ROC 그래프 밑부분의 면적. <strong class="key3">1에 가까울수록 좋은 분류 모형</strong></li>
+          <li class="hl4"><strong class="key3">Perfect Classifier</strong>: 긍정·부정 모두 맞추는 위치. <strong class="key3">(FP-Rate, 민감도) = (0, 1)</strong></li>
+        </ul>
+        <div class="related-box">
+          <h4>🔗 관련 평가 지표</h4>
+          <p><span>카파계수</span>: 두 평가자 또는 모델의 예측값과 실제값 간의 일치 정도를 측정<br>
+          <span>향상도 도표</span>: 랜덤 모형 대비 해당 분류모형의 성과가 얼마나 향상되었는지 등급별로 파악</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>군집 평가지표</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">실루엣 계수</span><span class="kw-tag">던 지수</span><span class="kw-tag">ARI</span><span class="kw-tag">NMI</span></div>
+      <div class="card-footer"><span>군집 평가</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">실루엣 계수</strong>: 동일 군집끼리 잘 모여 있고 다른 군집과는 잘 분리되어 있는지 측정. <strong class="key2">1에 가까울수록 분리가 잘 이루어진 상태</strong></li>
+          <li class="hl2"><strong class="key2">던 지수(Dunn Index)</strong>: <strong class="key2">DI가 클수록</strong> 군집화가 잘 되었다고 평가</li>
+          <li class="hl3"><strong class="key3">RI</strong>: 쌍 단위 비교 / <strong class="key3">ARI</strong>: 우연 일치에 대한 보정 / <strong class="key3">NMI</strong>: 정보량 / <strong class="key3">평균 엔트로피</strong>: 불확실성</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S4: 하이퍼파라미터·편향-분산 -->
+<div class="section" id="s4">
+  <div class="section-title">하이퍼파라미터 튜닝 · 편향-분산 분해</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>파라미터 vs 하이퍼파라미터</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">파라미터(매개변수)</span><span class="kw-tag red">하이퍼파라미터(초매개변수)</span></div>
+      <div class="card-footer"><span>파라미터 구분</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">파라미터(매개변수)</strong>: 모델이 데이터로부터 <strong class="key2">학습을 통해 결정</strong>되는 값
+            <br>예: 회귀모델의 회귀계수, 인공신경망의 가중치(weight)
+          </li>
+          <li class="hl4"><strong class="key3">하이퍼파라미터(초매개변수)</strong>: 학습 전에 <strong class="key3">사람(전문가)이 미리 설정</strong>하는 값
+            <br>예: k-NN의 K, Ridge/Lasso의 α, 인공신경망의 학습률·배치 크기·은닉 유닛(노드)·은닉층·epoch 수
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>하이퍼파라미터 튜닝(최적화) 4가지</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag">수동탐색</span><span class="kw-tag yellow">격자탐색</span><span class="kw-tag">무작위탐색</span><span class="kw-tag red">베이지안</span></div>
+      <div class="card-footer"><span>튜닝 방법 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">수동 탐색</strong>: 사용자가 직접 변경해 적용. <strong class="key3">비효율적이며 재현성이 낮음</strong></li>
+          <li class="hl"><strong class="key">격자 탐색(Grid Search)</strong>: 하이퍼파라미터값의 목록을 만들고 <strong class="key2">모든 가능한 조합</strong>에 대해 모델 평가. <strong class="key3">목록에 없는 값은 적용 불가</strong></li>
+          <li class="hl2"><strong class="key2">무작위 탐색(Random Search)</strong>: 범위 내에서 <strong class="key2">랜덤하게 값을 선택</strong>. <strong class="key3">최적값 보장 없음</strong></li>
+          <li class="hl3"><strong class="key3">베이지안 최적화</strong>: 새로운 하이퍼파라미터값 조사 시 <strong class="key3">이전 경험에 대한 확률을 반영</strong>하는 방법</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>편향-분산 분해(Bias-Variance Decomposition)</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag red">편향(과소적합)</span><span class="kw-tag yellow">분산(과대적합)</span><span class="kw-tag">Noise</span></div>
+      <div class="card-footer"><span>편향-분산 트레이드오프</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <div class="formula-box">
+          <div class="label">기대 테스트 오차 분해</div>
+          Expected Test Error = Bias² + Variance + Noise
+        </div>
+        <ul style="margin-top:0.6rem">
+          <li class="hl4"><strong class="key3">편향(Bias) 높음</strong>: 예측값의 평균이 실제값과 멀리 떨어짐. 지나치게 단순한 모델. <strong class="key3">과소적합(Underfitting) 야기</strong></li>
+          <li class="hl2"><strong class="key2">분산(Variance) 높음</strong>: 특정 학습 데이터에 과도하게 적합. 데이터셋 변경 시 예측값도 크게 변함. 지나치게 복잡한 모델. <strong class="key2">과대적합(Overfitting) 야기</strong></li>
+          <li class="hl"><strong class="key">Noise</strong>: 데이터 내 포함된 백색잡음. 데이터에 내재된 불확실성. <strong class="key4">정상 시계열</strong></li>
+        </ul>
+        <div class="related-box">
+          <h4>📈 학습 오차 vs 검증 오차 곡선</h4>
+          <p>• 학습 오차는 반복 학습에 따라 감소하지만, <span>검증 오차는 일정 지점 이후 다시 증가 가능</span><br>
+          • 두 오차의 차이가 클수록 <span>과대적합 가능성 높음</span><br>
+          • 두 오차가 모두 낮을 때 → <span>일반화 성공</span><br>
+          • 과대적합되면 <span>검증 곡선의 성능이 낮아짐</span></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S5: 분석모형 해석·평가 기준 -->
+<div class="section" id="s5">
+  <div class="section-title">분석모형 해석 기법 · 평가 기준 · 비즈니스 기여도</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>분석모형 해석 기법 4가지</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">해석 가능 모형</span><span class="kw-tag">순열 변수중요도</span><span class="kw-tag">PDP</span><span class="kw-tag red">SHAP</span></div>
+      <div class="card-footer"><span>모형 해석 기법</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">해석 가능한 모형(Interpretable Models)</strong>: 모델 자체가 단순하여 입력변수와 예측 관계를 직관적으로 해석 가능. 예: <strong class="key2">선형회귀, 로지스틱회귀, 의사결정나무</strong></li>
+          <li class="hl2"><strong class="key2">순열 변수 중요도</strong>: 특정 변수를 무작위로 섞어 모델 성능이 얼마나 감소하는지 측정. <strong class="key3">성능 감소가 클수록 중요한 변수</strong>. 랜덤포레스트, 부스팅에 활용</li>
+          <li class="hl3"><strong class="key3">부분 의존도 Plot(PDP)</strong>: 특정 변수 1~2개의 변화가 예측값에 미치는 <strong class="key3">평균적 영향을 시각화</strong></li>
+          <li class="hl4"><strong class="key3">SHAP</strong>: 각 관측치 단위로 각 변수의 <strong class="key3">기여도(local contribution)를 계산</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>평가 기준에 따른 분석 결과 평가 유형</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">기준 기반</span><span class="kw-tag">비교 기반</span><span class="kw-tag red">규준 기반</span></div>
+      <div class="card-footer"><span>평가 유형 3가지</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">기준 기반 평가</strong>: 사전에 설정된 <strong class="key2">절대 기준(Criterion)</strong>에 따라 목표 수준에 도달했는지 <strong class="key2">절대 평가(Absolute Evaluation)</strong>하는 방식</li>
+          <li class="hl2"><strong class="key2">비교 기반 평가</strong>: 기준 모델 또는 경쟁 모델과 성과를 <strong class="key2">상대적 비교(Relative to Baseline)</strong>를 통해 평가</li>
+          <li class="hl3"><strong class="key3">규준 기반 평가</strong>: 전체 집단의 평균·분포(규준, Norm)를 기준으로 <strong class="key3">상대적 위치(순위·백분위)</strong>를 평가하는 방식</li>
+        </ul>
+        <div class="warn-box">
+          <h4>⚠️ 시험 포인트</h4>
+          <p><span>KPI</span>: 목표 달성 정도를 수치로 표현하는 핵심 지표. KPI는 <span>'평가 방법'이 아닌 '평가의 기준(목표)'</span>을 정하는 것!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>비즈니스 기여도 평가</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">ROI·NPV·IRR</span><span class="kw-tag">정성적 평가</span></div>
+      <div class="card-footer"><span>비즈니스 기여도</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl">모델이 실제 조직의 비용, 매출, 효율성, 리스크, 고객 만족 등의 측면에서 얼마나 <strong class="key2">가치(Value)를 창출했는지</strong> 정량·정성적으로 평가</li>
+          <li class="hl2"><strong class="key2">정량적 평가 요소</strong>: 재무적 지표 — <strong class="key2">ROI, NPV, IRR, TCO, PP</strong></li>
+          <li class="hl3"><strong class="key3">정성적 평가 요소</strong>: 비재무적 개선 효과 — <strong class="key3">의사결정 품질 향상, 업무 효율성 개선, 리스크 관리 수준 향상, 조직의 데이터 역량 강화, 이해관계자 만족도 증가</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>분석모형 평가 기준 · 리모델링</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">일반화</span><span class="kw-tag">리모델링</span><span class="kw-tag red">재조정 주기</span></div>
+      <div class="card-footer"><span>모형 평가·리모델링</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">분석모형 평가 기준 1순위</strong>: <strong class="key3">일반화의 가능성(과대적합 여부)</strong></li>
+          <li class="hl2"><strong class="key2">분석 모델 리모델링</strong>: 데이터 마이닝, 시뮬레이션, 최적화의 분석 기법으로 모델을 개조 및 재구성. 새로운 데이터나 환경 변경 시 주기적 업데이트 필요</li>
+          <li class="hl3"><strong class="key3">재조정 주기</strong>: 초기에 짧게 설정되며, <strong class="key3">모델이 안정화됨에 따라 점차 길어지는 경향</strong></li>
+          <li class="hl">리모델링 순서: <strong class="key2">리모델링용 데이터 수집/처리 → 분석 모델 리모델링 → 리모델링 결과 평가 및 분석 모델 등록</strong></li>
+          <li class="hl4"><strong class="key3">분석 모형 전개(Deploy)</strong>: 분석 모델을 운영 환경과 통합하고 실행하는 것. 개발과 피드백 적용을 <strong class="key3">반복적으로 수행</strong>하여 성능 향상 가능</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S6: 시각화 유형 -->
+<div class="section" id="s6">
+  <div class="section-title">시각화 유형 완전 정리</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>4대 시각화 유형 완전 정리</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">시간</span><span class="kw-tag">공간</span><span class="kw-tag red">관계</span><span class="kw-tag">비교</span></div>
+      <div class="card-footer"><span>시각화 유형별 그래프</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <table class="mini-table">
+          <tr><th>유형</th><th>설명</th><th>주요 그래프</th></tr>
+          <tr><td><strong>시간 시각화</strong></td><td>X축=시간, Y축=값으로 흐름 표현</td><td>선 그래프, 계단식, 영역, 점, 막대</td></tr>
+          <tr><td><strong>공간 시각화</strong></td><td>지도를 활용하여 데이터 표현</td><td>카토그램(면적 왜곡), 코로플레스 맵/단계구분도/등치지역도(한 색상·명도 단계), 버블 플롯 맵, 등치선도</td></tr>
+          <tr><td><strong>관계 시각화</strong></td><td>변수 간 연관성·패턴을 색상·농도로 표현</td><td>산점도, 산점도 행렬, 버블 차트, 히트맵</td></tr>
+          <tr><td><strong>비교 시각화</strong></td><td>변수 간 유사·차이를 점·선·막대로 표현</td><td>레이더/스타/거미줄 차트, 막대, 평행 차트, 히트맵, 플로팅 바, 체르노프 페이스</td></tr>
+          <tr><td><strong>구성 시각화</strong></td><td>범주형 비율 표현</td><td>파이 차트, 도넛, 선버스트, 트리맵</td></tr>
+          <tr><td><strong>분포 시각화</strong></td><td>연속형 분포 표현</td><td>히스토그램, 박스플롯(이상값 확인), 막대, 점, 파레토</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>특수 시각화: 격자 카토그램·극좌표</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag">격자 카토그램</span><span class="kw-tag yellow">극좌표</span><span class="kw-tag green">등치선도</span></div>
+      <div class="card-footer"><span>특수 시각화 방법</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">격자 카토그램</strong>: 지리적 데이터를 시각화하는 방법으로, 각 지역의 특정 변수의 크기에 따라 <strong class="key2">그리드 셀의 크기 또는 색상이 조정된 지도</strong>. 전통적인 지도를 왜곡하여 각 지역의 특성을 더 명확하게 시각화</li>
+          <li class="hl2"><strong class="key2">극좌표</strong>: 원형 좌표계로 데이터를 <strong class="key2">각도와 반지름</strong>을 기준으로 표현. 주기성·방향성 데이터를 <strong class="key3">왜곡 없이 효과적으로 시각화</strong></li>
+          <li class="hl3"><strong class="key3">등치선도</strong>: 같은 값을 가진 지점을 선으로 연결</li>
+        </ul>
+        <div class="related-box">
+          <h4>📦 박스플롯(Boxplot) 확인 가능 / 불가능</h4>
+          <p>확인 <span>가능</span>: IQR, lower, upper, 이상값, Q1, Q2(Median), Q3, min, max<br>
+          확인 <span>불가능</span>: 평균, 분산, 데이터의 개수</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S7: 인포그래픽 -->
+<div class="section" id="s7">
+  <div class="section-title">인포그래픽(Infographic)</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>인포그래픽의 특징</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">스토리 전달</span><span class="kw-tag">일반인 대상</span><span class="kw-tag red">전문SW 불필요</span></div>
+      <div class="card-footer"><span>인포그래픽 개요</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">인포그래픽</strong>: 정보를 빠르고 명확하게 전달하기 위해 <strong class="key2">시각 요소를 활용해 구조화한 콘텐츠</strong></li>
+          <li class="hl2">스토리를 통해 정보를 전달하려는 경향이 강하며, <strong class="key2">일반인을 대상</strong>으로 특정 정보와 메시지를 전달하기 적합</li>
+          <li class="hl3">복잡한 대규모 빅데이터 분석 결과를 <strong class="key3">명료하고 이해하기 쉽게 표현</strong></li>
+          <li class="hl4"><strong class="key3">인포그래픽과 데이터 시각화</strong>는 밀접한 관련이 있지만 목적과 구성 면에서 차이가 있어, <strong class="key3">별도로 기획·제작하는 것이 바람직함</strong></li>
+          <li class="hl"><strong class="key3">반드시 별도의 전문 소프트웨어의 설치가 필요한 것은 아님</strong></li>
+          <li class="hl4">너무 많은 정보를 담는 것은 <strong class="key3">이해도를 떨어트릴 수 있음</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>인포그래픽 유형 6가지</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">타임라인형</span><span class="kw-tag">스토리텔링형</span><span class="kw-tag red">만화형</span><span class="kw-tag">지도형</span></div>
+      <div class="card-footer"><span>인포그래픽 유형</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <table class="mini-table">
+          <tr><th>유형</th><th>특징 및 적합한 정보</th></tr>
+          <tr><td><strong>타임라인형</strong></td><td>관련 역사를 시간의 흐름 형태로 나타냄. 기업 연혁, 기술 이력, 인물의 발전과정에 적합</td></tr>
+          <tr><td><strong>스토리텔링형</strong></td><td>하나의 사건이나 주제를 중심으로 이야기를 전개. 주제·내용의 연관성을 중요시</td></tr>
+          <tr><td><strong>만화형</strong></td><td>캐릭터 등 만화적 요소 활용. 행동, 직업, 심리 등과 관련된 정보 표현에 적합</td></tr>
+          <tr><td><strong>지도형</strong></td><td>특정 국가나 지역의 지도 사용. 서비스 이용 현황, 매장 분포, 지역별 선호도 등에 적합</td></tr>
+          <tr><td><strong>도표형</strong></td><td>다양한 표, 그래프를 사용해 정보 제공</td></tr>
+          <tr><td><strong>비교분석형</strong></td><td>두 가지 이상의 제품, 개념을 비교하여 정보 제공</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- S8: 분석 결과 활용·리모델링 -->
+<div class="section" id="s8">
+  <div class="section-title">분석 결과 활용 · 스토리텔링 · 보고서</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>분석 결과 활용 시나리오</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">초기 단계부터 고려</span><span class="kw-tag">이해관계자 도출</span></div>
+      <div class="card-footer"><span>활용 시나리오</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">분석 결과 활용 시나리오</strong>: 분석된 데이터나 정보를 활용하여 효과적으로 가치를 창출할 수 있는 구체적 방법</li>
+          <li class="hl2"><strong class="key3">분석 프로젝트의 초기 단계부터 고려</strong>해야 하며, 전체 과정 속에서 지속적으로 구체화·검증되어야 함</li>
+          <li class="hl3">체계적으로 정의해야 하는 이유:
+            <br>• 빅데이터 분석체계 도입에 따른 <strong class="key3">업무성과 측정</strong>
+            <br>• 업무상의 체계적인 <strong class="key3">의사결정 지원</strong>
+            <br>• 빅데이터 분석 관련 <strong class="key3">이해관계자의 도출</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>분석 결과 스토리텔링 · 머신러닝 산출물</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords"><span class="kw-tag yellow">스토리보드</span><span class="kw-tag red">알고리즘 보안계획서 ✕</span></div>
+      <div class="card-footer"><span>스토리텔링·산출물</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">분석 결과 스토리텔링 준비 과정</strong>에서 수행해야 하는 일:
+            <br>• 사용자별 필요 데이터셋 및 정보 기술
+            <br>• 사용자 시나리오 작성
+            <br>• <strong class="key2">스토리보드 기획</strong>
+          </li>
+          <li class="hl4"><strong class="key3">머신러닝 기반 데이터 분석 결과 산출물</strong> (<strong class="key3">NO. 알고리즘 보안 계획서!</strong>):
+            <br>데이터 탐색 보고서, 모델링 및 검증, 중간 및 최종 보고서, 성능 보고서, 운영 보고서, 데이터 분석 계획서, 모델 훈련 및 예측 결과, 주요 사용 데이터 및 확보 방안 등
+          </li>
+        </ul>
+        <div class="related-box">
+          <h4>📝 분석 보고서 작성 방법</h4>
+          <p>• 쉽게 이해할 수 있도록 작성하며, <span>전문용어 사용을 가급적 자제</span><br>
+          • 분석 결과가 <span>실제 비즈니스 의사결정에 활용</span>될 수 있도록 작성<br>
+          • 보고서를 통해 <span>성과 기준과 기여도를 명확히 제시</span></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="section" id="quiz">
+  <div class="section-title">📝 연습 문제</div>
+  <div id="score-bar">
+    <span>현재 점수</span>
+    <div id="score-display">0 / 0</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <button id="reset-btn" onclick="resetQuiz()">다시 풀기</button>
+  </div>
+  <div id="quiz-container"></div>
+</div>
+
+</main>
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const ids = ['s1','s2','s3','s4','s5','s6','s7','s8','quiz'];
+  document.querySelectorAll('nav button')[ids.indexOf(id)].classList.add('active');
+}
+function toggleCard(el) { el.classList.toggle('open'); }
+
+const quizData = [
+  { q: "회귀모형 평가지표 중 0에 가까울수록 좋은 성능을 나타내는 것으로만 묶인 것은?", opts: ["MAE, MSE, RMSE, MAPE", "R², Adjusted R², MAE", "결정계수(R²), RMSE", "Adjusted R², MAPE, R²"], ans: 0, explain: "<strong>오차 지표(0에 가까울수록 좋음)</strong>: MAE, MSE, RMSE, MSLE, RMSLE, MPE, MAPE. <strong>설명력 지표(1에 가까울수록 좋음)</strong>: R², Adjusted R².", tag: "회귀 평가지표" },
+  { q: "혼동행렬에서 '재현율(Recall)'을 계산하는 공식으로 올바른 것은?", opts: ["TP / (TP+FP)", "TP / (TP+FN)", "TN / (TN+FP)", "(TP+TN) / (TP+TN+FP+FN)"], ans: 1, explain: "<strong>재현율(Recall) = 민감도(Sensitivity) = TP Rate = TP / (TP+FN)</strong>. 분모가 '실제 양성(TP+FN)'임을 기억! 정밀도(Precision) = TP/(TP+FP)로 분모가 '예측 양성'.", tag: "혼동행렬" },
+  { q: "혼동행렬에서 FP(False Positive)가 의미하는 것은?", opts: ["실제 양성이고 양성으로 예측한 경우", "실제 양성이지만 음성으로 예측한 경우", "실제 음성이지만 양성으로 예측한 경우", "실제 음성이고 음성으로 예측한 경우"], ans: 2, explain: "<strong>FP(False Positive, 1종 오류)</strong>: 실제는 음성(False)인데 양성(Positive)으로 잘못 예측한 경우. FN(2종 오류): 실제 양성인데 음성으로 예측.", tag: "혼동행렬" },
+  { q: "F1 Score에 대한 설명으로 옳지 않은 것은?", opts: ["정밀도와 재현율의 조화평균이다", "불균형 데이터 상황에서 유용하다", "두 지표에 동등한 가중치를 부여한다", "두 지표의 산술평균으로 계산한다"], ans: 3, explain: "<strong>F1 Score</strong>는 정밀도와 재현율의 <strong>조화평균</strong>으로 계산합니다. 산술평균이 아닙니다! F1 = 2×Precision×Recall / (Precision+Recall).", tag: "F1 Score" },
+  { q: "ROC 곡선에서 Perfect Classifier의 위치는 (FP-Rate, 민감도) 기준으로?", opts: ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"], ans: 2, explain: "<strong>Perfect Classifier</strong>: FP-Rate=0 (오분류 없음), 민감도=1 (모든 양성 정확히 분류). 위치: <strong>(FP-Rate, 민감도) = (0, 1)</strong>.", tag: "ROC 곡선" },
+  { q: "Cutoff(C) 값이 작아질 때 일어나는 변화로 올바른 것은?", opts: ["특이도 증가, 민감도 감소", "특이도 감소, 민감도 증가", "특이도 증가, 민감도 증가", "특이도 감소, 민감도 감소"], ans: 1, explain: "<strong>C가 작아지면</strong>: 더 많은 예측을 양성 클래스로 분류 → 민감도 증가(실제 양성 더 잘 잡음), 특이도 감소(실제 음성을 양성으로 오분류 증가).", tag: "Cutoff" },
+  { q: "하이퍼파라미터(초매개변수)에 해당하지 않는 것은?", opts: ["k-NN 모델의 K", "인공신경망의 학습률", "Ridge 회귀의 α", "인공신경망의 가중치(weight)"], ans: 3, explain: "<strong>인공신경망의 가중치(weight)</strong>는 학습을 통해 모델이 스스로 결정하는 <strong>파라미터(매개변수)</strong>입니다. 하이퍼파라미터는 사람이 미리 설정하는 값: k-NN의 K, 학습률, 배치 크기, 은닉층 수, epoch 수 등.", tag: "하이퍼파라미터" },
+  { q: "하이퍼파라미터 튜닝 방법 중 '이전 경험에 대한 확률을 반영'하는 방법은?", opts: ["수동 탐색", "격자 탐색(Grid Search)", "무작위 탐색(Random Search)", "베이지안 최적화"], ans: 3, explain: "<strong>베이지안 최적화</strong>: 새로운 하이퍼파라미터값 조사 시 이전 경험에 대한 확률을 반영. 격자 탐색: 모든 조합 시도, 무작위 탐색: 범위 내 랜덤 선택(최적 보장 없음).", tag: "하이퍼파라미터 튜닝" },
+  { q: "편향-분산 분해에서 '편향(Bias)이 높을 때' 나타나는 현상으로 옳은 것은?", opts: ["특정 학습 데이터에 과도하게 적합된 상태", "지나치게 복잡한 모델로 인한 오류", "과대적합(Overfitting)을 야기함", "과소적합(Underfitting)을 야기함"], ans: 3, explain: "<strong>편향 높음</strong>: 예측값 평균이 실제값과 멀리 떨어짐. 지나치게 단순한 모델. <strong>과소적합</strong> 야기. <strong>분산 높음</strong>: 특정 학습 데이터에 과도 적합. 지나치게 복잡한 모델. <strong>과대적합</strong> 야기.", tag: "편향-분산" },
+  { q: "분석모형 해석 기법 중 'SHAP'의 특징으로 올바른 것은?", opts: ["특정 변수 1~2개의 평균적 영향을 시각화한다", "특정 변수를 무작위로 섞어 성능 감소를 측정한다", "각 관측치 단위로 각 변수의 기여도(local contribution)를 계산한다", "모델 자체가 단순하여 직관적으로 해석 가능한 모형이다"], ans: 2, explain: "<strong>SHAP</strong>: 각 관측치 단위로 각 변수의 기여도(local contribution)를 계산. PDP: 특정 변수 1~2개의 평균적 영향 시각화. 순열 변수 중요도: 변수를 무작위로 섞어 성능 감소 측정.", tag: "분석모형 해석" },
+  { q: "인포그래픽에 대한 설명으로 옳지 않은 것은?", opts: ["스토리를 통해 정보를 전달하려는 경향이 강하다", "복잡한 빅데이터 분석 결과를 명료하게 표현하는 데 적합하다", "반드시 별도의 전문 소프트웨어 설치가 필요하다", "너무 많은 정보를 담으면 이해도가 떨어질 수 있다"], ans: 2, explain: "인포그래픽은 전문 소프트웨어를 설치하면 편리하겠지만, <strong>반드시 별도의 전문 소프트웨어 설치가 필요한 것은 아닙니다</strong>.", tag: "인포그래픽" },
+  { q: "인포그래픽 유형 중 '기업 연혁, 기술 이력, 인물의 발전과정' 표현에 가장 적합한 유형은?", opts: ["스토리텔링형", "타임라인형", "지도형", "비교분석형"], ans: 1, explain: "<strong>타임라인형</strong>: 관련 역사를 시간의 흐름 형태로 나타냄. 기업 연혁, 기술 이력, 인물의 발전과정 등에 적합. 지도형: 서비스 이용 현황, 매장 분포 등에 적합.", tag: "인포그래픽 유형" },
+  { q: "박스플롯(Boxplot)을 통해 확인할 수 없는 것은?", opts: ["중앙값(Median)", "사분위수 범위(IQR)", "이상값(Outlier)", "데이터의 개수"], ans: 3, explain: "박스플롯으로 확인 <strong>가능</strong>: IQR, lower, upper, 이상값, Q1, Q2(Median), Q3, min, max. 확인 <strong>불가능</strong>: <strong>평균, 분산, 데이터의 개수</strong>.", tag: "시각화" },
+  { q: "분석 모델 리모델링에 대한 설명으로 옳지 않은 것은?", opts: ["데이터 마이닝, 시뮬레이션, 최적화 기법을 적용한다", "재조정 주기는 초기에 길게 설정되며 점차 짧아진다", "새로운 데이터 또는 환경 변경 시 주기적인 모델 업데이트가 필요하다", "주기적인 재평가를 통해 필요시 분석 모델을 재조정한다"], ans: 1, explain: "재조정 주기는 <strong>초기에 짧게</strong> 설정되며, <strong>모델이 안정화됨에 따라 점차 길어지는 경향</strong>이 있습니다. 초기에 길게 설정되는 것이 아닙니다.", tag: "리모델링" },
+  { q: "머신러닝 기반 데이터 분석 결과 산출물에 해당하지 않는 것은?", opts: ["데이터 탐색 보고서", "모델 훈련 및 예측 결과", "알고리즘 보안 계획서", "데이터 분석 계획서"], ans: 2, explain: "머신러닝 기반 데이터 분석 결과 산출물에는 데이터 탐색 보고서, 모델링 및 검증, 성능 보고서, 운영 보고서, 데이터 분석 계획서, 모델 훈련 및 예측 결과 등이 포함됩니다. <strong>알고리즘 보안 계획서는 포함되지 않습니다!(NO!)</strong>", tag: "분석 산출물" }
+];
+
+let score = 0, answered = 0;
+function renderQuiz() {
+  const c = document.getElementById('quiz-container');
+  c.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.innerHTML = `
+      <div class="quiz-num">Q${i+1}</div>
+      <div class="quiz-tag">${q.tag}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((opt,j) => `<button class="quiz-opt" onclick="checkAns(${i},${j})" id="opt-${i}-${j}"><span style="font-family:'JetBrains Mono',monospace;font-size:0.78em">${['①','②','③','④'][j]}</span> ${opt}</button>`).join('')}
+      </div>
+      <div class="quiz-explain" id="explain-${i}">${q.explain}</div>`;
+    c.appendChild(card);
+  });
+  updateScore();
+}
+function checkAns(qi, oi) {
+  const q = quizData[qi];
+  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(o => o.disabled = true);
+  const sel = document.getElementById(`opt-${qi}-${oi}`);
+  const cor = document.getElementById(`opt-${qi}-${q.ans}`);
+  cor.classList.add(oi === q.ans ? 'correct' : 'reveal-correct');
+  if (oi !== q.ans) sel.classList.add('wrong');
+  else score++;
+  answered++;
+  document.getElementById(`explain-${qi}`).classList.add('show');
+  updateScore();
+}
+function updateScore() {
+  document.getElementById('score-display').textContent = `${score} / ${answered}`;
+  document.getElementById('progress-fill').style.width = (answered / quizData.length * 100) + '%';
+}
+function resetQuiz() { score = 0; answered = 0; renderQuiz(); }
+renderQuiz();
+</script>
+</body>
+</html>

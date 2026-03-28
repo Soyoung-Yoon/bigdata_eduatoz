@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>빅데이터 분석기사 2과목 학습 카드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161b27;
+    --surface2: #1e2638;
+    --border: #2a3550;
+    --accent: #4f8ef7;
+    --accent2: #f7c94f;
+    --accent3: #4ff7b4;
+    --accent4: #f74f7a;
+    --text: #e8edf8;
+    --text-dim: #7a8baa;
+    --star: #f7c94f;
+    --tag-blue: #1a3a6e;
+    --tag-green: #0f3d2e;
+    --tag-yellow: #3d2e0f;
+    --tag-red: #3d0f1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    padding: 2.5rem 2rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    background: linear-gradient(180deg, #111828 0%, var(--bg) 100%);
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent2), var(--accent4));
+  }
+  header h1 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p { color: var(--text-dim); font-size: 0.85rem; margin-top: 0.5rem; }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.78rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  nav button:hover, nav button.active {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #000;
+  }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent3);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+  }
+
+  .topic-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .topic-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    border-color: var(--accent2);
+  }
+  .topic-card.imp-1 { background: #161c2a; }
+  .topic-card.imp-2 { background: #161e30; }
+  .topic-card.imp-3 { background: #141c38; }
+  .topic-card.imp-4 { background: #13183a; }
+  .topic-card.imp-5 { background: #11103a; border-color: #3a2a7a; }
+
+  .card-header {
+    padding: 0.9rem 1rem 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .card-header h3 { font-size: 0.92rem; font-weight: 700; line-height: 1.35; flex: 1; }
+  .stars { font-size: 0.7rem; color: var(--star); white-space: nowrap; padding-top: 2px; }
+
+  .card-keywords {
+    padding: 0 1rem 0.7rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .kw-tag {
+    font-size: 0.68rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: var(--tag-blue);
+    color: var(--accent);
+    border: 1px solid rgba(79,142,247,0.25);
+  }
+  .kw-tag.green { background: var(--tag-green); color: var(--accent3); border-color: rgba(79,247,180,0.25); }
+  .kw-tag.yellow { background: var(--tag-yellow); color: var(--accent2); border-color: rgba(247,201,79,0.25); }
+  .kw-tag.red { background: var(--tag-red); color: var(--accent4); border-color: rgba(247,79,122,0.25); }
+
+  .card-footer {
+    padding: 0.5rem 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .expand-icon { transition: transform 0.3s; }
+  .topic-card.open .expand-icon { transform: rotate(180deg); }
+
+  .detail-panel {
+    display: none;
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+    animation: slideDown 0.25s ease;
+  }
+  @keyframes slideDown { from { opacity: 0; } to { opacity: 1; } }
+  .topic-card.open .detail-panel { display: block; }
+
+  .detail-panel ul { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+  .detail-panel li {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    padding: 0.5rem 0.7rem;
+    background: rgba(255,255,255,0.03);
+    border-left: 2px solid var(--border);
+    border-radius: 0 6px 6px 0;
+  }
+  .detail-panel li.hl { border-left-color: var(--accent); }
+  .detail-panel li.hl2 { border-left-color: var(--accent2); }
+  .detail-panel li.hl3 { border-left-color: var(--accent3); }
+  .detail-panel li.hl4 { border-left-color: var(--accent4); }
+
+  strong.key { color: var(--accent2); font-weight: 700; }
+  strong.key2 { color: var(--accent3); font-weight: 700; }
+  strong.key3 { color: var(--accent4); font-weight: 700; }
+  strong.key4 { color: var(--accent); font-weight: 700; }
+
+  .formula-box {
+    margin-top: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    background: rgba(79,247,180,0.06);
+    border: 1px solid rgba(79,247,180,0.2);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent3);
+    line-height: 1.8;
+  }
+  .formula-box .label {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .related-box {
+    margin-top: 0.8rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(79,142,247,0.07);
+    border: 1px solid rgba(79,142,247,0.2);
+    border-radius: 8px;
+  }
+  .related-box h4 {
+    font-size: 0.72rem;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .related-box p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+  .related-box span { color: var(--accent2); font-weight: 600; }
+
+  /* Table */
+  .mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    margin-top: 0.6rem;
+  }
+  .mini-table th {
+    background: rgba(79,142,247,0.15);
+    color: var(--accent);
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+    font-weight: 700;
+  }
+  .mini-table td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  .mini-table td strong { color: var(--text); }
+  .mini-table tr:last-child td { border-bottom: none; }
+
+  /* Quiz */
+  .quiz-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .quiz-num { font-size: 0.7rem; color: var(--accent2); font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-bottom: 0.5rem; }
+  .quiz-q { font-size: 0.9rem; font-weight: 600; line-height: 1.55; margin-bottom: 0.9rem; }
+  .quiz-options { display: flex; flex-direction: column; gap: 0.4rem; }
+  .quiz-opt {
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.02);
+    text-align: left;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+  }
+  .quiz-opt:hover { border-color: var(--accent2); background: rgba(247,201,79,0.08); }
+  .quiz-opt.correct { background: rgba(79,247,180,0.1); border-color: var(--accent3); color: var(--accent3); }
+  .quiz-opt.wrong { background: rgba(247,79,122,0.1); border-color: var(--accent4); color: var(--accent4); }
+  .quiz-opt.reveal-correct { background: rgba(79,247,180,0.08); border-color: var(--accent3); }
+  .quiz-explain {
+    display: none;
+    margin-top: 0.8rem;
+    padding: 0.7rem 0.9rem;
+    background: rgba(247,201,79,0.07);
+    border: 1px solid rgba(247,201,79,0.25);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .quiz-explain.show { display: block; }
+  .quiz-explain strong { color: var(--accent2); }
+  .quiz-tag {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(247,201,79,0.15);
+    color: var(--accent2);
+    font-weight: 700;
+  }
+
+  #score-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+  #score-bar span { font-size: 0.82rem; color: var(--text-dim); }
+  #score-display { font-size: 1.1rem; font-weight: 900; color: var(--accent3); font-family: 'JetBrains Mono', monospace; }
+  #reset-btn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: all 0.2s;
+  }
+  #reset-btn:hover { border-color: var(--accent4); color: var(--accent4); }
+  .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; flex: 1; min-width: 80px; }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent3));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.78em; }
+
+  @media (max-width: 600px) {
+    .card-grid { grid-template-columns: 1fr; }
+    nav { padding: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📐 빅데이터 분석기사 2과목 키워드 학습</h1>
+  <p>통계 · 시각화 · 확률 · 전처리 · 차원축소 · 가설검정 | 주제 클릭 → 세부 내용 · ★ 중요도 · 퀴즈로 실력 점검</p>
+</header>
+
+<nav id="main-nav">
+  <button class="active" onclick="showSection('s1')">통계 기초·표본추출</button>
+  <button onclick="showSection('s2')">중심경향·산포·분포</button>
+  <button onclick="showSection('s3')">데이터 시각화</button>
+  <button onclick="showSection('s4')">확률 기초·사건</button>
+  <button onclick="showSection('s5')">확률분포</button>
+  <button onclick="showSection('s6')">데이터 전처리·결측값</button>
+  <button onclick="showSection('s7')">이상값·변수변환·부호화</button>
+  <button onclick="showSection('s8')">파생변수·변수선택</button>
+  <button onclick="showSection('s9')">차원축소·다중공선성</button>
+  <button onclick="showSection('s10')">상관분석·표본분포</button>
+  <button onclick="showSection('s11')">추정·가설검정</button>
+  <button onclick="showSection('quiz')">📝 연습 문제</button>
+</nav>
+
+<main>
+
+<!-- ===== S1: 통계 기초·표본추출 ===== -->
+<div class="section active" id="s1">
+  <div class="section-title">통계 기초 · 표본추출</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>통계 기본 용어</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">모집단·모수</span><span class="kw-tag yellow">표본·통계량</span>
+      </div>
+      <div class="card-footer"><span>기본 개념</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">모집단(Population)</strong> — 연구 대상 전체 집합 / <strong class="key">모수</strong> — 모집단의 특성값</li>
+          <li class="hl2"><strong class="key2">표본(Sample)</strong> — 모집단에서 추출한 일부 / <strong class="key2">통계량</strong> — 표본의 특성값</li>
+          <li class="hl3"><strong class="key3">복원 추출</strong> — 추출 후 다시 모집단에 넣음 / <strong class="key3">비복원 추출</strong> — 넣지 않음</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>확률적 표본추출법 4가지</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">층화</span><span class="kw-tag yellow">군집</span><span class="kw-tag green">계통</span><span class="kw-tag">단순무작위</span>
+      </div>
+      <div class="card-footer"><span>핵심 추출법</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">층화 추출법</strong> — 이질적인 모집단을 서로 겹치지 않는 층으로 나누고, 각 층에서 단순 무작위 추출. <strong class="key3">동질성 검정에 사용</strong></li>
+          <li class="hl2"><strong class="key2">군집 추출법</strong> — 집단 내: <strong class="key3">이질적</strong>, 집단 간: <strong class="key2">동질적</strong>인 표본 추출기법</li>
+          <li class="hl3"><strong class="key3">계통 추출법</strong> — 일련번호 부여 후 임의 시작점 정하고 <strong class="key3">일정 간격</strong>으로 추출</li>
+          <li class="hl"><strong class="key">단순 무작위 추출법</strong> — 모집단 각 요소가 <strong class="key2">동일한 확률</strong>로 선택되도록 무작위 추출</li>
+        </ul>
+        <div class="related-box">
+          <h4>⚠️ 시험 포인트</h4>
+          <p>군집 추출: 집단 <span>내 이질적</span>, 집단 <span>간 동질적</span> (층화 추출과 반대!)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-3" onclick="toggleCard(this)">
+      <div class="card-header"><h3>전수조사가 필요한 경우</h3><div class="stars">★★★☆☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag red">치명적 결함</span><span class="kw-tag">자동 수집</span><span class="kw-tag yellow">법적 근거</span>
+      </div>
+      <div class="card-footer"><span>전수조사 조건</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl">조사 대상이 <strong class="key">적을 때</strong>, 국가 통계처럼 법적/제도적 근거가 있을 때</li>
+          <li class="hl4"><strong class="key3">결함이 있으면 치명적인 문제를 일으킬 때</strong> — 예: 우주선 부품 검사</li>
+          <li class="hl3">데이터가 <strong class="key3">자동으로 수집</strong>될 수 있을 때</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S2: 중심경향·산포·분포 ===== -->
+<div class="section" id="s2">
+  <div class="section-title">중심경향 통계량 · 산포 · 분포</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>중심경향 통계량: 평균·중앙값·최빈값</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">평균</span><span class="kw-tag yellow">중앙값</span><span class="kw-tag green">최빈값</span><span class="kw-tag red">왜도</span>
+      </div>
+      <div class="card-footer"><span>핵심 통계량</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">평균(Mean)</strong> — 데이터의 합 / n. <strong class="key3">이상값에 민감</strong></li>
+          <li class="hl2"><strong class="key2">중앙값(Median)</strong> — <strong class="key2">이상값에 강건</strong>함</li>
+          <li class="hl3"><strong class="key3">최빈값(Mode)</strong> — <strong class="key3">범주형 변수</strong>에 사용</li>
+          <li class="hl4"><strong class="key3">음의 왜도</strong>: Mean &lt; Median &lt; Mode</li>
+          <li class="hl"><strong class="key">양의 왜도</strong>: Mean &gt; Median &gt; Mode</li>
+        </ul>
+        <div class="related-box">
+          <h4>💡 평균의 종류</h4>
+          <p><span>산술평균</span>: 일반적인 평균<br>
+          <span>조화평균</span>: N개 양수의 역수들의 산술평균의 역수 (평균 속도)<br>
+          <span>기하평균</span>: N개 자료를 곱한 후 N 제곱근 계산 (물가 상승률, 경제 성장률)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>산포(Dispersion) 통계량</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">분산</span><span class="kw-tag yellow">IQR</span><span class="kw-tag green">변동계수</span><span class="kw-tag red">이상값</span>
+      </div>
+      <div class="card-footer"><span>산포 통계량</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">이상값에 민감</strong>: 평균, 분산, 표준편차, 범위(Range) — 최솟값과 최댓값을 포함하는 통계량</li>
+          <li class="hl3"><strong class="key3">이상값에 민감하지 않음</strong>: 중앙값, IQR — 최솟값과 최댓값을 포함하지 않는 통계량</li>
+          <li class="hl2"><strong class="key2">사분위수 범위(IQR)</strong> = Q3 - Q1 (Q1=25%, Q3=75%). <strong class="key2">이상값 영향 없음</strong></li>
+          <li class="hl"><strong class="key">변동계수</strong> — <strong class="key3">음수 없음</strong></li>
+          <li><strong class="key4">표본 분산</strong> = 편차 제곱의 합 / <strong class="key4">(n-1)</strong></li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">핵심 공식</div>
+          분산 = 0 → 모든 값이 동일<br>
+          평균 = 0 → 분산 = 각 값의 제곱 평균 (편차 = 0)
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>분포 통계량: 첨도·왜도</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">첨도</span><span class="kw-tag yellow">왜도</span><span class="kw-tag green">정규분포</span>
+      </div>
+      <div class="card-footer"><span>분포 특성</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">정규분포</strong>의 경우: <strong class="key2">첨도 = 왜도 = 0</strong></li>
+          <li class="hl2">정규분포: 기댓값, 최빈값, 중앙값이 <strong class="key2">모두 평균과 같음</strong></li>
+          <li class="hl3">정규분포 왜도=0, 첨도=<strong class="key3">0(초과 첨도)</strong> 또는 <strong class="key3">3(일반 첨도)</strong> — 공식에서 -3의 여부로 구분</li>
+          <li>정규분포 곡선: 좌우대칭, 하나의 꼭지, X축에 <strong class="key">닿지 않음</strong></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S3: 데이터 시각화 ===== -->
+<div class="section" id="s3">
+  <div class="section-title">데이터 시각화</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>시각화 유형 4가지</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">시간</span><span class="kw-tag yellow">공간</span><span class="kw-tag green">관계</span><span class="kw-tag red">비교</span>
+      </div>
+      <div class="card-footer"><span>4대 시각화 유형</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">시간 시각화</strong> — X축: 시간, Y축: 값. 선, 계단식, 영역, 점, 막대, 산점도</li>
+          <li class="hl2"><strong class="key2">공간 시각화</strong> — 지도 활용. <strong class="key2">카토그램</strong>(면적 왜곡), <strong class="key2">코로플레스 맵/단계구분도/등치지역도</strong>(한 색상·명도 단계), 버블 플롯 맵, 등치선도</li>
+          <li class="hl3"><strong class="key3">관계 시각화</strong> — 변수 간 연관성·패턴. 산점도, 산점도 행렬, <strong class="key3">버블 차트</strong>(산점도와 비슷), 히트맵, 모자이크 플롯</li>
+          <li class="hl4"><strong class="key4">비교 시각화</strong> — 변수 간 유사/차이. 평행 차트, 스타/레이다/거미줄 차트, 플로팅 바, 막대그래프. <strong class="key3">히트맵</strong>: 두 범주형 변수의 비교 시각화, 체르노프 페이스</li>
+        </ul>
+        <div class="related-box">
+          <h4>+ 구성·분포 시각화</h4>
+          <p><span>구성 시각화(범주형)</span>: 파이 차트, 도넛 차트, 선버스트 차트, 트리맵 차트<br>
+          <span>분포 시각화(연속형)</span>: 히스토그램, <strong style="color:var(--accent4)">박스 플롯(이상값 확인)</strong>, 막대그래프, 점 그래프, 파레토 차트</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>데이터 유형별 주요 그래프</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">수치형</span><span class="kw-tag yellow">범주형</span>
+      </div>
+      <div class="card-footer"><span>그래프 선택 기준</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <table class="mini-table">
+          <tr><th>데이터 유형</th><th>적합한 그래프</th></tr>
+          <tr><td><strong>수치형</strong></td><td>산점도, 산점도 행렬, 박스 플롯, 히스토그램</td></tr>
+          <tr><td><strong>범주형(명목형)</strong></td><td>막대그래프, 파이차트, 히트맵, 파레토 차트</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>시간 관련 데이터 유형</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">횡단면</span><span class="kw-tag yellow">시계열</span><span class="kw-tag green">패널</span>
+      </div>
+      <div class="card-footer"><span>시간 데이터 분류</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">횡단면 데이터</strong> — <strong class="key2">한 시점</strong>, 여러 대상</li>
+          <li class="hl2"><strong class="key2">시계열 데이터</strong> — 하나의 대상, <strong class="key2">여러 시점</strong></li>
+          <li class="hl3"><strong class="key3">패널 데이터</strong> — <strong class="key3">여러 대상, 여러 시점</strong></li>
+        </ul>
+        <div class="related-box">
+          <h4>🔗 시공간 데이터</h4>
+          <p>시간+공간 데이터. 공간 데이터에서 시간 데이터를 <span>계산하여 추출 불가</span>(원래 별도 관리). 분석: 시계열 분석, 공간 통계 기법(<span>단순 선형회귀 X</span>). 활용: 교통 패턴 분석, 기상 데이터 모니터링</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-3" onclick="toggleCard(this)">
+      <div class="card-header"><h3>시각화 기능·목적·과정</h3><div class="stars">★★★☆☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">탐색적</span><span class="kw-tag yellow">설명적</span><span class="kw-tag green">표현적</span>
+      </div>
+      <div class="card-footer"><span>시각화 개요</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">기능</strong>: 탐색적, 설명적, 표현적</li>
+          <li class="hl2"><strong class="key2">목적</strong>: 정보 전달, 설득</li>
+          <li class="hl3"><strong class="key3">과정 절차</strong>: 정보 구조화 → 정보 시각화 → 정보 시각 표현</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S4: 확률 기초·사건 ===== -->
+<div class="section" id="s4">
+  <div class="section-title">확률 기초 · 사건의 종류</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>사건의 종류: 독립·배반·종속·근원</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">독립사건</span><span class="kw-tag yellow">배반사건</span><span class="kw-tag red">종속사건</span>
+      </div>
+      <div class="card-footer"><span>핵심 사건 유형</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">독립사건</strong> — A 발생이 B 발생 확률에 영향 없음
+            <br>P(B|A)=P(B), P(A|B)=P(A), <strong class="key2">P(A∩B)=P(A)·P(B)</strong>
+            <br>P(A∪B) = P(A)+P(B)-P(A)·P(B)
+          </li>
+          <li class="hl2"><strong class="key2">배반사건</strong> — 교집합이 공집합. <strong class="key2">P(A∩B)=0</strong>, P(A∪B)=P(A)+P(B)</li>
+          <li class="hl3"><strong class="key3">종속사건</strong> — 한 사건이 다른 사건에 영향. P(A∩B)=P(A|B)·P(B)</li>
+          <li><strong class="key4">근원사건</strong> — 표본 공간에 원소가 한 개일 때</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">조건부 확률</div>
+          P(A|B) = P(A∩B) / P(B), 단 P(B) > 0
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>베이즈 정리·심슨의 역설·기저율 무시</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag red">심슨의 역설</span><span class="kw-tag yellow">기저율 무시</span><span class="kw-tag green">베이즈 정리</span>
+      </div>
+      <div class="card-footer"><span>확률 오류와 이론</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">심슨의 역설</strong> — 부분집단에서는 일관된 경향을 보이지만, 전체를 합치면 그 경향이 역전되는 현상</li>
+          <li class="hl2"><strong class="key2">기저율 무시</strong> — 사전확률(기저율)을 무시하고 새로운 정보만으로 판단하는 오류</li>
+          <li class="hl3"><strong class="key3">베이즈 정리</strong> — 기저율을 반영하기 위해 사용하는 기본 확률 원리</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">베이즈 정리 공식</div>
+          P(A|B) = P(B|A) × P(A) / P(B)
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>확률분포함수·누적분포함수</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">확률질량함수</span><span class="kw-tag yellow">확률밀도함수</span><span class="kw-tag green">누적분포함수</span>
+      </div>
+      <div class="card-footer"><span>분포 함수 분류</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">확률질량함수(PMF)</strong> — <strong class="key2">이산</strong> 확률변수에서 특정값에 대한 확률을 계산</li>
+          <li class="hl2"><strong class="key2">확률밀도함수(PDF)</strong> — <strong class="key2">연속</strong> 확률변수에서 특정 구간에 속할 확률을 계산</li>
+          <li class="hl3"><strong class="key3">누적분포함수(CDF)</strong> — 확률변수 X가 특정값 x <strong class="key3">이하</strong>일 확률을 누적하여 계산</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">확률변수의 분산</div>
+          Var(X) = E(X²) - {E(X)}²<br>
+          σ(X) = √Var(X)<br>
+          Var(aX ± b) = a²·Var(X)<br>
+          Var(aX ± bY) = a²Var(X) ± b²Var(Y)
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S5: 확률분포 ===== -->
+<div class="section" id="s5">
+  <div class="section-title">확률분포의 종류</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>이산 확률분포 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">이항</span><span class="kw-tag yellow">베르누이</span><span class="kw-tag green">포아송</span><span class="kw-tag red">초기하</span>
+      </div>
+      <div class="card-footer"><span>이산 분포</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">베르누이 분포</strong> — 한 번의 시행에서 성공(1)/실패(0). E(X)=p, Var(X)=p(1-p)</li>
+          <li class="hl2"><strong class="key2">이항 분포</strong> — 동일 베르누이 시행을 n번 반복했을 때 성공 횟수. 매 시행 성공확률 같음. <strong class="key2">E(X)=np, Var(X)=np(1-p)</strong></li>
+          <li class="hl3"><strong class="key3">기하 분포</strong> — 처음 성공이 나올 때까지의 시도 횟수</li>
+          <li class="hl4"><strong class="key4">포아송 분포</strong> — 단위 시간이나 단위 공간(=영역)에 어떤 사건이 발생하는 횟수. <strong class="key2">E(X)=λ, Var(X)=λ (1개 모수)</strong></li>
+          <li><strong class="key">초기하 분포</strong> — 유한 모집단에서 <strong class="key3">비복원추출</strong>. 시행들이 서로 독립적이지 않고 성공확률이 매번 일정하지 않음</li>
+          <li><strong class="key2">이산균등분포</strong> — 정해진 정수 범위 내에서 모든 값이 동일한 확률</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>연속 확률분포 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">정규분포</span><span class="kw-tag yellow">T분포</span><span class="kw-tag green">카이제곱</span><span class="kw-tag red">F분포</span>
+      </div>
+      <div class="card-footer"><span>연속 분포</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">정규분포</strong> — 기댓값=최빈값=중앙값=평균. 왜도=0, 첨도=0(초과)/3(일반). 좌우대칭. X축에 닿지 않음</li>
+          <li class="hl2"><strong class="key2">T-분포</strong> — 표본수가 <strong class="key2">적을 때</strong> 평균 비교. <strong class="key3">정규분포보다 꼬리가 두꺼움</strong></li>
+          <li class="hl3"><strong class="key3">카이제곱 분포</strong> — 표준정규분포를 만족하는 확률변수 여러 개의 제곱합은 자유도 n인 카이제곱 분포를 따름</li>
+          <li class="hl4"><strong class="key4">F-분포</strong> — 두 카이제곱 분포의 비율. <strong class="key4">분산 비교, ANOVA</strong></li>
+          <li><strong class="key">연속균등분포</strong> — 구간 [a, b]에서 모든 값이 동일한 확률</li>
+          <li><strong class="key2">지수분포</strong> — 사건이 일어날 때까지의 <strong class="key2">대기시간</strong> 분포 (오른쪽 꼬리)</li>
+          <li><strong class="key3">감마분포</strong> — 어떤 사건이 여러 번(α번) 일어날 때까지 걸리는 시간</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S6: 데이터 전처리·결측값 ===== -->
+<div class="section" id="s6">
+  <div class="section-title">데이터 전처리 · 결측값 처리</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>데이터 전처리 개요</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag red">70~80% 소모</span><span class="kw-tag yellow">반복적 과정</span>
+      </div>
+      <div class="card-footer"><span>전처리 특징</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl">오류 방지, 신뢰도 향상, 반복적인 과정</li>
+          <li class="hl4"><strong class="key3">실제 분석 과정의 70~80% 소모</strong></li>
+          <li class="hl2">전처리 작업 종류: <strong class="key2">데이터 정제, 데이터 통합, 데이터 축소, 데이터 변환, 불균형 데이터 처리</strong></li>
+          <li class="hl3">데이터 정제: 결측값, 이상값 처리, 중복 제거, 데이터 형식 변환, 공백/특수문자 제거. <strong class="key3">반정형/비정형에 노이즈/이상값이 많이 발생</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>결측값 처리: 단순 대치법</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">완전사례</span><span class="kw-tag yellow">평균 대치</span><span class="kw-tag green">단순확률</span>
+      </div>
+      <div class="card-footer"><span>단순 대치 3가지</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">완전 사례 분석법</strong> — 결측값이 포함된 관측치를 <strong class="key3">모두 제외</strong></li>
+          <li class="hl2"><strong class="key2">평균 대치법</strong> — 조건부/비조건부. <strong class="key3">표준오차(σ/√n)의 과소추정 문제</strong> 발생</li>
+          <li class="hl3"><strong class="key3">단순 확률 대치법</strong> — <strong class="key3">Hot-Deck</strong>(같은 데이터셋에서 유사한 값으로 대치), <strong class="key3">Cold-Deck</strong>(외부 데이터 활용)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>결측값 처리: 고급 대치법</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag yellow">모형 기반</span><span class="kw-tag red">다중 대치</span>
+      </div>
+      <div class="card-footer"><span>고급 대치 방법</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl2"><strong class="key2">모형 기반 대치법</strong> — <strong class="key2">상관도가 높아지고 분산이 작아짐</strong></li>
+          <li class="hl4"><strong class="key3">다중 대치법</strong> — 절차 복잡성, 추정량 계산의 복잡성, 분석 결과 결합의 난해함</li>
+        </ul>
+        <div class="related-box">
+          <h4>📌 결측값 상황별 처리 기준</h4>
+          <p>
+            범주형 변수 → <span>최빈값</span><br>
+            연속형 변수 → <span>평균</span><br>
+            왜도 있을 때 → <span>중앙값</span><br>
+            높은 결측률 + 낮은 중요도 → <span>변수 제거</span><br>
+            높은 결측률 + 높은 중요도 → <span>회귀 대치 / k-NN 기반 대치 / 다중 대치법</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S7: 이상값·변수변환·부호화 ===== -->
+<div class="section" id="s7">
+  <div class="section-title">이상값 · 변수 변환 · 부호화</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>이상값(Outlier) 검출 방법</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag red">ESD</span><span class="kw-tag yellow">IQR 방법</span><span class="kw-tag green">박스플롯</span>
+      </div>
+      <div class="card-footer"><span>이상값 검출</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">이상값 특징</strong>: <strong class="key3">반정형/비정형에서 더 자주 발생</strong>. 분포의 집중경향치를 왜곡</li>
+          <li class="hl2"><strong class="key2">이상값 처리</strong>: 삭제, 대체(<strong class="key2">양의 왜도일 때 중앙값으로 대체</strong>), 변환, 절단</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">이상값 검출 공식</div>
+          ESD: μ - 3σ &lt; 정상데이터 &lt; μ + 3σ<br>
+          IQR: Q1 - 1.5×IQR &lt; 정상 &lt; Q3 + 1.5×IQR
+        </div>
+        <div class="related-box">
+          <h4>📦 박스플롯(Boxplot) 포함 요소</h4>
+          <p>Min, Max, Median, Mean, Q1, Q3, IQR=Q3-Q1<br>
+          lower = Q1 - 1.5×IQR, upper = Q3 + 1.5×IQR<br>
+          <strong style="color:var(--accent4)">포함하지 않는 것: 평균, 분산, 데이터 개수</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>스케일링(Scaling) 방법</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">MinMax</span><span class="kw-tag yellow">Z-Score</span><span class="kw-tag green">Robust</span>
+      </div>
+      <div class="card-footer"><span>정규화·표준화</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">Min-Max Normalization</strong> — [0~1] 범위로 변환</li>
+          <li class="hl2"><strong class="key2">Standardization (Z-Score)</strong> — 평균 0, 분산 1의 표준정규분포로 변환. (X-μ)/σ. <strong class="key3">표준화된 값은 단위 없음(단위 약분됨)</strong></li>
+          <li class="hl3"><strong class="key3">Robust Scaler</strong> — IQR 사용, <strong class="key3">이상값 영향 최소화</strong></li>
+          <li><strong class="key4">Max Absolute Scaler</strong></li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">Min-Max 공식</div>
+          (X - Xmin) / (Xmax - Xmin)<br>
+          <div class="label" style="margin-top:0.5rem">Z-Score 공식</div>
+          (X - μ) / σ
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>단순 함수 변환 (왜도 보정)</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag red">오른쪽 꼬리</span><span class="kw-tag yellow">왼쪽 꼬리</span><span class="kw-tag green">BoxCox</span>
+      </div>
+      <div class="card-footer"><span>비선형→선형 변환</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">오른쪽 꼬리가 길 때(양의 왜도)</strong>: <strong class="key3">로그, 제곱근, 역수</strong> 변환</li>
+          <li class="hl2"><strong class="key2">왼쪽 꼬리가 길 때(음의 왜도)</strong>: <strong class="key2">제곱, 지수</strong> 변환</li>
+          <li class="hl3"><strong class="key3">BoxCox 변환</strong> — 정규분포에 가깝게 만들거나 분산 안정화. <strong class="key3">양수 데이터에만 적용 가능</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>부호화(Encoding) 방법</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">Label</span><span class="kw-tag yellow">One-Hot</span><span class="kw-tag green">Binary</span><span class="kw-tag red">Target</span>
+      </div>
+      <div class="card-footer"><span>범주형 인코딩</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">Label Encoding</strong> — 각 범주를 숫자에 1:1로 대치</li>
+          <li class="hl2"><strong class="key2">One-Hot Encoding</strong> — 범주의 개수만큼 더미변수 생성 (R에서는 범주 수 - 1). 서로 다른 단어의 내적은 0. <strong class="key3">공간 차원 효율이 좋지 않음(Sparse 데이터)</strong></li>
+          <li class="hl3"><strong class="key3">Binary Encoding</strong> — <strong class="key3">One-Hot보다 모델 학습 속도가 더 빠름</strong></li>
+          <li class="hl4"><strong class="key4">Frequency Encoding</strong> — 범주형 변수를 해당 범주의 빈도로 변환</li>
+          <li><strong class="key">(Mean) Target Encoding</strong> — 종속변수 값들의 평균을 활용</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S8: 파생변수·변수선택 ===== -->
+<div class="section" id="s8">
+  <div class="section-title">파생변수 · 요약변수 · 변수 선택</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>파생변수 vs 요약변수</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag yellow">파생변수</span><span class="kw-tag green">요약변수</span>
+      </div>
+      <div class="card-footer"><span>변수 종류 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">파생변수</strong> — 기존 데이터 변수들을 가공·연산하여 새로운 의미의 변수 생성. <strong class="key3">매우 주관적일 수 있으므로 논리적 타당성 필요</strong>. 원본 데이터 기반으로 새로 생성되어 <strong class="key">지속적</strong>으로 분석에 사용</li>
+          <li class="hl2"><strong class="key2">요약변수</strong> — 여러 관측값 또는 범주를 집계(합계, 평균, 최소, 최대, 개수)하여 집합적 정보를 나타내는 변수. 그룹별 집계 통계량. <strong class="key2">데이터 마트에서 중요</strong>. 많은 모델에서 공통 사용 가능하여 <strong class="key2">재활용 가능</strong>. <strong class="key3">특정 시점(일시적)</strong>의 특성을 요약</li>
+        </ul>
+        <div class="related-box">
+          <h4>📋 파생변수 종류 예시</h4>
+          <p>단위 변환: 분→시간, 100cm→1m, 나이→연령대<br>
+          요약 통계량 변환: 고객별 누적 방문 횟수<br>
+          변수 분해: 주민등록번호→성별·나이<br>
+          변수 결합: 키·몸무게→BMI<br>
+          교호작용: 나이×프로모션 변수 생성</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>변수 선택 기법: 필터·래퍼·임베디드</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">필터 기법</span><span class="kw-tag yellow">래퍼 기법</span><span class="kw-tag green">임베디드</span>
+      </div>
+      <div class="card-footer"><span>변수 선택 3가지</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">필터 기법</strong> — 분산, 상관계수, 상호 정보량, 정보이득, 카이제곱 검정, 피셔 스코어</li>
+          <li class="hl2"><strong class="key2">래퍼 기법</strong>:
+            <br>• <strong class="key2">후진 제거법</strong>: 모든 독립변수 포함 모형에서 출발, 영향 적은 변수부터 하나씩 제거
+            <br>• <strong class="key3">전진 선택법</strong>: 절편만 있는 모델에서 출발, 기준 통계치를 가장 많이 개선하는 변수를 차례로 추가
+            <br>• <strong class="key2">단계적 선택법</strong>: 변수 삭제와 추가를 반복하며 모형 선택
+            <br>• <strong class="key">최상의 부분집합 선택법</strong>: 모든 독립변수 조합의 회귀모형을 고려, <strong class="key2">AIC, BIC</strong> 기준으로 최적 선택
+          </li>
+          <li class="hl3"><strong class="key3">임베디드 기법</strong> — Lasso, Ridge, ElasticNet, 의사결정나무, 랜덤포레스트(변수의 중요도 계산)</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S9: 차원축소·다중공선성 ===== -->
+<div class="section" id="s9">
+  <div class="section-title">차원 축소 · 다중공선성</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>차원 축소 목적·차원의 저주</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag red">차원의 저주</span><span class="kw-tag yellow">과적합 방지</span><span class="kw-tag green">다중공선성</span>
+      </div>
+      <div class="card-footer"><span>차원 축소 개요</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">차원 축소 정의</strong>: 정보를 최대한 보존하면서 변수의 개수를 줄이는 통계적 기법</li>
+          <li class="hl2">변수 많을 때 문제: <strong class="key2">성능 저하, 계산 비용 증가, 다중공선성, 모델 복잡도 증가, 과대적합, 해석·시각화의 어려움</strong></li>
+          <li class="hl3">차원 축소 효과: <strong class="key3">다중공선성 완화/해결, 과대적합 방지, 해석력 향상(특징 노출), 학습 시간 단축, 노이즈 제거</strong></li>
+          <li class="hl4"><strong class="key3">차원의 저주</strong>: 저장 공간/처리 시간 증가, 사용할 만한 데이터의 증가 없음 → 성능저하</li>
+        </ul>
+        <div class="related-box">
+          <h4>🔗 차원 축소 기법 종류</h4>
+          <p>PCA, FA, MDS, t-SNE, ICA, SVD, LDA, CCA</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>주성분 분석(PCA)</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">선형 결합</span><span class="kw-tag yellow">척도 영향</span><span class="kw-tag green">고윳값</span>
+      </div>
+      <div class="card-footer"><span>PCA 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">PCA</strong>: 여러 차원의 변수를 대표하는 새로운 차원의 주성분 생성. <strong class="key2">변수들의 선형 결합</strong></li>
+          <li class="hl3"><strong class="key3">정규성, 등분산성을 가정하지 않음</strong>. 상관행렬/공분산 행렬 같은 정방행렬 사용</li>
+          <li class="hl4"><strong class="key3">척도의 영향을 받음</strong></li>
+          <li class="hl2">주성분 개수 결정:
+            <br>• 전체변이 공헌도: <strong class="key2">70~90%</strong>
+            <br>• 고윳값: <strong class="key2">1 초과</strong>, 평균 이상
+            <br>• 스크리 플롯: <strong class="key2">Elbow 기법</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>MDS vs t-SNE 비교</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag green">MDS(전역)</span><span class="kw-tag yellow">t-SNE(지역)</span>
+      </div>
+      <div class="card-footer"><span>비선형 차원축소</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <table class="mini-table">
+          <tr><th>구분</th><th>MDS</th><th>t-SNE</th></tr>
+          <tr><td><strong>방식</strong></td><td>선형</td><td>비선형</td></tr>
+          <tr><td><strong>보존</strong></td><td>전체 거리 보존</td><td>지역적 유사성 보존</td></tr>
+          <tr><td><strong>최적해</strong></td><td><span style="color:var(--accent3)">Global Minimum 보장</span></td><td><span style="color:var(--accent4)">Local Minimum 보장 안 함</span></td></tr>
+          <tr><td><strong>적합도</strong></td><td>스트레스 값 0</td><td>t-분포 사용</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>다중공선성 해결 방법</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag red">VIF</span><span class="kw-tag yellow">Ridge/Lasso</span><span class="kw-tag green">PCA</span>
+      </div>
+      <div class="card-footer"><span>다중공선성 대응</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">다중공선성</strong>: 회귀계수의 분산을 증가시켜 <strong class="key3">모델을 불안정하게 하고, 해석을 어렵게 함</strong>. <strong class="key3">VIF</strong>를 측정하여 여부 판단</li>
+          <li class="hl">해결 방법:
+            <br>• 변수 제거(상관관계 높은 변수 제거)
+            <br>• 변수 선택: <strong class="key2">Ridge, Lasso</strong>
+            <br>• 평균 중심화 방법(교호작용항 포함 시)
+            <br>• 변수 축소: <strong class="key2">PCA, MDS, FA</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-3" onclick="toggleCard(this)">
+      <div class="card-header"><h3>불균형 데이터 처리</h3><div class="stars">★★★☆☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">언더샘플링</span><span class="kw-tag yellow">오버샘플링</span><span class="kw-tag green">SMOTE</span>
+      </div>
+      <div class="card-footer"><span>불균형 데이터</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl4"><strong class="key3">특징</strong>: 정확도 높아질 수 있지만, 분포가 낮은 클래스의 <strong class="key3">재현율이 낮아지는</strong> 문제. 과적합, 검증 어려움</li>
+          <li class="hl">처리 방법:
+            <br>• 전처리 단계: <strong class="key2">언더샘플링, 오버샘플링</strong>
+            <br>• 학습 단계: Weight balancing(적은 클래스에 더 큰 loss), 앙상블, 비용 민감 학습
+            <br>• 평가 단계: <strong class="key3">임곗값 이동</strong>
+          </li>
+          <li class="hl2"><strong class="key2">SMOTE</strong>: 오버샘플링 방법. 과대적합 발생. <strong class="key2">재현율 높아지고, 정밀도는 낮아질 수 있음</strong></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S10: 상관분석·표본분포 ===== -->
+<div class="section" id="s10">
+  <div class="section-title">상관분석 · 표본분포 · 중심극한정리</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>상관계수의 종류</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">피어슨</span><span class="kw-tag yellow">스피어만</span><span class="kw-tag green">편 상관계수</span>
+      </div>
+      <div class="card-footer"><span>상관계수 비교</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">피어슨 상관계수</strong> — <strong class="key2">등간/비율척도</strong>. 선형적인 관계만 측정. <strong class="key3">이상값의 영향 받음</strong>. 통계적 유의성 판단 불가. = X,Y의 공분산 / X,Y의 표준편차의 곱</li>
+          <li class="hl2"><strong class="key2">스피어만/켄달 상관계수</strong> — <strong class="key2">서열척도</strong>. 단조관계(선형/비선형 포함)를 나타냄</li>
+          <li class="hl3"><strong class="key3">편 상관계수</strong> — 두 변수 사이의 <strong class="key3">순수한 상관관계</strong> 파악</li>
+          <li><strong class="key4">포인트 바이세리얼</strong> — 하나의 변수는 이분형, 다른 하나는 연속형</li>
+          <li><strong class="key4">피셔의 이분 상관계수</strong> — 두 이분형 변수 간의 상관계수</li>
+        </ul>
+        <div class="related-box">
+          <h4>⚠️ 시험 포인트</h4>
+          <p><span>명목적 데이터의 상관성 분석</span>에는 <strong style="color:var(--accent4)">"카이제곱 검정"</strong>을 사용!<br>
+          공분산이 0이라도 <span>항상 독립은 아님</span><br>
+          공분산 행렬의 대각선 = 각 변수의 <span>분산</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>대수의 법칙·중심극한정리</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag green">대수의 법칙</span><span class="kw-tag yellow">중심극한정리 n≥30</span>
+      </div>
+      <div class="card-footer"><span>표본의 핵심 정리</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl2"><strong class="key2">대수의 법칙</strong> — 표본의 크기(n)가 커질수록 <strong class="key2">표본평균은 모집단의 평균에 더 가까워진다</strong></li>
+          <li class="hl3"><strong class="key3">중심극한정리</strong> — 모집단의 분포와 상관없이 <strong class="key3">표본의 크기(n)가 30 이상</strong>이 되면 N이 커짐에 따라 <strong class="key3">표본평균의 분포가 정규분포에 근사</strong>해짐</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">표본평균의 분포</div>
+          평균: μ, 분산: σ²/n, 표준편차(표준오차): σ/√n<br>
+          표본오차 = 오차한계 = 임곗값 × σ/√n
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-3" onclick="toggleCard(this)">
+      <div class="card-header"><h3>탐색적 데이터 분석(EDA)</h3><div class="stars">★★★☆☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">가정 없음</span><span class="kw-tag yellow">구조 파악</span><span class="kw-tag green">교차분석</span>
+      </div>
+      <div class="card-footer"><span>EDA 개요</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key3">사전에 데이터의 구조나 관계를 가정하지 않고</strong>, 통계량과 분포 등을 통해 데이터의 구조와 특성을 파악</li>
+          <li class="hl2">의미 있는 관계를 찾아내는 과정, 모델링과 결과 해석에 도움을 주는 필수 과정</li>
+          <li class="hl3">EDA 결과물: <strong class="key3">데이터 탐색 보고서, 데이터 시각화 보고서</strong></li>
+          <li class="hl"><strong class="key">교차 분석</strong>: 명목형/서열형 변수 간의 분포와 관계를 확인. 질적 자료 간의 연관성 탐색. <strong class="key2">독립성 검정(카이제곱 검정)</strong>에 사용</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== S11: 추정·가설검정 ===== -->
+<div class="section" id="s11">
+  <div class="section-title">추정 · 가설검정</div>
+  <div class="card-grid">
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>좋은 추정량 판단 기준 · 점추정</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">비편향성</span><span class="kw-tag yellow">일치성</span><span class="kw-tag green">효율성</span><span class="kw-tag">충분성</span>
+      </div>
+      <div class="card-footer"><span>추정량 기준</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">좋은 추정량 판단 기준</strong>: <strong class="key2">비편향성(=불편성), 일치성, 효율성, 충분성</strong></li>
+          <li class="hl2"><strong class="key2">점추정</strong>: 모집단의 모수를 하나의 값으로 추정하는 방법. 적률법, 최소제곱법, <strong class="key3">최대가능도추정법(최대우도법)</strong></li>
+          <li class="hl3"><strong class="key3">최대우도추정법</strong>: 원하는 값들이 나올 가능도를 최대로 만드는 모수를 선택하는 점추정 방식
+            <br>• 지수분포 최대우도추정량: <strong class="key3">1/x̄</strong>
+            <br>• 포아송분포 최대우도추정량: <strong class="key3">x̄</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>구간추정·신뢰구간</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag yellow">신뢰구간</span><span class="kw-tag green">오차한계</span><span class="kw-tag red">표준오차</span>
+      </div>
+      <div class="card-footer"><span>구간추정 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">구간추정</strong>: 신뢰구간을 만들어 추정. <strong class="key3">점추정 값이 먼저 필요함</strong></li>
+          <li class="hl2"><strong class="key2">신뢰구간</strong>: (통계량 - 오차한계) ~ (통계량 + 오차한계)</li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">오차한계 = 표본오차</div>
+          오차한계 = 임곗값 × 표준오차 = 임곗값 × σ/√n
+        </div>
+        <ul style="margin-top:0.6rem">
+          <li class="hl3"><strong class="key3">신뢰수준이 높을수록 신뢰구간이 길어짐</strong>: 99% 신뢰구간 > 95% 신뢰구간</li>
+          <li class="hl2"><strong class="key2">표본의 크기가 커지면 신뢰구간의 길이는 줄어든다</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topic-card imp-5" onclick="toggleCard(this)">
+      <div class="card-header"><h3>가설검정: 귀무가설·대립가설</h3><div class="stars">★★★★★</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">귀무가설</span><span class="kw-tag yellow">대립가설</span><span class="kw-tag red">p-value</span><span class="kw-tag green">기각역</span>
+      </div>
+      <div class="card-footer"><span>가설검정 핵심</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <ul>
+          <li class="hl"><strong class="key">귀무가설(H₀)</strong> — 가설검정 비교의 기준. 효과 없음, 변화 없음, 차이 없음. 유의한 차이가 없을 때 채택</li>
+          <li class="hl2"><strong class="key2">대립가설(H₁)</strong> — 귀무가설이 기각되면 채택. 연구자가 검증하고자 하는 주장. 채택되면 통계적으로 유의한 차이 있음</li>
+          <li class="hl4"><strong class="key3">제1종 오류(α)</strong> — 귀무가설이 <strong class="key3">참인데 기각</strong>되는 오류</li>
+          <li class="hl3"><strong class="key3">제2종 오류(β)</strong> — 귀무가설이 <strong class="key3">거짓인데 채택</strong>되는 오류</li>
+          <li class="hl2"><strong class="key2">p-value</strong>: 제1종 오류를 범할 확률, 귀무가설을 지지하는 정도. <strong class="key3">p-value ≤ α</strong>이거나 검정통계량 ≥ 임곗값일 때, <strong class="key3">귀무가설 기각, 대립가설 채택</strong></li>
+        </ul>
+        <div class="formula-box">
+          <div class="label">가설검정 절차</div>
+          가설 설정 → 유의수준 설정 → 검정통계량 산출(p-value 계산) → 기각/채택 판단
+        </div>
+      </div>
+    </div>
+
+    <div class="topic-card imp-4" onclick="toggleCard(this)">
+      <div class="card-header"><h3>검정통계량 공식 정리</h3><div class="stars">★★★★☆</div></div>
+      <div class="card-keywords">
+        <span class="kw-tag">Z-분포</span><span class="kw-tag yellow">t-분포</span><span class="kw-tag green">카이제곱</span><span class="kw-tag red">F-분포</span>
+      </div>
+      <div class="card-footer"><span>검정통계량 공식</span><span class="expand-icon">▼</span></div>
+      <div class="detail-panel">
+        <div class="formula-box">
+          <div class="label">Z-검정 (모분산 알 때)</div>
+          Z = (x̄ - μ₀) / (σ/√n)<br>
+          <div class="label" style="margin-top:0.5rem">t-검정 (모분산 모를 때, 소표본)</div>
+          t = (x̄ - μ₀) / (s/√n)<br>
+          <div class="label" style="margin-top:0.5rem">카이제곱 검정 (분산 검정)</div>
+          χ² = (n-1)s² / σ₀²<br>
+          <div class="label" style="margin-top:0.5rem">F-검정 (두 분산 비교)</div>
+          F = s₁² / s₂²
+        </div>
+        <ul style="margin-top:0.6rem">
+          <li class="hl">양측검정, 좌측검정, 우측검정: <strong class="key">기각역의 위치</strong>에 따라 구분</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="section" id="quiz">
+  <div class="section-title">📝 연습 문제</div>
+  <div id="score-bar">
+    <span>현재 점수</span>
+    <div id="score-display">0 / 0</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <button id="reset-btn" onclick="resetQuiz()">다시 풀기</button>
+  </div>
+  <div id="quiz-container"></div>
+</div>
+
+</main>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const ids = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','quiz'];
+  document.querySelectorAll('nav button')[ids.indexOf(id)].classList.add('active');
+}
+
+function toggleCard(el) { el.classList.toggle('open'); }
+
+const quizData = [
+  {
+    q: "확률적 표본추출법 중 집단 내에서는 이질적이며 집단 간에는 동질적인 표본 추출기법은?",
+    opts: ["층화 추출법", "군집 추출법", "계통 추출법", "단순 무작위 추출법"],
+    ans: 1,
+    explain: "<strong>군집 추출법</strong>: 집단 내 이질적, 집단 간 동질적. 반면 층화 추출법은 집단 내 동질적, 집단 간 이질적입니다.",
+    tag: "표본추출"
+  },
+  {
+    q: "양의 왜도(Positive Skewness)일 때 평균, 중앙값, 최빈값의 크기 순서로 올바른 것은?",
+    opts: [
+      "Mean < Median < Mode",
+      "Mode < Median < Mean",
+      "Median < Mean < Mode",
+      "Mean = Median = Mode"
+    ],
+    ans: 1,
+    explain: "<strong>양의 왜도</strong>: Mean > Median > Mode (오른쪽 꼬리가 긴 분포). 음의 왜도: Mean < Median < Mode",
+    tag: "중심경향"
+  },
+  {
+    q: "이상값의 영향을 받지 않는 통계량으로만 묶인 것은?",
+    opts: [
+      "평균, 분산",
+      "중앙값, IQR",
+      "평균, IQR",
+      "분산, 범위(Range)"
+    ],
+    ans: 1,
+    explain: "<strong>이상값에 강건(영향받지 않음)</strong>: 중앙값, IQR (최솟값·최댓값을 포함하지 않는 통계량). 이상값에 민감: 평균, 분산, 표준편차, 범위",
+    tag: "산포 통계량"
+  },
+  {
+    q: "시각화 유형 중 히트맵(Heatmap)이 속하는 분류로 올바르게 짝지어진 것은?",
+    opts: [
+      "시간 시각화, 구성 시각화",
+      "관계 시각화, 비교 시각화",
+      "공간 시각화, 분포 시각화",
+      "시간 시각화, 비교 시각화"
+    ],
+    ans: 1,
+    explain: "<strong>히트맵</strong>은 관계 시각화(변수 간 연관성·패턴)와 비교 시각화(두 범주형 변수의 비교) 모두에 해당합니다.",
+    tag: "시각화"
+  },
+  {
+    q: "독립사건 A, B에서 P(A∩B)를 구하는 공식으로 올바른 것은?",
+    opts: [
+      "P(A) + P(B)",
+      "P(A|B) · P(B)",
+      "P(A) · P(B)",
+      "P(A) + P(B) - P(A∪B)"
+    ],
+    ans: 2,
+    explain: "<strong>독립사건</strong>: P(A∩B) = P(A) · P(B). 종속사건: P(A∩B) = P(A|B) · P(B). 배반사건: P(A∩B) = 0",
+    tag: "확률"
+  },
+  {
+    q: "포아송 분포의 기댓값과 분산이 올바르게 짝지어진 것은?",
+    opts: ["E(X)=p, Var(X)=p(1-p)", "E(X)=np, Var(X)=np(1-p)", "E(X)=λ, Var(X)=λ", "E(X)=1/λ, Var(X)=1/λ²"],
+    ans: 2,
+    explain: "<strong>포아송 분포</strong>: E(X) = λ, Var(X) = λ (1개 모수만 사용). 단위 시간이나 단위 공간에 사건이 발생하는 횟수를 나타냄.",
+    tag: "확률분포"
+  },
+  {
+    q: "결측값 처리에서 '왜도가 있을 때' 사용하기 가장 적절한 대체값은?",
+    opts: ["평균", "최빈값", "중앙값", "0"],
+    ans: 2,
+    explain: "왜도가 있을 때 평균은 이상값의 영향을 받으므로 <strong>중앙값</strong>으로 대치하는 것이 적절합니다. 범주형→최빈값, 연속형→평균이 기본 원칙이나 왜도가 있을 때는 중앙값을 사용합니다.",
+    tag: "결측값 처리"
+  },
+  {
+    q: "이상값 검출 시 ESD 방법을 사용할 때 정상데이터의 범위로 올바른 것은?",
+    opts: [
+      "μ - 2σ < 정상 < μ + 2σ",
+      "μ - 3σ < 정상 < μ + 3σ",
+      "Q1 - 1.5·IQR < 정상 < Q3 + 1.5·IQR",
+      "Q1 - 3·IQR < 정상 < Q3 + 3·IQR"
+    ],
+    ans: 1,
+    explain: "<strong>ESD(Extreme Studentized Deviate)</strong>: μ - 3σ < 정상데이터 < μ + 3σ. Q1 - 1.5·IQR < 정상 < Q3 + 1.5·IQR은 사분위수 범위를 사용하는 방법입니다.",
+    tag: "이상값"
+  },
+  {
+    q: "오른쪽 꼬리가 긴 분포(양의 왜도)에서 적용하기 적합한 변환 방법이 아닌 것은?",
+    opts: ["로그 변환", "제곱근 변환", "역수 변환", "제곱 변환"],
+    ans: 3,
+    explain: "오른쪽 꼬리가 길 때: <strong>로그, 제곱근, 역수</strong> 변환 사용. <strong>제곱, 지수 변환</strong>은 왼쪽 꼬리가 길 때(음의 왜도) 사용합니다.",
+    tag: "변수 변환"
+  },
+  {
+    q: "변수 선택 기법 중 '래퍼 기법'에 해당하는 것은?",
+    opts: [
+      "카이제곱 검정",
+      "피셔 스코어",
+      "후진 제거법",
+      "Lasso"
+    ],
+    ans: 2,
+    explain: "<strong>래퍼 기법</strong>: 후진 제거법, 전진 선택법, 단계적 선택법, 최상의 부분집합 선택법. 카이제곱 검정·피셔 스코어는 필터 기법, Lasso·Ridge는 임베디드 기법입니다.",
+    tag: "변수 선택"
+  },
+  {
+    q: "주성분 분석(PCA)에서 주성분 개수를 결정하는 기준으로 '고윳값'을 사용할 때 기준값은?",
+    opts: ["0 이상", "0.5 이상", "1 초과", "2 초과"],
+    ans: 2,
+    explain: "PCA에서 고윳값(Eigenvalue) 기준: <strong>1 초과</strong>인 주성분을 선택. 전체변이 공헌도 70~90%, 스크리 플롯의 Elbow 기법도 함께 사용합니다.",
+    tag: "차원 축소"
+  },
+  {
+    q: "피어슨 상관계수에 대한 설명으로 올바른 것은?",
+    opts: [
+      "서열척도에 사용하며 이상값의 영향을 받지 않는다",
+      "등간/비율척도에 사용하며 이상값의 영향을 받는다",
+      "단조관계(선형·비선형 포함)를 나타낸다",
+      "두 변수 사이의 순수한 상관관계를 파악한다"
+    ],
+    ans: 1,
+    explain: "<strong>피어슨 상관계수</strong>: 등간/비율척도 사용, 선형 관계만 측정, 이상값의 영향을 받음. 서열척도+단조관계는 스피어만, 순수한 상관관계는 편 상관계수입니다.",
+    tag: "상관분석"
+  },
+  {
+    q: "중심극한정리에 대한 설명으로 올바른 것은?",
+    opts: [
+      "모집단이 정규분포일 때만 표본평균이 정규분포를 따른다",
+      "표본의 크기가 10 이상이면 정규분포에 근사한다",
+      "모집단의 분포와 상관없이 표본 크기가 30 이상이면 표본평균의 분포가 정규분포에 근사한다",
+      "표본의 크기가 커질수록 표본평균이 모집단의 중앙값에 가까워진다"
+    ],
+    ans: 2,
+    explain: "<strong>중심극한정리</strong>: 모집단의 분포와 상관없이, 표본 크기(n)가 <strong>30 이상</strong>이 되면 표본평균의 분포가 정규분포에 근사합니다.",
+    tag: "표본분포"
+  },
+  {
+    q: "가설검정에서 제1종 오류(Type I Error)에 대한 설명으로 올바른 것은?",
+    opts: [
+      "귀무가설이 거짓인데 채택되는 오류",
+      "귀무가설이 참인데 기각되는 오류",
+      "대립가설이 참인데 채택되는 오류",
+      "p-value가 유의수준보다 클 때 발생하는 오류"
+    ],
+    ans: 1,
+    explain: "<strong>제1종 오류(α)</strong>: 귀무가설이 참인데 기각되는 오류. <strong>제2종 오류(β)</strong>: 귀무가설이 거짓인데 채택되는 오류. p-value ≤ α일 때 귀무가설을 기각합니다.",
+    tag: "가설검정"
+  },
+  {
+    q: "신뢰구간에 대한 설명으로 옳지 않은 것은?",
+    opts: [
+      "점추정 값이 먼저 필요하다",
+      "표본의 크기가 커지면 신뢰구간의 길이는 줄어든다",
+      "99% 신뢰구간이 95% 신뢰구간보다 짧다",
+      "오차한계 = 임곗값 × 표준오차"
+    ],
+    ans: 2,
+    explain: "<strong>99% 신뢰구간</strong>이 95% 신뢰구간보다 <strong>더 깁니다</strong>. 신뢰수준이 높을수록 더 넓은 구간을 제시해야 하기 때문입니다. 나머지 3개는 모두 올바른 설명입니다.",
+    tag: "추정"
+  }
+];
+
+let score = 0;
+let answered = 0;
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  quizData.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.id = 'qcard-' + i;
+    card.innerHTML = `
+      <div class="quiz-num">Q${i+1}</div>
+      <div class="quiz-tag">${q.tag}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((opt, j) => `
+          <button class="quiz-opt" onclick="checkAns(${i}, ${j})" id="opt-${i}-${j}">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.78em">${['①','②','③','④'][j]}</span> ${opt}
+          </button>
+        `).join('')}
+      </div>
+      <div class="quiz-explain" id="explain-${i}">${q.explain}</div>
+    `;
+    container.appendChild(card);
+  });
+  updateScore();
+}
+
+function checkAns(qi, oi) {
+  const q = quizData[qi];
+  const opts = document.querySelectorAll(`[id^="opt-${qi}-"]`);
+  opts.forEach(o => o.disabled = true);
+  const selected = document.getElementById(`opt-${qi}-${oi}`);
+  const correct = document.getElementById(`opt-${qi}-${q.ans}`);
+  correct.classList.add(oi === q.ans ? 'correct' : 'reveal-correct');
+  if (oi !== q.ans) selected.classList.add('wrong');
+  else score++;
+  answered++;
+  document.getElementById(`explain-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore() {
+  document.getElementById('score-display').textContent = `${score} / ${answered}`;
+  const pct = quizData.length > 0 ? (answered / quizData.length) * 100 : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function resetQuiz() {
+  score = 0;
+  answered = 0;
+  renderQuiz();
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
