@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데이터 분석 지식 지도</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1628;
+    --grid: rgba(255,255,255,0.03);
+    --math:    #4fc3f7;
+    --stat:    #81c784;
+    --ml:      #ffb74d;
+    --dl:      #f48fb1;
+    --prep:    #ce93d8;
+    --eval:    #80cbc4;
+    --text: #e8eaf6;
+    --text-dim: #7986cb;
+    --card-border: rgba(255,255,255,0.07);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 48px 24px 32px;
+  }
+
+  header h1 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #e8eaf6 0%, #7986cb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 24px 32px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.2s;
+  }
+  .legend-item:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+  .legend-item.active { color: var(--text); border-color: currentColor; }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Main canvas area */
+  .canvas-wrap {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0 24px 60px;
+  }
+
+  .canvas {
+    position: relative;
+    min-width: 1100px;
+    margin: 0 auto;
+  }
+
+  svg.connections {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Sections / columns */
+  .grid-layout {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Section headers */
+  .section-header {
+    grid-column: span 1;
+    text-align: center;
+    padding: 10px 6px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  /* Node cards */
+  .node {
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    background: var(--bg2);
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .node::before {
+    content:'';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .node:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+
+  .node.highlighted {
+    border-color: rgba(255,255,255,0.3) !important;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  }
+
+  .node.dimmed {
+    opacity: 0.2;
+  }
+
+  .node-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .node-sub {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .node-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 6px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* Color theming per category */
+  .cat-math .node::before   { background: var(--math); }
+  .cat-stat .node::before   { background: var(--stat); }
+  .cat-ml .node::before     { background: var(--ml); }
+  .cat-dl .node::before     { background: var(--dl); }
+  .cat-prep .node::before   { background: var(--prep); }
+  .cat-eval .node::before   { background: var(--eval); }
+
+  .cat-math .section-header   { background: rgba(79,195,247,0.08); color: var(--math); border: 1px solid rgba(79,195,247,0.2); }
+  .cat-stat .section-header   { background: rgba(129,199,132,0.08); color: var(--stat); border: 1px solid rgba(129,199,132,0.2); }
+  .cat-ml .section-header     { background: rgba(255,183,77,0.08); color: var(--ml); border: 1px solid rgba(255,183,77,0.2); }
+  .cat-dl .section-header     { background: rgba(244,143,177,0.08); color: var(--dl); border: 1px solid rgba(244,143,177,0.2); }
+  .cat-prep .section-header   { background: rgba(206,147,216,0.08); color: var(--prep); border: 1px solid rgba(206,147,216,0.2); }
+  .cat-eval .section-header   { background: rgba(128,203,196,0.08); color: var(--eval); border: 1px solid rgba(128,203,196,0.2); }
+
+  .cat-math .node-tag   { background: rgba(79,195,247,0.15); color: var(--math); }
+  .cat-stat .node-tag   { background: rgba(129,199,132,0.15); color: var(--stat); }
+  .cat-ml .node-tag     { background: rgba(255,183,77,0.15); color: var(--ml); }
+  .cat-dl .node-tag     { background: rgba(244,143,177,0.15); color: var(--dl); }
+  .cat-prep .node-tag   { background: rgba(206,147,216,0.15); color: var(--prep); }
+  .cat-eval .node-tag   { background: rgba(128,203,196,0.15); color: var(--eval); }
+
+  /* Flow arrows between sections */
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column: span 6;
+    margin: 8px 0;
+    gap: 12px;
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+  }
+
+  .flow-arrow::before,
+  .flow-arrow::after {
+    content:'';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: fixed;
+    background: #1a2035;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.8rem;
+    max-width: 280px;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.2s;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    line-height: 1.6;
+  }
+
+  .tooltip.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tooltip-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 0.88rem;
+  }
+
+  .tooltip-desc {
+    color: #9fa8da;
+    font-size: 0.76rem;
+  }
+
+  .tooltip-links {
+    margin-top: 8px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .tooltip-links span {
+    display: inline-block;
+    background: rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin: 2px 2px 0 0;
+  }
+
+  /* Spacer rows */
+  .spacer { grid-column: span 6; height: 8px; }
+
+  /* Purpose strip */
+  .purpose-strip {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 24px 28px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .purpose-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+
+  .purpose-card h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .purpose-card .icon {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .purpose-card ul {
+    list-style: none;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .purpose-card ul li::before {
+    content: '→ ';
+    opacity: 0.5;
+  }
+
+  @keyframes fadeIn {
+    from { opacity:0; transform: translateY(16px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .node { animation: fadeIn 0.4s ease both; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>데이터 분석 지식 지도</h1>
+  <p>수학적 기초부터 머신러닝까지 — 노드를 클릭하면 상세 정보를 볼 수 있습니다</p>
+</header>
+
+<!-- 분석 목적별 분류 -->
+<div class="purpose-strip">
+  <div class="purpose-card">
+    <h3><span class="icon" style="background:rgba(79,195,247,0.15)">📈</span> 예측 (Prediction)</h3>
+    <ul>
+      <li>회귀분석 (Linear / Logistic)</li>
+      <li>의사결정나무 / Random Forest</li>
+      <li>Neural Network / XGBoost</li>
+    </ul>
+  </div>
+  <div class="purpose-card">
+    <h3><span class="icon" style="background:rgba(255,183,77,0.15)">🔍</span> 탐색 (Exploration)</h3>
+    <ul>
+      <li>군집분석 (K-means, 계층적)</li>
+      <li>차원축소 (PCA, SVD)</li>
+      <li>연관분석 (Support/Confidence/Lift)</li>
+    </ul>
+  </div>
+  <div class="purpose-card">
+    <h3><span class="icon" style="background:rgba(129,199,132,0.15)">📊</span> 설명 (Explanation)</h3>
+    <ul>
+      <li>가설검정 (Z/t/카이제곱/ANOVA)</li>
+      <li>상관분석 (피어슨, 스피어만)</li>
+      <li>기술통계 (평균, 분산, 왜도 등)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item active cat-prep" onclick="filterCat('prep')">
+    <span class="legend-dot" style="background:var(--prep)"></span> 데이터 전처리
+  </div>
+  <div class="legend-item active cat-math" onclick="filterCat('math')">
+    <span class="legend-dot" style="background:var(--math)"></span> 수학적 기초
+  </div>
+  <div class="legend-item active cat-stat" onclick="filterCat('stat')">
+    <span class="legend-dot" style="background:var(--stat)"></span> 통계 분석
+  </div>
+  <div class="legend-item active cat-ml" onclick="filterCat('ml')">
+    <span class="legend-dot" style="background:var(--ml)"></span> 머신러닝
+  </div>
+  <div class="legend-item active cat-dl" onclick="filterCat('dl')">
+    <span class="legend-dot" style="background:var(--dl)"></span> 딥러닝
+  </div>
+  <div class="legend-item active cat-eval" onclick="filterCat('eval')">
+    <span class="legend-dot" style="background:var(--eval)"></span> 모델 평가
+  </div>
+</div>
+
+<div class="canvas-wrap">
+<div class="canvas">
+<div class="grid-layout" id="grid">
+
+  <!-- ───────────── ROW 0: 전처리 ───────────── -->
+  <div class="cat-prep" style="grid-column:span 6">
+    <div class="section-header" style="max-width:180px; margin: 0 auto 12px;">⚙️ 데이터 전처리</div>
+    <div style="display:grid; grid-template-columns: repeat(6,1fr); gap:12px;">
+
+      <div class="node" id="n-missing" data-cat="prep" data-title="결측치 처리" data-desc="데이터에 빠진 값을 처리하는 방법. 평균/중앙값 대체, 삭제, KNN 보간 등을 활용합니다." data-links="전처리,정규화" style="animation-delay:0.05s">
+        <div class="node-title">결측치 처리</div>
+        <div class="node-sub">평균/중앙값 대체<br>KNN 보간 / 삭제</div>
+        <span class="node-tag">Imputation</span>
+      </div>
+
+      <div class="node" id="n-outlier" data-cat="prep" data-title="이상치 탐지" data-desc="정상 범위를 벗어난 데이터를 찾아냅니다. IQR, Z-score, Isolation Forest 등을 사용합니다." data-links="전처리,Z-test" style="animation-delay:0.1s">
+        <div class="node-title">이상치 탐지</div>
+        <div class="node-sub">IQR / Z-score<br>Isolation Forest</div>
+        <span class="node-tag">Outlier</span>
+      </div>
+
+      <div class="node" id="n-norm" data-cat="prep" data-title="정규화 / 표준화" data-desc="스케일 차이를 제거합니다. Min-Max 정규화(0~1), Z-score 표준화(평균0, 표준편차1)." data-links="모델학습,군집분석" style="animation-delay:0.15s">
+        <div class="node-title">정규화 / 표준화</div>
+        <div class="node-sub">Min-Max Scaling<br>Z-score Standardization</div>
+        <span class="node-tag">Scaling</span>
+      </div>
+
+      <div class="node" id="n-encode" data-cat="prep" data-title="인코딩" data-desc="범주형 변수를 수치로 변환합니다. One-Hot Encoding, Label Encoding, Target Encoding 등이 있습니다." data-links="회귀분석,분류" style="animation-delay:0.2s">
+        <div class="node-title">인코딩</div>
+        <div class="node-sub">One-Hot Encoding<br>Label / Target Encoding</div>
+        <span class="node-tag">Categorical</span>
+      </div>
+
+      <div class="node" id="n-split" data-cat="prep" data-title="데이터 분할" data-desc="모델 학습/검증/테스트를 위해 데이터를 분리합니다. Train/Validation/Test split, K-Fold Cross Validation." data-links="모델평가,모델학습" style="animation-delay:0.25s">
+        <div class="node-title">데이터 분할</div>
+        <div class="node-sub">Train / Val / Test<br>K-Fold Cross Validation</div>
+        <span class="node-tag">Split</span>
+      </div>
+
+      <div class="node" id="n-eda" data-cat="prep" data-title="탐색적 분석 (EDA)" data-desc="데이터의 구조와 패턴을 시각화로 파악합니다. 히스토그램, 박스플롯, 상관행렬 등을 활용합니다." data-links="기술통계,상관분석" style="animation-delay:0.3s">
+        <div class="node-title">탐색적 분석 EDA</div>
+        <div class="node-sub">히스토그램 / 박스플롯<br>상관행렬 히트맵</div>
+        <span class="node-tag">Visualization</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">▼ &nbsp; 수학적 기초가 통계·머신러닝의 토대가 됩니다</div>
+
+  <!-- ───────────── ROW 1: 수학 기초 ───────────── -->
+  <div class="cat-math" style="grid-column:1/3">
+    <div class="section-header">🔢 확률 / 정보이론</div>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+
+      <div class="node" id="n-prob" data-cat="math" data-title="확률" data-desc="불확실한 사건의 가능성을 0~1 사이 숫자로 표현합니다. 데이터 분석의 가장 핵심 기반입니다." data-links="조건부확률,확률분포" style="animation-delay:0.05s">
+        <div class="node-title">확률</div>
+        <div class="node-sub">사건, 표본공간<br>결합·주변·조건부 확률</div>
+        <span class="node-tag">Probability</span>
+      </div>
+
+      <div class="node" id="n-cond" data-cat="math" data-title="조건부 확률 & 베이즈 정리" data-desc="P(A|B) = P(B|A)·P(A)/P(B). 사전확률을 새 증거로 업데이트하는 베이즈 추론의 핵심." data-links="Naive Bayes,확률분포" style="animation-delay:0.1s">
+        <div class="node-title">조건부확률 · 베이즈</div>
+        <div class="node-sub">P(A|B), 베이즈 정리<br>사전/사후 확률</div>
+        <span class="node-tag">Bayes</span>
+      </div>
+
+      <div class="node" id="n-entropy" data-cat="math" data-title="정보이론 (엔트로피)" data-desc="불확실성의 양을 측정합니다. 엔트로피가 낮을수록 순수한 집합. 의사결정나무 분기 기준으로 사용." data-links="의사결정나무,지니지수" style="animation-delay:0.15s">
+        <div class="node-title">정보이론</div>
+        <div class="node-sub">엔트로피 / 정보이득<br>지니지수 (Gini Index)</div>
+        <span class="node-tag">Information Theory</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="cat-math" style="grid-column:3/5">
+    <div class="section-header">📐 선형대수 / 미적분</div>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+
+      <div class="node" id="n-linalg" data-cat="math" data-title="벡터 & 행렬" data-desc="데이터를 벡터·행렬로 표현합니다. 행렬 연산으로 선형변환, 회귀계수 추정 등을 수행합니다." data-links="PCA,SVD,회귀분석" style="animation-delay:0.05s">
+        <div class="node-title">벡터 & 행렬</div>
+        <div class="node-sub">내적 / 행렬곱<br>역행렬 / 전치</div>
+        <span class="node-tag">Linear Algebra</span>
+      </div>
+
+      <div class="node" id="n-eigen" data-cat="math" data-title="고유값 & 고유벡터" data-desc="행렬 변환에서 방향이 바뀌지 않는 벡터(고유벡터)와 스케일(고유값). PCA의 핵심 원리입니다." data-links="PCA,SVD" style="animation-delay:0.1s">
+        <div class="node-title">고유값 & 고유벡터</div>
+        <div class="node-sub">Av = λv<br>스펙트럼 분해</div>
+        <span class="node-tag">Eigenvalue</span>
+      </div>
+
+      <div class="node" id="n-calculus" data-cat="math" data-title="미적분 & 최적화" data-desc="손실함수의 기울기(미분)를 계산해 파라미터를 업데이트합니다. 경사하강법의 수학적 기반입니다." data-links="경사하강법,Neural Network" style="animation-delay:0.15s">
+        <div class="node-title">미적분 & 최적화</div>
+        <div class="node-sub">편미분 / 연쇄법칙<br>Gradient / Hessian</div>
+        <span class="node-tag">Calculus</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="cat-math" style="grid-column:5/7">
+    <div class="section-header">📏 거리 & 유사도</div>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+
+      <div class="node" id="n-dist" data-cat="math" data-title="거리 측도" data-desc="두 데이터 포인트 간의 차이를 수치화합니다. 군집분석, KNN 등 다양한 알고리즘에 사용됩니다." data-links="K-means,KNN" style="animation-delay:0.05s">
+        <div class="node-title">거리 측도</div>
+        <div class="node-sub">유클리드 / 맨해튼<br>마할라노비스 거리</div>
+        <span class="node-tag">Distance</span>
+      </div>
+
+      <div class="node" id="n-cosine" data-cat="math" data-title="코사인 유사도" data-desc="벡터 간 각도로 유사성을 측정합니다. 방향은 같지만 크기가 다른 벡터도 유사하게 판단합니다." data-links="추천시스템,군집분석,SVD" style="animation-delay:0.1s">
+        <div class="node-title">코사인 유사도</div>
+        <div class="node-sub">cos θ = A·B / |A||B|<br>텍스트 유사도에 활용</div>
+        <span class="node-tag">Similarity</span>
+      </div>
+
+      <div class="node" id="n-descstat" data-cat="stat" data-title="기술통계" data-desc="데이터를 요약하는 통계량. 중심경향(평균/중앙값/최빈값)과 산포도(분산/표준편차/IQR), 분포형태(왜도/첨도)." data-links="EDA,가설검정" style="animation-delay:0.15s">
+        <div class="node-title">기술통계</div>
+        <div class="node-sub">평균·분산·표준편차<br>왜도(Skewness)·첨도</div>
+        <span class="node-tag">Descriptive</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flow-arrow">▼ &nbsp; 수학 기초 → 통계 분석 & 머신러닝 알고리즘으로 발전</div>
+
+  <!-- ───────────── ROW 2: 통계 ───────────── -->
+  <div class="cat-stat" style="grid-column:1/4">
+    <div class="section-header">📊 통계 분석</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+
+      <div class="node" id="n-dist2" data-cat="stat" data-title="확률분포" data-desc="데이터가 어떤 패턴으로 분포하는지 나타냅니다. 정규분포, t분포, 카이제곱분포, F분포가 핵심입니다." data-links="가설검정,회귀분석" style="animation-delay:0.05s">
+        <div class="node-title">확률분포</div>
+        <div class="node-sub">정규 / t분포<br>카이제곱 / F분포<br>이항 / 포아송</div>
+        <span class="node-tag">Distribution</span>
+      </div>
+
+      <div class="node" id="n-hypo" data-cat="stat" data-title="가설검정" data-desc="귀무가설(H0)과 대립가설(H1)을 설정하고 p-value로 판단합니다. 1종/2종 오류, 유의수준(α)이 핵심." data-links="Z-test,t-test,ANOVA,카이제곱검정" style="animation-delay:0.1s">
+        <div class="node-title">가설검정</div>
+        <div class="node-sub">H0 / H1 / p-value<br>α=0.05, 검정력</div>
+        <span class="node-tag">Hypothesis</span>
+      </div>
+
+      <div class="node" id="n-corr" data-cat="stat" data-title="상관분석" data-desc="두 변수 간 선형관계의 강도를 측정합니다. 피어슨(연속형), 스피어만(순위형) 상관계수를 사용합니다." data-links="회귀분석,다중공선성" style="animation-delay:0.15s">
+        <div class="node-title">상관분석</div>
+        <div class="node-sub">피어슨 / 스피어만<br>상관계수 r (-1~+1)</div>
+        <span class="node-tag">Correlation</span>
+      </div>
+
+      <div class="node" id="n-ztest" data-cat="stat" data-title="Z-test" data-desc="모집단 분산을 알거나 n≥30일 때 사용. 표준정규분포를 사용해 평균 차이를 검정합니다." data-links="가설검정" style="animation-delay:0.2s">
+        <div class="node-title">Z-test</div>
+        <div class="node-sub">n≥30, σ알려진 경우<br>표준정규분포 활용</div>
+        <span class="node-tag">단일/이표본</span>
+      </div>
+
+      <div class="node" id="n-ttest" data-cat="stat" data-title="t-test" data-desc="소표본(n<30)이거나 분산을 모를 때 사용. 독립 t검정, 대응 t검정, 단일표본 t검정이 있습니다." data-links="가설검정,t분포" style="animation-delay:0.25s">
+        <div class="node-title">t-test</div>
+        <div class="node-sub">독립표본 / 대응표본<br>등분산 검정 선행</div>
+        <span class="node-tag">소표본</span>
+      </div>
+
+      <div class="node" id="n-anova" data-cat="stat" data-title="ANOVA / 카이제곱" data-desc="ANOVA: 3개 이상 집단 평균 비교 (F분포 활용). 카이제곱: 범주형 변수 간 독립성 검정." data-links="가설검정,F분포" style="animation-delay:0.3s">
+        <div class="node-title">ANOVA / 카이제곱</div>
+        <div class="node-sub">집단 간 분산 비교<br>범주형 독립성 검정</div>
+        <span class="node-tag">다집단 비교</span>
+      </div>
+
+      <div class="node" id="n-timeseries" data-cat="stat" data-title="시계열 분석" data-desc="시간에 따라 변하는 데이터를 분석합니다. 추세, 계절성, 잔차로 분해하고 ARIMA로 예측합니다." data-links="ARIMA,예측" style="animation-delay:0.35s">
+        <div class="node-title">시계열 분석</div>
+        <div class="node-sub">추세 / 계절성 / 잔차<br>ARIMA, Prophet</div>
+        <span class="node-tag">Time Series</span>
+      </div>
+
+      <div class="node" id="n-regression" data-cat="stat" data-title="회귀분석" data-desc="독립변수로 종속변수를 예측하는 통계 모델. 선형회귀로 시작해 머신러닝의 기반이 됩니다." data-links="Linear Regression,Logistic Regression,다중공선성" style="animation-delay:0.4s">
+        <div class="node-title">회귀분석</div>
+        <div class="node-sub">OLS 최소제곱법<br>다중공선성(VIF)</div>
+        <span class="node-tag">Regression</span>
+      </div>
+
+      <div class="node" id="n-assoc" data-cat="stat" data-title="연관분석" data-desc="항목 간 동시 출현 패턴을 찾습니다. 장바구니 분석에 활용. Support, Confidence, Lift가 핵심 지표." data-links="추천시스템" style="animation-delay:0.45s">
+        <div class="node-title">연관분석</div>
+        <div class="node-sub">Support / Confidence<br>Lift / Apriori</div>
+        <span class="node-tag">Association Rule</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───────────── ROW 2: 머신러닝 ───────────── -->
+  <div class="cat-ml" style="grid-column:4/7">
+    <div class="section-header">🤖 머신러닝</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+
+      <div class="node" id="n-linreg" data-cat="ml" data-title="Linear Regression" data-desc="연속형 값을 예측합니다. 최소제곱법으로 파라미터 추정. 릿지/라쏘 정규화로 과적합 방지." data-links="회귀분석,경사하강법" style="animation-delay:0.05s">
+        <div class="node-title">Linear Regression</div>
+        <div class="node-sub">연속값 예측<br>Ridge / Lasso 정규화</div>
+        <span class="node-tag">지도학습·회귀</span>
+      </div>
+
+      <div class="node" id="n-logreg" data-cat="ml" data-title="Logistic Regression" data-desc="이진 분류 문제를 풉니다. Sigmoid 함수로 확률을 출력하고, 결정경계로 클래스를 분리합니다." data-links="회귀분석,분류" style="animation-delay:0.1s">
+        <div class="node-title">Logistic Regression</div>
+        <div class="node-sub">이진 분류<br>Sigmoid / 결정경계</div>
+        <span class="node-tag">지도학습·분류</span>
+      </div>
+
+      <div class="node" id="n-knn" data-cat="ml" data-title="KNN" data-desc="가장 가까운 K개 이웃의 다수결로 분류/회귀를 수행합니다. 거리 측도가 성능을 결정합니다." data-links="거리측도,분류" style="animation-delay:0.15s">
+        <div class="node-title">KNN</div>
+        <div class="node-sub">K-Nearest Neighbors<br>분류 & 회귀</div>
+        <span class="node-tag">인스턴스 기반</span>
+      </div>
+
+      <div class="node" id="n-svm" data-cat="ml" data-title="SVM" data-desc="마진을 최대화하는 결정경계를 찾습니다. 커널 트릭으로 비선형 문제를 선형으로 변환합니다." data-links="커널,분류" style="animation-delay:0.2s">
+        <div class="node-title">SVM</div>
+        <div class="node-sub">최대 마진 분류기<br>커널 트릭 (RBF, Poly)</div>
+        <span class="node-tag">지도학습·분류</span>
+      </div>
+
+      <div class="node" id="n-dt" data-cat="ml" data-title="의사결정나무" data-desc="엔트로피/지니지수를 기준으로 데이터를 재귀적으로 분할합니다. 해석이 쉽고 시각화 가능합니다." data-links="엔트로피,Random Forest" style="animation-delay:0.25s">
+        <div class="node-title">의사결정나무</div>
+        <div class="node-sub">Decision Tree<br>CART / ID3 / C4.5</div>
+        <span class="node-tag">트리 기반</span>
+      </div>
+
+      <div class="node" id="n-rf" data-cat="ml" data-title="Random Forest" data-desc="다수의 의사결정나무를 앙상블합니다. 배깅으로 분산을 줄이고 변수 중요도를 제공합니다." data-links="의사결정나무,앙상블" style="animation-delay:0.3s">
+        <div class="node-title">Random Forest</div>
+        <div class="node-sub">배깅 + 랜덤 특성<br>변수 중요도</div>
+        <span class="node-tag">앙상블</span>
+      </div>
+
+      <div class="node" id="n-boost" data-cat="ml" data-title="부스팅 앙상블" data-desc="이전 모델의 오류를 순차적으로 보완합니다. XGBoost, LightGBM, CatBoost가 대표 알고리즘입니다." data-links="의사결정나무,앙상블" style="animation-delay:0.35s">
+        <div class="node-title">부스팅 앙상블</div>
+        <div class="node-sub">XGBoost / LightGBM<br>GradientBoosting</div>
+        <span class="node-tag">앙상블</span>
+      </div>
+
+      <div class="node" id="n-kmeans" data-cat="ml" data-title="K-means 군집" data-desc="K개 중심점을 초기화하고 각 점을 가장 가까운 중심에 할당, 중심을 재계산하는 과정을 반복합니다." data-links="거리측도,군집분석" style="animation-delay:0.4s">
+        <div class="node-title">K-means 군집</div>
+        <div class="node-sub">비지도 군집화<br>엘보우 기법으로 K 선택</div>
+        <span class="node-tag">비지도학습</span>
+      </div>
+
+      <div class="node" id="n-pca" data-cat="ml" data-title="PCA / SVD" data-desc="고차원 데이터를 저차원으로 축소합니다. PCA는 고유벡터 방향으로 투영하고, SVD는 행렬 분해를 이용합니다." data-links="고유값,추천시스템,차원축소" style="animation-delay:0.45s">
+        <div class="node-title">PCA / SVD</div>
+        <div class="node-sub">차원 축소<br>주성분 분석 / 행렬분해</div>
+        <span class="node-tag">비지도학습</span>
+      </div>
+
+      <div class="node" id="n-naive" data-cat="ml" data-title="Naive Bayes" data-desc="베이즈 정리를 분류에 적용합니다. 특성 간 독립을 가정(Naive). 텍스트 분류, 스팸 필터에 자주 사용." data-links="베이즈정리,분류" style="animation-delay:0.5s">
+        <div class="node-title">Naive Bayes</div>
+        <div class="node-sub">스팸/텍스트 분류<br>조건부 독립 가정</div>
+        <span class="node-tag">확률적 분류</span>
+      </div>
+
+      <div class="node" id="n-rec" data-cat="ml" data-title="추천 시스템" data-desc="협업 필터링(사용자·아이템 기반), 컨텐츠 기반 필터링, SVD를 이용한 행렬 분해 방식이 있습니다." data-links="코사인유사도,SVD,연관분석" style="animation-delay:0.55s">
+        <div class="node-title">추천 시스템</div>
+        <div class="node-sub">협업 필터링<br>컨텐츠 기반 / 행렬분해</div>
+        <span class="node-tag">비지도학습</span>
+      </div>
+
+      <div class="node" id="n-gd" data-cat="ml" data-title="경사하강법" data-desc="손실함수의 기울기 반대 방향으로 파라미터를 업데이트합니다. SGD, Adam, RMSProp이 파생 알고리즘입니다." data-links="미적분,Neural Network" style="animation-delay:0.6s">
+        <div class="node-title">경사하강법</div>
+        <div class="node-sub">Gradient Descent<br>SGD / Adam / RMSProp</div>
+        <span class="node-tag">최적화</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flow-arrow">▼ &nbsp; 머신러닝 → 딥러닝 & 모델 평가로 연결</div>
+
+  <!-- ───────────── ROW 3: 딥러닝 + 모델평가 ───────────── -->
+  <div class="cat-dl" style="grid-column:1/4">
+    <div class="section-header">🧠 딥러닝</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+
+      <div class="node" id="n-nn" data-cat="dl" data-title="Neural Network" data-desc="뉴런을 층으로 쌓은 구조. 입력층-은닉층-출력층으로 구성되며 역전파(Backpropagation)로 학습합니다." data-links="경사하강법,활성화함수" style="animation-delay:0.05s">
+        <div class="node-title">Neural Network</div>
+        <div class="node-sub">MLP / Feedforward<br>역전파 (Backprop)</div>
+        <span class="node-tag">기본 구조</span>
+      </div>
+
+      <div class="node" id="n-cnn" data-cat="dl" data-title="CNN" data-desc="이미지 처리에 특화된 신경망. 컨볼루션 필터로 공간적 특성을 추출합니다. 물체 인식, 분류에 활용." data-links="Neural Network,이미지" style="animation-delay:0.1s">
+        <div class="node-title">CNN</div>
+        <div class="node-sub">Convolutional Neural Net<br>이미지 분류 / 물체인식</div>
+        <span class="node-tag">이미지</span>
+      </div>
+
+      <div class="node" id="n-rnn" data-cat="dl" data-title="RNN / LSTM" data-desc="순서가 있는 데이터(시계열, 텍스트)에 특화된 구조. LSTM은 장기 의존성 문제를 해결합니다." data-links="Neural Network,시계열" style="animation-delay:0.15s">
+        <div class="node-title">RNN / LSTM</div>
+        <div class="node-sub">순차 데이터 처리<br>시계열 / NLP</div>
+        <span class="node-tag">시퀀스</span>
+      </div>
+
+      <div class="node" id="n-transformer" data-cat="dl" data-title="Transformer" data-desc="Attention 메커니즘 기반 모델. BERT, GPT 등 LLM의 기반 구조. 자연어처리의 혁신을 이끌었습니다." data-links="RNN,Attention,NLP" style="animation-delay:0.2s">
+        <div class="node-title">Transformer</div>
+        <div class="node-sub">Self-Attention 기반<br>BERT / GPT / LLM</div>
+        <span class="node-tag">NLP·최신</span>
+      </div>
+
+      <div class="node" id="n-reg" data-cat="dl" data-title="과적합 방지" data-desc="모델이 훈련 데이터에 과도하게 맞춰지는 것을 방지합니다. Dropout, L2 정규화, 조기 종료를 사용합니다." data-links="Neural Network,일반화" style="animation-delay:0.25s">
+        <div class="node-title">과적합 방지</div>
+        <div class="node-sub">Dropout / L2 정규화<br>Early Stopping / BN</div>
+        <span class="node-tag">Regularization</span>
+      </div>
+
+      <div class="node" id="n-act" data-cat="dl" data-title="활성화 함수" data-desc="비선형성을 도입합니다. ReLU가 가장 널리 사용되며, 출력층에는 Sigmoid(이진), Softmax(다중분류) 사용." data-links="Neural Network,Logistic" style="animation-delay:0.3s">
+        <div class="node-title">활성화 함수</div>
+        <div class="node-sub">ReLU / Sigmoid<br>Softmax / Tanh</div>
+        <span class="node-tag">Activation</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 모델 평가 -->
+  <div class="cat-eval" style="grid-column:4/7">
+    <div class="section-header">📋 모델 평가</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+
+      <div class="node" id="n-clf-metric" data-cat="eval" data-title="분류 평가지표" data-desc="Accuracy(정확도), Precision(정밀도), Recall(재현율), F1-Score(조화평균). 불균형 데이터에서는 Accuracy만으로 부족합니다." data-links="모델평가,AUC" style="animation-delay:0.05s">
+        <div class="node-title">분류 평가지표</div>
+        <div class="node-sub">Accuracy / Precision<br>Recall / F1-Score</div>
+        <span class="node-tag">Classification</span>
+      </div>
+
+      <div class="node" id="n-auc" data-cat="eval" data-title="ROC / AUC" data-desc="임계값에 따른 TPR vs FPR 곡선(ROC). 곡선 아래 넓이(AUC)가 클수록 좋은 모델입니다. 1에 가까울수록 완벽." data-links="분류평가,임계값" style="animation-delay:0.1s">
+        <div class="node-title">ROC / AUC</div>
+        <div class="node-sub">TPR vs FPR 곡선<br>AUC: 1에 가까울수록 Good</div>
+        <span class="node-tag">Binary Class</span>
+      </div>
+
+      <div class="node" id="n-conf" data-cat="eval" data-title="혼동 행렬" data-desc="TP, TN, FP, FN으로 예측 결과를 정리합니다. 오분류 패턴을 시각적으로 파악할 수 있습니다." data-links="분류평가" style="animation-delay:0.15s">
+        <div class="node-title">혼동 행렬</div>
+        <div class="node-sub">TP / TN / FP / FN<br>Confusion Matrix</div>
+        <span class="node-tag">Classification</span>
+      </div>
+
+      <div class="node" id="n-reg-metric" data-cat="eval" data-title="회귀 평가지표" data-desc="MAE(평균절대오차), MSE(평균제곱오차), RMSE(제곱근), R²(설명력). 스케일에 따라 적합한 지표를 선택합니다." data-links="회귀분석,모델평가" style="animation-delay:0.2s">
+        <div class="node-title">회귀 평가지표</div>
+        <div class="node-sub">MAE / MSE / RMSE<br>R² (결정계수)</div>
+        <span class="node-tag">Regression</span>
+      </div>
+
+      <div class="node" id="n-cv" data-cat="eval" data-title="교차 검증" data-desc="K-Fold Cross Validation으로 모델의 일반화 성능을 평가합니다. 특정 분할에 편향되지 않은 평가 가능." data-links="데이터분할,과적합" style="animation-delay:0.25s">
+        <div class="node-title">교차 검증</div>
+        <div class="node-sub">K-Fold CV<br>Stratified / LOOCV</div>
+        <span class="node-tag">Validation</span>
+      </div>
+
+      <div class="node" id="n-hp" data-cat="eval" data-title="하이퍼파라미터 튜닝" data-desc="모델 성능을 최대화하는 파라미터를 찾습니다. Grid Search, Random Search, Bayesian Optimization이 있습니다." data-links="교차검증,모델선택" style="animation-delay:0.3s">
+        <div class="node-title">하이퍼파라미터</div>
+        <div class="node-sub">Grid / Random Search<br>Bayesian Optimization</div>
+        <span class="node-tag">Tuning</span>
+      </div>
+
+      <div class="node" id="n-shap" data-cat="eval" data-title="모델 해석 (XAI)" data-desc="블랙박스 모델을 해석합니다. SHAP(Shapley값), LIME, 변수 중요도로 예측 근거를 설명합니다." data-links="Random Forest,XGBoost" style="animation-delay:0.35s">
+        <div class="node-title">모델 해석 XAI</div>
+        <div class="node-sub">SHAP / LIME<br>변수 중요도</div>
+        <span class="node-tag">Explainability</span>
+      </div>
+
+      <div class="node" id="n-bias" data-cat="eval" data-title="편향-분산 트레이드오프" data-desc="모델 복잡도와 일반화의 균형. 편향↑=과소적합, 분산↑=과적합. 최적 복잡도를 찾는 것이 핵심." data-links="과적합,교차검증" style="animation-delay:0.4s">
+        <div class="node-title">편향-분산 트레이드오프</div>
+        <div class="node-sub">Bias-Variance Tradeoff<br>과소/과대 적합</div>
+        <span class="node-tag">Model Complexity</span>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /grid-layout -->
+</div><!-- /canvas -->
+</div><!-- /canvas-wrap -->
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title" id="tt-title"></div>
+  <div class="tooltip-desc" id="tt-desc"></div>
+  <div class="tooltip-links" id="tt-links"></div>
+</div>
+
+<script>
+  // Tooltip
+  const tooltip = document.getElementById('tooltip');
+  const nodes = document.querySelectorAll('.node');
+
+  nodes.forEach(node => {
+    node.addEventListener('mouseenter', (e) => {
+      const title = node.dataset.title;
+      const desc  = node.dataset.desc;
+      const links = node.dataset.links ? node.dataset.links.split(',') : [];
+
+      document.getElementById('tt-title').textContent = title;
+      document.getElementById('tt-desc').textContent  = desc;
+      document.getElementById('tt-links').innerHTML =
+        links.length ? '🔗 연결: ' + links.map(l=>`<span>${l.trim()}</span>`).join('') : '';
+
+      tooltip.classList.add('show');
+    });
+
+    node.addEventListener('mousemove', (e) => {
+      const x = e.clientX + 16;
+      const y = e.clientY + 16;
+      const tw = tooltip.offsetWidth;
+      const th = tooltip.offsetHeight;
+      tooltip.style.left = (x + tw > window.innerWidth ? x - tw - 32 : x) + 'px';
+      tooltip.style.top  = (y + th > window.innerHeight ? y - th - 32 : y) + 'px';
+    });
+
+    node.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('show');
+    });
+  });
+
+  // Category filter
+  let activeFilters = new Set(['prep','math','stat','ml','dl','eval']);
+
+  function filterCat(cat) {
+    const item = document.querySelector(`.legend-item.cat-${cat}`);
+    if (activeFilters.has(cat)) {
+      if (activeFilters.size === 1) return; // keep at least one
+      activeFilters.delete(cat);
+      item.classList.remove('active');
+    } else {
+      activeFilters.add(cat);
+      item.classList.add('active');
+    }
+    applyFilter();
+  }
+
+  function applyFilter() {
+    nodes.forEach(n => {
+      const cat = n.dataset.cat;
+      if (activeFilters.has(cat)) {
+        n.classList.remove('dimmed');
+      } else {
+        n.classList.add('dimmed');
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데이터 분석 지식 그래프</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#07090f; color:#dde3f5; font-family:'Noto Sans KR',sans-serif; height:100vh; overflow:hidden; display:flex; flex-direction:column; user-select:none; }
+
+/* ── Header ── */
+#header { background:#0c1020; border-bottom:1px solid rgba(255,255,255,0.07); padding:10px 18px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; flex-shrink:0; }
+#header h1 { font-size:1rem; font-weight:900; background:linear-gradient(90deg,#5eead4,#818cf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; white-space:nowrap; }
+#header p  { font-size:.6rem; color:#4a5580; margin-top:2px; }
+
+/* ── Legends ── */
+.legends { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; }
+.leg-block { display:flex; flex-direction:column; gap:3px; }
+.leg-title { font-size:.55rem; color:#4a5580; text-transform:uppercase; letter-spacing:.1em; }
+.leg-items { display:flex; gap:5px; flex-wrap:wrap; }
+.leg-btn { display:flex; align-items:center; gap:4px; font-size:.62rem; padding:2px 8px; border-radius:10px; border:1px solid transparent; cursor:pointer; transition:all .15s; background:none; color:#4a5580; font-family:'Noto Sans KR',sans-serif; }
+.leg-btn.on { border-color:rgba(255,255,255,.14); background:rgba(255,255,255,.04); color:#dde3f5; }
+.leg-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; }
+.leg-line { width:18px; height:2px; border-radius:2px; flex-shrink:0; display:inline-block; }
+
+/* ── Graph area ── */
+#graph { flex:1; position:relative; overflow:hidden; }
+#canvas { display:block; width:100%; height:100%; cursor:grab; }
+#canvas.grabbing { cursor:grabbing; }
+
+/* ── Search ── */
+#search-wrap { position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:20; }
+#search { background:rgba(6,10,22,.95); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:5px 14px; color:#dde3f5; font-family:'Noto Sans KR',sans-serif; font-size:.72rem; width:190px; outline:none; }
+#search:focus { border-color:rgba(255,255,255,.28); }
+#search::placeholder { color:#4a5580; }
+
+/* ── Controls ── */
+#controls { position:absolute; bottom:14px; left:14px; display:flex; flex-direction:column; gap:5px; z-index:20; }
+.ctrl { width:28px; height:28px; background:rgba(10,14,28,.92); border:1px solid rgba(255,255,255,.1); border-radius:6px; color:#dde3f5; font-size:.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.ctrl:hover { background:rgba(255,255,255,.08); }
+
+/* ── Detail panel ── */
+#panel { position:absolute; top:14px; right:14px; width:268px; background:rgba(6,10,22,.97); border:1px solid rgba(255,255,255,.1); border-radius:13px; padding:15px 17px 17px; z-index:30; box-shadow:0 16px 50px rgba(0,0,0,.85); display:none; }
+#panel.show { display:block; }
+#p-close { position:absolute; top:9px; right:11px; background:rgba(255,255,255,.06); border:none; border-radius:50%; width:22px; height:22px; color:#4a5580; font-size:.72rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+#p-close:hover { background:rgba(255,255,255,.13); color:#dde3f5; }
+#p-cat  { font-size:.57rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px; }
+#p-name { font-size:1rem; font-weight:900; margin-bottom:7px; line-height:1.3; }
+#p-desc { font-size:.7rem; color:#8892bb; line-height:1.75; margin-bottom:11px; }
+#p-sec  { font-size:.57rem; color:#4a5580; text-transform:uppercase; letter-spacing:.1em; margin-bottom:5px; }
+#p-rels { display:flex; flex-direction:column; gap:4px; max-height:190px; overflow-y:auto; }
+.p-rel  { display:flex; align-items:center; gap:7px; font-size:.67rem; padding:5px 9px; border-radius:7px; background:rgba(255,255,255,.04); border-left:3px solid #444; cursor:pointer; transition:background .12s; }
+.p-rel:hover { background:rgba(255,255,255,.09); }
+.p-rel-type { font-size:.57rem; opacity:.6; font-style:italic; min-width:44px; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <h1>데이터 분석 지식 그래프</h1>
+    <p>노드 클릭 → 상세정보 & 연결관계 표시 &nbsp;|&nbsp; 드래그로 이동 &nbsp;|&nbsp; 스크롤로 확대/축소</p>
+  </div>
+  <div class="legends">
+    <div class="leg-block">
+      <div class="leg-title">카테고리</div>
+      <div class="leg-items" id="cat-legend"></div>
+    </div>
+    <div class="leg-block">
+      <div class="leg-title">관계 유형</div>
+      <div class="leg-items" id="rel-legend"></div>
+    </div>
+  </div>
+</div>
+
+<div id="graph">
+  <div id="search-wrap">
+    <input id="search" placeholder="🔍 노드 검색..." />
+  </div>
+  <canvas id="canvas"></canvas>
+  <div id="controls">
+    <button class="ctrl" id="btn-zi">＋</button>
+    <button class="ctrl" id="btn-zo">－</button>
+    <button class="ctrl" id="btn-zr">⊙</button>
+  </div>
+  <div id="panel">
+    <button id="p-close">✕</button>
+    <div id="p-cat"></div>
+    <div id="p-name"></div>
+    <div id="p-desc"></div>
+    <div id="p-sec">연결된 개념</div>
+    <div id="p-rels"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════════
+const CATS = {
+  prob:   { label:'확률·정보이론', color:'#5eead4' },
+  linalg: { label:'선형대수',     color:'#818cf8' },
+  stat:   { label:'통계분석',     color:'#4ade80' },
+  test:   { label:'가설검정',     color:'#facc15' },
+  ml:     { label:'머신러닝',     color:'#fb923c' },
+  dl:     { label:'딥러닝',       color:'#f472b6' },
+  prep:   { label:'전처리',       color:'#a78bfa' },
+  eval:   { label:'모델평가',     color:'#38bdf8' },
+};
+const RELS = {
+  '기반':       { color:'#818cf8', dash:[6,3] },
+  '파생':       { color:'#4ade80', dash:[5,3] },
+  '활용':       { color:'#fb923c', dash:[2,4] },
+  '검정에사용': { color:'#facc15', dash:null  },
+  '적용':       { color:'#f472b6', dash:[4,2] },
+  '입력':       { color:'#38bdf8', dash:[3,3] },
+};
+
+const NODES = [
+  {id:'prob',       cat:'prob',   r:22, label:'확률',           sub:'Probability',         desc:'불확실한 사건의 가능성. 표본공간, 사건, 확률의 공리. 모든 데이터 분석의 출발점입니다.'},
+  {id:'condprob',   cat:'prob',   r:18, label:'조건부 확률',    sub:'P(A|B)',               desc:'B가 주어졌을 때 A의 확률. P(A|B)=P(A∩B)/P(B). 베이즈 정리와 연관분석 신뢰도의 직접 기반입니다.'},
+  {id:'bayes',      cat:'prob',   r:20, label:'베이즈 정리',    sub:'Bayes Theorem',        desc:'P(H|D)=P(D|H)·P(H)/P(D). 새 증거로 사전확률을 사후확률로 업데이트합니다.'},
+  {id:'entropy',    cat:'prob',   r:16, label:'엔트로피',       sub:'H = -Σp·log(p)',       desc:'불확실성의 양. 낮을수록 순수한 집합. 정보이득과 지니지수의 기반 불순도 지표입니다.'},
+  {id:'infogain',   cat:'prob',   r:13, label:'정보이득',       sub:'Information Gain',     desc:'분기 전후 엔트로피 감소량. 의사결정나무에서 어떤 특성으로 나눌지 결정하는 기준입니다.'},
+  {id:'gini',       cat:'prob',   r:13, label:'지니지수',       sub:'Gini = 1-Σp²',        desc:'불순도 측정 지표. CART 알고리즘이 의사결정나무 분기에 사용합니다.'},
+  {id:'support',    cat:'prob',   r:13, label:'지지도',         sub:'Support',              desc:'전체 거래 중 항목집합이 등장하는 비율. 연관규칙의 첫 번째 신뢰성 필터입니다.'},
+  {id:'confidence', cat:'prob',   r:15, label:'신뢰도',         sub:'Confidence=P(B|A)',    desc:'A→B에서 A가 있을 때 B도 있는 조건부 확률. 연관규칙의 강도를 나타냅니다.'},
+  {id:'lift',       cat:'prob',   r:13, label:'향상도',         sub:'Lift=conf/P(B)',       desc:'신뢰도÷P(B). 1보다 크면 우연 이상의 연관성. 연관분석의 최종 품질 지표입니다.'},
+  {id:'vector',     cat:'linalg', r:20, label:'벡터·행렬',     sub:'Matrix Algebra',       desc:'데이터를 수치 배열로 표현. 행렬곱·역행렬·전치 연산으로 모델 계산의 기반을 구성합니다.'},
+  {id:'eigen',      cat:'linalg', r:18, label:'고유값·벡터',   sub:'Eigenvalue',           desc:'Av=λv. 변환에도 방향이 유지되는 벡터. PCA에서 분산이 큰 방향을 찾는 수학적 핵심입니다.'},
+  {id:'cosine',     cat:'linalg', r:15, label:'코사인 유사도', sub:'cosθ=A·B/|A||B|',      desc:'벡터 간 각도로 유사성 측정. 크기 무관하게 방향만 비교해 텍스트·추천에 활용됩니다.'},
+  {id:'distance',   cat:'linalg', r:14, label:'거리 측도',     sub:'Euclidean/Manhattan',  desc:'유클리드·맨해튼·마할라노비스 거리. 군집분석과 KNN의 핵심 기준입니다.'},
+  {id:'calculus',   cat:'linalg', r:18, label:'미분·최적화',   sub:'∂L/∂w Gradient',       desc:'손실함수의 기울기를 계산해 파라미터를 업데이트합니다. 경사하강법의 수학적 기반입니다.'},
+  {id:'descstat',   cat:'stat',   r:17, label:'기술통계',      sub:'Mean/Var/Skew',        desc:'평균·중앙값·분산·표준편차·왜도·첨도로 데이터 분포를 요약합니다.'},
+  {id:'probdist',   cat:'stat',   r:22, label:'확률분포',      sub:'Normal/t/χ²/F',        desc:'정규·t·카이제곱·F분포. 표본통계량의 분포를 모델링해 가설검정의 근거를 제공합니다.'},
+  {id:'corr',       cat:'stat',   r:16, label:'상관분석',      sub:'Pearson/Spearman',     desc:'두 변수 간 선형관계 강도. r∈[-1,+1]. 피어슨(연속형), 스피어만(순위형).'},
+  {id:'regression', cat:'stat',   r:20, label:'회귀분석',      sub:'OLS Regression',       desc:'최소제곱법으로 독립→종속변수 관계를 모델링합니다. 통계와 ML의 교차점입니다.'},
+  {id:'assoc',      cat:'stat',   r:17, label:'연관분석',      sub:'Support·Conf·Lift',    desc:'지지도·신뢰도·향상도로 항목 간 동시 출현 패턴을 발견합니다. 장바구니 분석.'},
+  {id:'timeseries', cat:'stat',   r:15, label:'시계열 분석',   sub:'ARIMA/Prophet',        desc:'추세·계절성·잔차로 분해해 시간 흐름에 따른 패턴을 모델링합니다.'},
+  {id:'hypo',       cat:'test',   r:22, label:'가설검정',      sub:'H₀/H₁/p-value',        desc:'귀무가설(H0)과 대립가설(H1)을 설정하고 p-value로 기각 여부를 판단합니다.'},
+  {id:'ztest',      cat:'test',   r:13, label:'Z-test',        sub:'n≥30, σ알려진경우',    desc:'모분산을 알거나 n≥30일 때 표준정규분포를 사용해 평균을 검정합니다.'},
+  {id:'ttest',      cat:'test',   r:13, label:'t-test',        sub:'n<30, σ모르는경우',    desc:'소표본이거나 분산을 모를 때 t분포를 사용. 독립·대응 표본 검정.'},
+  {id:'chi2',       cat:'test',   r:13, label:'카이제곱',      sub:'χ² test',              desc:'범주형 변수 간 독립성 검정. 관찰빈도와 기대빈도의 차이를 χ²분포로 측정합니다.'},
+  {id:'anova',      cat:'test',   r:14, label:'ANOVA',         sub:'F-test (3집단+)',       desc:'3개 이상 집단 간 평균 차이를 F분포로 검정합니다. 집단 간/내 분산의 비율을 이용합니다.'},
+  {id:'linreg',     cat:'ml',     r:16, label:'선형 회귀',     sub:'Linear Regression',    desc:'Ridge/Lasso 정규화로 연속값 예측. OLS 통계 회귀를 ML로 확장합니다.'},
+  {id:'logreg',     cat:'ml',     r:16, label:'로지스틱 회귀', sub:'Logistic Regression',  desc:'Sigmoid로 확률 출력 후 이진 분류. 회귀와 분류 사이의 다리 역할.'},
+  {id:'naivebayes', cat:'ml',     r:15, label:'Naive Bayes',   sub:'베이즈 분류기',         desc:'특성 간 독립 가정 하에 베이즈 정리로 분류. 텍스트·스팸 필터에 효과적입니다.'},
+  {id:'dt',         cat:'ml',     r:16, label:'의사결정나무',  sub:'Decision Tree',         desc:'엔트로피/지니지수로 재귀 분할. 해석 가능하고 시각화가 쉬운 모델입니다.'},
+  {id:'rf',         cat:'ml',     r:18, label:'Random Forest', sub:'배깅 앙상블',           desc:'다수의 의사결정나무를 배깅으로 앙상블. 분산을 줄이고 과적합을 방지합니다.'},
+  {id:'xgb',        cat:'ml',     r:16, label:'XGBoost',       sub:'부스팅 앙상블',         desc:'이전 트리의 오류를 순차적으로 보완. 경사하강법을 트리 앙상블에 적용합니다.'},
+  {id:'svm',        cat:'ml',     r:15, label:'SVM',           sub:'최대 마진',             desc:'마진을 최대화하는 초평면. 커널 트릭으로 비선형 문제를 선형으로 변환합니다.'},
+  {id:'knn',        cat:'ml',     r:14, label:'KNN',           sub:'K-최근접 이웃',         desc:'K개 가장 가까운 이웃의 다수결로 분류/회귀. 거리 측도가 성능을 결정합니다.'},
+  {id:'kmeans',     cat:'ml',     r:16, label:'K-means',       sub:'군집분석',              desc:'K개 중심점에 데이터를 반복 할당하는 비지도 학습의 대표 알고리즘입니다.'},
+  {id:'pca',        cat:'ml',     r:16, label:'PCA',           sub:'주성분 분석',            desc:'고유벡터 방향으로 데이터를 투영해 차원을 축소합니다. 노이즈 제거·시각화.'},
+  {id:'svd',        cat:'ml',     r:15, label:'SVD',           sub:'특이값 분해',            desc:'행렬을 3개 행렬로 분해. 추천 시스템의 협업 필터링에 핵심적으로 활용됩니다.'},
+  {id:'rec',        cat:'ml',     r:16, label:'추천 시스템',   sub:'Collaborative Filter',  desc:'SVD·코사인 유사도·연관분석을 결합해 사용자-아이템 선호를 예측합니다.'},
+  {id:'gd',         cat:'ml',     r:18, label:'경사하강법',    sub:'SGD/Adam/RMSProp',      desc:'미분으로 계산한 기울기 반대 방향으로 파라미터를 반복 업데이트합니다.'},
+  {id:'nn',         cat:'dl',     r:20, label:'신경망',        sub:'Neural Network',        desc:'층을 쌓은 비선형 함수 합성. 역전파(Backprop)로 파라미터를 학습합니다.'},
+  {id:'cnn',        cat:'dl',     r:16, label:'CNN',           sub:'이미지 처리',            desc:'컨볼루션 필터로 공간적 특성 추출. 이미지 분류·물체 인식에 특화된 구조입니다.'},
+  {id:'rnn',        cat:'dl',     r:16, label:'RNN/LSTM',      sub:'순차 데이터',            desc:'이전 상태를 기억하는 순환 구조. LSTM은 장기 의존성 문제를 해결합니다.'},
+  {id:'transformer',cat:'dl',     r:17, label:'Transformer',   sub:'Attention/LLM',         desc:'Self-Attention 기반. BERT·GPT의 기반 구조. 자연어처리의 혁신을 이끌었습니다.'},
+  {id:'prep',       cat:'prep',   r:19, label:'데이터 전처리', sub:'Preprocessing',          desc:'결측치 처리·이상치 탐지·정규화·인코딩. 모든 모델 학습 전 필수 단계입니다.'},
+  {id:'eval',       cat:'eval',   r:20, label:'모델 평가',     sub:'Acc/F1/AUC',            desc:'Accuracy·Precision·Recall·F1·AUC. 분류와 회귀에 따라 적합한 지표를 선택합니다.'},
+  {id:'cv',         cat:'eval',   r:15, label:'교차 검증',     sub:'K-Fold CV',             desc:'K-Fold로 데이터를 나눠 편향 없는 성능을 측정합니다. 과적합 탐지에 필수입니다.'},
+  {id:'bias_var',   cat:'eval',   r:14, label:'편향-분산',     sub:'Bias-Variance',         desc:'복잡도를 높이면 편향↓ 분산↑. 최적 모델은 둘의 균형점에 위치합니다.'},
+  {id:'shap',       cat:'eval',   r:14, label:'SHAP/XAI',      sub:'모델 해석',              desc:'Shapley 값으로 각 특성의 기여도를 계산. 블랙박스 모델을 해석 가능하게 합니다.'},
+];
+
+const EDGES = [
+  {s:'prob',       t:'condprob',   rel:'파생',       desc:'조건부 확률은 확률의 확장 개념입니다'},
+  {s:'condprob',   t:'bayes',      rel:'파생',       desc:'베이즈 정리는 조건부 확률로 직접 유도됩니다'},
+  {s:'bayes',      t:'naivebayes', rel:'적용',       desc:'Naive Bayes는 베이즈 정리를 분류에 직접 적용합니다'},
+  {s:'prob',       t:'support',    rel:'기반',       desc:'지지도는 결합확률 P(A∩B)입니다'},
+  {s:'condprob',   t:'confidence', rel:'기반',       desc:'신뢰도는 조건부 확률 P(B|A) 그 자체입니다'},
+  {s:'support',    t:'confidence', rel:'입력',       desc:'지지도를 이용해 신뢰도를 계산합니다'},
+  {s:'confidence', t:'lift',       rel:'입력',       desc:'향상도 = 신뢰도 / P(B)'},
+  {s:'support',    t:'assoc',      rel:'검정에사용', desc:'지지도가 임계값 이상인 규칙만 1차 통과시킵니다'},
+  {s:'confidence', t:'assoc',      rel:'검정에사용', desc:'신뢰도가 임계값 이상인 규칙만 채택합니다'},
+  {s:'lift',       t:'assoc',      rel:'검정에사용', desc:'향상도로 연관규칙의 실질적 유의성을 최종 검증합니다'},
+  {s:'assoc',      t:'rec',        rel:'활용',       desc:'연관규칙은 추천 시스템의 콘텐츠 기반 필터링에 활용됩니다'},
+  {s:'prob',       t:'entropy',    rel:'파생',       desc:'엔트로피는 확률분포에서 정의됩니다'},
+  {s:'entropy',    t:'infogain',   rel:'파생',       desc:'정보이득 = 분기 전후 엔트로피 차이'},
+  {s:'entropy',    t:'gini',       rel:'파생',       desc:'지니지수는 엔트로피의 대안적 불순도 지표입니다'},
+  {s:'infogain',   t:'dt',         rel:'검정에사용', desc:'의사결정나무의 분기 기준으로 정보이득을 사용합니다'},
+  {s:'gini',       t:'dt',         rel:'검정에사용', desc:'CART 알고리즘은 지니지수로 분기합니다'},
+  {s:'probdist',   t:'hypo',       rel:'기반',       desc:'가설검정은 표본통계량의 확률분포를 기반으로 합니다'},
+  {s:'probdist',   t:'ztest',      rel:'검정에사용', desc:'Z-test는 표준정규분포(σ 알려진 경우)를 사용합니다'},
+  {s:'probdist',   t:'ttest',      rel:'검정에사용', desc:'t-test는 t분포(σ 모르는 경우)를 사용합니다'},
+  {s:'probdist',   t:'chi2',       rel:'검정에사용', desc:'카이제곱검정은 χ²분포를 사용합니다'},
+  {s:'probdist',   t:'anova',      rel:'검정에사용', desc:'ANOVA는 F분포를 사용합니다'},
+  {s:'hypo',       t:'ztest',      rel:'파생',       desc:'Z-test는 가설검정의 구체적 방법입니다'},
+  {s:'hypo',       t:'ttest',      rel:'파생',       desc:'t-test는 소표본 가설검정 방법입니다'},
+  {s:'hypo',       t:'chi2',       rel:'파생',       desc:'카이제곱 검정은 범주형 가설검정 방법입니다'},
+  {s:'hypo',       t:'anova',      rel:'파생',       desc:'ANOVA는 다집단 평균 비교 가설검정입니다'},
+  {s:'corr',       t:'hypo',       rel:'활용',       desc:'상관계수의 유의성도 가설검정으로 판단합니다'},
+  {s:'regression', t:'hypo',       rel:'활용',       desc:'회귀계수가 0인지 t-test/F-test로 검정합니다'},
+  {s:'vector',     t:'eigen',      rel:'파생',       desc:'고유값·고유벡터는 행렬 연산에서 도출됩니다'},
+  {s:'eigen',      t:'pca',        rel:'기반',       desc:'PCA는 공분산 행렬의 고유벡터 방향으로 투영합니다'},
+  {s:'vector',     t:'svd',        rel:'기반',       desc:'SVD는 행렬 분해의 일반화된 형태입니다'},
+  {s:'svd',        t:'pca',        rel:'파생',       desc:'SVD는 PCA를 계산하는 수치적으로 안정적인 방법입니다'},
+  {s:'pca',        t:'rec',        rel:'활용',       desc:'SVD 기반 행렬 분해가 협업 필터링에 사용됩니다'},
+  {s:'cosine',     t:'rec',        rel:'활용',       desc:'코사인 유사도로 사용자·아이템 간 유사성을 측정합니다'},
+  {s:'distance',   t:'kmeans',     rel:'기반',       desc:'K-means는 유클리드 거리로 군집 중심을 계산합니다'},
+  {s:'distance',   t:'knn',        rel:'기반',       desc:'KNN은 거리 측도로 가장 가까운 이웃을 찾습니다'},
+  {s:'cosine',     t:'knn',        rel:'활용',       desc:'텍스트 KNN에서는 코사인 유사도를 거리로 사용합니다'},
+  {s:'calculus',   t:'gd',         rel:'기반',       desc:'경사하강법은 편미분으로 기울기를 계산합니다'},
+  {s:'gd',         t:'linreg',     rel:'활용',       desc:'회귀 계수를 경사하강법으로 최적화합니다'},
+  {s:'gd',         t:'nn',         rel:'활용',       desc:'신경망 파라미터를 역전파+경사하강법으로 학습합니다'},
+  {s:'gd',         t:'xgb',        rel:'활용',       desc:'XGBoost는 경사하강법을 트리 앙상블에 적용합니다'},
+  {s:'regression', t:'linreg',     rel:'파생',       desc:'선형 회귀는 통계 회귀분석을 ML로 확장한 것입니다'},
+  {s:'regression', t:'logreg',     rel:'파생',       desc:'로지스틱 회귀는 회귀 출력을 확률로 변환합니다'},
+  {s:'dt',         t:'rf',         rel:'파생',       desc:'Random Forest는 의사결정나무의 배깅 앙상블입니다'},
+  {s:'dt',         t:'xgb',        rel:'파생',       desc:'XGBoost는 의사결정나무의 부스팅 앙상블입니다'},
+  {s:'rf',         t:'shap',       rel:'활용',       desc:'변수 중요도와 SHAP으로 Random Forest를 해석합니다'},
+  {s:'nn',         t:'cnn',        rel:'파생',       desc:'CNN은 컨볼루션 레이어를 추가한 신경망입니다'},
+  {s:'nn',         t:'rnn',        rel:'파생',       desc:'RNN은 순환 연결을 추가한 신경망입니다'},
+  {s:'rnn',        t:'transformer',rel:'파생',       desc:'Transformer는 Attention으로 RNN의 한계를 극복합니다'},
+  {s:'timeseries', t:'rnn',        rel:'활용',       desc:'시계열 예측에 RNN/LSTM이 많이 활용됩니다'},
+  {s:'prep',       t:'linreg',     rel:'입력',       desc:'정규화·인코딩 후 선형 회귀에 입력합니다'},
+  {s:'prep',       t:'nn',         rel:'입력',       desc:'표준화된 데이터가 신경망 학습 안정성을 높입니다'},
+  {s:'prep',       t:'kmeans',     rel:'입력',       desc:'스케일 통일 후 거리 기반 군집화를 수행합니다'},
+  {s:'eval',       t:'cv',         rel:'활용',       desc:'K-Fold 교차검증으로 과적합 없이 성능을 측정합니다'},
+  {s:'eval',       t:'bias_var',   rel:'기반',       desc:'편향-분산 트레이드오프가 평가의 이론적 기반입니다'},
+  {s:'hypo',       t:'eval',       rel:'활용',       desc:'통계 가설검정으로 모델 성능 차이를 유의하게 검증합니다'},
+  {s:'linreg',     t:'eval',       rel:'활용',       desc:'MAE·MSE·R²로 회귀 모델을 평가합니다'},
+  {s:'logreg',     t:'eval',       rel:'활용',       desc:'F1·AUC·혼동행렬로 분류 모델을 평가합니다'},
+  {s:'descstat',   t:'corr',       rel:'파생',       desc:'상관계수는 표준화된 공분산으로, 기술통계에서 파생됩니다'},
+  {s:'descstat',   t:'probdist',   rel:'활용',       desc:'표본 기술통계로 모집단의 분포를 추정합니다'},
+];
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+const nodeById = {};
+NODES.forEach(n => nodeById[n.id] = n);
+
+// Working copies with physics state
+const nodes = NODES.map(n => ({ ...n, x:0, y:0, vx:0, vy:0 }));
+const nodeIndex = {};
+nodes.forEach((n,i) => nodeIndex[n.id] = i);
+
+// Edge working copies (resolved to node objects)
+const edges = EDGES.map(e => ({
+  ...e,
+  source: null, target: null  // filled after nodes ready
+}));
+edges.forEach(e => {
+  e.source = nodes[nodeIndex[e.s]];
+  e.target = nodes[nodeIndex[e.t]];
+});
+
+// Camera
+let camX = 0, camY = 0, camK = 0.82;
+
+// Interaction
+let selectedId  = null;
+let highlightIds = null;   // Set of node ids to highlight
+let highlightEdgeIdx = null; // Set of edge indices
+
+let hiddenCats = new Set();
+let hiddenRels = new Set();
+let searchQ    = '';
+
+let isDraggingCanvas = false;
+let dragNode = null;
+let lastMouse = { x:0, y:0 };
+
+// ═══════════════════════════════════════════════════════════
+//  CANVAS SETUP
+// ═══════════════════════════════════════════════════════════
+const canvas = document.getElementById('canvas');
+const ctx    = canvas.getContext('2d');
+const graphEl = document.getElementById('graph');
+
+function resize() {
+  canvas.width  = graphEl.clientWidth  * devicePixelRatio;
+  canvas.height = graphEl.clientHeight * devicePixelRatio;
+  canvas.style.width  = graphEl.clientWidth  + 'px';
+  canvas.style.height = graphEl.clientHeight + 'px';
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+}
+resize();
+window.addEventListener('resize', () => { resize(); });
+
+function W() { return graphEl.clientWidth; }
+function H() { return graphEl.clientHeight; }
+
+// ═══════════════════════════════════════════════════════════
+//  PHYSICS (simple force-directed)
+// ═══════════════════════════════════════════════════════════
+// Init positions in a circle
+nodes.forEach((n, i) => {
+  const angle = (i / nodes.length) * Math.PI * 2;
+  const rad   = 280;
+  n.x = W()/2 + Math.cos(angle) * rad + (Math.random()-.5)*60;
+  n.y = H()/2 + Math.sin(angle) * rad + (Math.random()-.5)*60;
+});
+
+function tickPhysics() {
+  const cx = W()/2, cy = H()/2;
+  const alpha = 0.04;
+
+  // Reset forces
+  nodes.forEach(n => { n.fx2 = 0; n.fy2 = 0; });
+
+  // Repulsion between all node pairs
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i+1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+      const minDist = (a.r + b.r) * 3.2 + 30;
+      if (dist < minDist) {
+        const force = (minDist - dist) / dist * 0.6;
+        a.fx2 -= dx * force;
+        a.fy2 -= dy * force;
+        b.fx2 += dx * force;
+        b.fy2 += dy * force;
+      } else {
+        // General repulsion
+        const strength = 4000 / (dist * dist);
+        a.fx2 -= dx / dist * strength;
+        a.fy2 -= dy / dist * strength;
+        b.fx2 += dx / dist * strength;
+        b.fy2 += dy / dist * strength;
+      }
+    }
+  }
+
+  // Spring attraction along edges
+  edges.forEach(e => {
+    const a = e.source, b = e.target;
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    const targetLen = (a.r + b.r) * 4.8 + 20;
+    const force = (dist - targetLen) / dist * 0.12;
+    a.fx2 += dx * force;
+    a.fy2 += dy * force;
+    b.fx2 -= dx * force;
+    b.fy2 -= dy * force;
+  });
+
+  // Gravity toward center
+  nodes.forEach(n => {
+    const dx = cx - n.x, dy = cy - n.y;
+    n.fx2 += dx * 0.012;
+    n.fy2 += dy * 0.012;
+  });
+
+  // Integrate
+  nodes.forEach(n => {
+    if (n === dragNode) return;
+    n.vx = (n.vx + n.fx2 * alpha) * 0.82;
+    n.vy = (n.vy + n.fy2 * alpha) * 0.82;
+    n.x += n.vx;
+    n.y += n.vy;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DRAWING
+// ═══════════════════════════════════════════════════════════
+function hexToRgba(hex, a) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function drawArrow(x2, y2, angle, color) {
+  const len = 8, w = 4;
+  ctx.save();
+  ctx.translate(x2, y2);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(-len, -w);
+  ctx.lineTo(-len,  w);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function worldToScreen(x, y) {
+  return { x: x * camK + camX, y: y * camK + camY };
+}
+function screenToWorld(sx, sy) {
+  return { x: (sx - camX) / camK, y: (sy - camY) / camK };
+}
+
+function isVisible(n) {
+  return !hiddenCats.has(n.cat);
+}
+
+function draw() {
+  const cw = graphEl.clientWidth, ch = graphEl.clientHeight;
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.save();
+
+  // Background grid (subtle)
+  ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+  ctx.lineWidth = 0.5;
+  const gridSize = 40 * camK;
+  const offX = camX % gridSize, offY = camY % gridSize;
+  for (let x = offX; x < cw; x += gridSize) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,ch); ctx.stroke(); }
+  for (let y = offY; y < ch; y += gridSize) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cw,y); ctx.stroke(); }
+
+  ctx.restore();
+
+  // ── Draw edges
+  edges.forEach((e, idx) => {
+    if (!isVisible(e.source) || !isVisible(e.target)) return;
+    if (hiddenRels.has(e.rel)) return;
+
+    const rInfo = RELS[e.rel] || {};
+    const color = rInfo.color || '#888';
+    const isDimmed = highlightEdgeIdx && !highlightEdgeIdx.has(idx);
+    const alpha = isDimmed ? 0.04 : 0.55;
+
+    const sp = worldToScreen(e.source.x, e.source.y);
+    const tp = worldToScreen(e.target.x, e.target.y);
+    const dx = tp.x - sp.x, dy = tp.y - sp.y;
+    const len = Math.sqrt(dx*dx+dy*dy) || 1;
+    const sr = (e.source.r * camK) + 2;
+    const tr = (e.target.r * camK) + 9;
+
+    const x1 = sp.x + dx/len*sr, y1 = sp.y + dy/len*sr;
+    const x2 = tp.x - dx/len*tr, y2 = tp.y - dy/len*tr;
+    // Bezier control point
+    const cx2 = (x1+x2)/2 - dy/len*14;
+    const cy2 = (y1+y2)/2 + dx/len*14;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 1.4;
+    if (rInfo.dash) ctx.setLineDash(rInfo.dash);
+    else ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.quadraticCurveTo(cx2, cy2, x2, y2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Arrow at endpoint
+    const angle = Math.atan2(y2 - cy2, x2 - cx2);
+    drawArrow(x2, y2, angle, hexToRgba(color, 0.8));
+
+    // Relation label at midpoint of bezier
+    const mx = 0.25*x1 + 0.5*cx2 + 0.25*x2;
+    const my = 0.25*y1 + 0.5*cy2 + 0.25*y2;
+
+    ctx.globalAlpha = alpha * 1.3;
+    ctx.font = `600 8px 'JetBrains Mono',monospace`;
+    const tw = ctx.measureText(e.rel).width;
+    ctx.fillStyle = '#07090f';
+    ctx.fillRect(mx - tw/2 - 3, my - 7, tw + 6, 13);
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(e.rel, mx, my);
+
+    ctx.restore();
+  });
+
+  // ── Draw nodes
+  nodes.forEach(n => {
+    if (!isVisible(n)) return;
+    const sp = worldToScreen(n.x, n.y);
+    const nr = n.r * camK;
+    const color = CATS[n.cat]?.color || '#888';
+    const isDimmed = highlightIds && !highlightIds.has(n.id);
+    const isSelected = n.id === selectedId;
+    const alpha = isDimmed ? 0.06 : 1;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // Glow
+    const grd = ctx.createRadialGradient(sp.x, sp.y, nr*0.3, sp.x, sp.y, nr+10);
+    grd.addColorStop(0, hexToRgba(color, isSelected ? 0.25 : 0.08));
+    grd.addColorStop(1, hexToRgba(color, 0));
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, nr+10, 0, Math.PI*2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+
+    // Selected ring
+    if (isSelected) {
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, nr+4, 0, Math.PI*2);
+      ctx.strokeStyle = hexToRgba(color, 0.55);
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Body fill
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, nr, 0, Math.PI*2);
+    ctx.fillStyle = hexToRgba(color, isSelected ? 0.22 : 0.12);
+    ctx.fill();
+    // Body stroke
+    ctx.strokeStyle = hexToRgba(color, isSelected ? 1 : 0.75);
+    ctx.lineWidth = isSelected ? 2.2 : 1.6;
+    ctx.stroke();
+
+    // Label
+    const fontSize = Math.max(8.5, Math.min(12, nr * 0.6));
+    ctx.fillStyle = '#eef2ff';
+    ctx.font = `700 ${fontSize}px 'Noto Sans KR',sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(n.label, sp.x, sp.y - (n.sub ? nr*0.22 : 0));
+
+    // Sub label
+    if (n.sub && nr > 10) {
+      ctx.fillStyle = hexToRgba('#8892bb', 0.75);
+      ctx.font = `400 ${Math.max(6.5, nr*0.38)}px 'JetBrains Mono',monospace`;
+      ctx.fillText(n.sub, sp.x, sp.y + nr*0.3);
+    }
+
+    ctx.restore();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ANIMATION LOOP
+// ═══════════════════════════════════════════════════════════
+let frame = 0;
+function loop() {
+  if (frame < 600 || dragNode) tickPhysics();
+  frame++;
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
+
+// ═══════════════════════════════════════════════════════════
+//  HIT TEST
+// ═══════════════════════════════════════════════════════════
+function hitTest(sx, sy) {
+  const w = screenToWorld(sx, sy);
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i];
+    if (!isVisible(n)) continue;
+    const dx = n.x - w.x, dy = n.y - w.y;
+    if (Math.sqrt(dx*dx+dy*dy) <= n.r + 6) return n;
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SELECTION & PANEL
+// ═══════════════════════════════════════════════════════════
+function selectNode(n) {
+  if (!n) { clearSelection(); return; }
+  selectedId = n.id;
+
+  // Compute connected set
+  const cn = new Set([n.id]);
+  const ce = new Set();
+  EDGES.forEach((e, i) => {
+    if (e.s === n.id || e.t === n.id) {
+      cn.add(e.s); cn.add(e.t); ce.add(i);
+    }
+  });
+  highlightIds    = cn;
+  highlightEdgeIdx = ce;
+
+  showPanel(n);
+}
+
+function clearSelection() {
+  selectedId       = null;
+  highlightIds     = null;
+  highlightEdgeIdx = null;
+  hidePanel();
+}
+
+function showPanel(n) {
+  const cat = CATS[n.cat] || {};
+  document.getElementById('p-cat').textContent  = cat.label || n.cat;
+  document.getElementById('p-cat').style.color  = cat.color || '#fff';
+  document.getElementById('p-name').textContent = n.label;
+  document.getElementById('p-desc').textContent = n.desc;
+
+  const relsEl = document.getElementById('p-rels');
+  relsEl.innerHTML = '';
+
+  EDGES.forEach(e => {
+    let other = null, dir = '';
+    if (e.s === n.id) { other = nodeById[e.t]; dir = '→'; }
+    if (e.t === n.id) { other = nodeById[e.s]; dir = '←'; }
+    if (!other) return;
+
+    const row = document.createElement('div');
+    row.className = 'p-rel';
+    row.style.borderLeftColor = RELS[e.rel]?.color || '#444';
+    row.title = e.desc;
+    row.innerHTML = `<span class="p-rel-type">${dir} ${e.rel}</span><span>${other.label}</span>`;
+    row.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const target = nodes[nodeIndex[other.id]];
+      if (target) selectNode(target);
+    });
+    relsEl.appendChild(row);
+  });
+
+  document.getElementById('panel').classList.add('show');
+}
+
+function hidePanel() {
+  document.getElementById('panel').classList.remove('show');
+}
+
+document.getElementById('p-close').addEventListener('click', e => {
+  e.stopPropagation();
+  clearSelection();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  MOUSE EVENTS
+// ═══════════════════════════════════════════════════════════
+function getCanvasXY(e) {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches ? e.touches[0] : e;
+  return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+}
+
+canvas.addEventListener('mousedown', e => {
+  const pos = getCanvasXY(e);
+  const hit = hitTest(pos.x, pos.y);
+  if (hit) {
+    dragNode = hit;
+    hit.vx = 0; hit.vy = 0;
+    canvas.classList.add('grabbing');
+  } else {
+    isDraggingCanvas = true;
+    canvas.classList.add('grabbing');
+  }
+  lastMouse = pos;
+});
+
+window.addEventListener('mousemove', e => {
+  const pos = getCanvasXY(e);
+  if (dragNode) {
+    const w = screenToWorld(pos.x, pos.y);
+    dragNode.x = w.x; dragNode.y = w.y;
+    dragNode.vx = 0; dragNode.vy = 0;
+  } else if (isDraggingCanvas) {
+    camX += pos.x - lastMouse.x;
+    camY += pos.y - lastMouse.y;
+  }
+  lastMouse = pos;
+});
+
+window.addEventListener('mouseup', e => {
+  const pos = getCanvasXY(e);
+  const moved = Math.abs(pos.x - lastMouse.x) < 4 && Math.abs(pos.y - lastMouse.y) < 4;
+
+  if (dragNode && moved) {
+    // It was a click, not a drag
+    selectNode(dragNode);
+  } else if (isDraggingCanvas && moved) {
+    clearSelection();
+  }
+
+  if (dragNode) { dragNode.vx = 0; dragNode.vy = 0; }
+  dragNode = null;
+  isDraggingCanvas = false;
+  canvas.classList.remove('grabbing');
+});
+
+// Track whether mouse moved significantly
+let mouseDownPos = { x:0, y:0 };
+canvas.addEventListener('mousedown', e => {
+  const pos = getCanvasXY(e);
+  mouseDownPos = pos;
+});
+
+canvas.addEventListener('click', e => {
+  const pos  = getCanvasXY(e);
+  const dist = Math.sqrt((pos.x-mouseDownPos.x)**2 + (pos.y-mouseDownPos.y)**2);
+  if (dist > 5) return; // was a drag, not a click
+  const hit = hitTest(pos.x, pos.y);
+  if (hit) selectNode(hit);
+  else clearSelection();
+});
+
+// Scroll zoom
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const pos    = getCanvasXY(e);
+  const factor = e.deltaY < 0 ? 1.1 : 0.91;
+  const newK   = Math.min(3, Math.max(0.15, camK * factor));
+  // Zoom toward cursor
+  camX = pos.x - (pos.x - camX) * (newK / camK);
+  camY = pos.y - (pos.y - camY) * (newK / camK);
+  camK = newK;
+}, { passive: false });
+
+// Touch support
+let lastTouchDist = null;
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    const pos = getCanvasXY(e);
+    mouseDownPos = pos;
+    lastMouse    = pos;
+    const hit = hitTest(pos.x, pos.y);
+    dragNode = hit || null;
+    if (!hit) isDraggingCanvas = true;
+  } else if (e.touches.length === 2) {
+    dragNode = null; isDraggingCanvas = false;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    lastTouchDist = Math.sqrt(dx*dx+dy*dy);
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    const pos = getCanvasXY(e);
+    if (dragNode) {
+      const w = screenToWorld(pos.x, pos.y);
+      dragNode.x = w.x; dragNode.y = w.y;
+    } else if (isDraggingCanvas) {
+      camX += pos.x - lastMouse.x;
+      camY += pos.y - lastMouse.y;
+    }
+    lastMouse = pos;
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    if (lastTouchDist) {
+      const factor = dist / lastTouchDist;
+      camK = Math.min(3, Math.max(0.15, camK * factor));
+    }
+    lastTouchDist = dist;
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  const pos  = getCanvasXY(e);
+  const dist = Math.sqrt((pos.x-mouseDownPos.x)**2 + (pos.y-mouseDownPos.y)**2);
+  if (dist < 5 && dragNode) selectNode(dragNode);
+  else if (dist < 5 && !dragNode) clearSelection();
+  dragNode = null; isDraggingCanvas = false; lastTouchDist = null;
+}, { passive: false });
+
+// ═══════════════════════════════════════════════════════════
+//  ZOOM CONTROLS
+// ═══════════════════════════════════════════════════════════
+document.getElementById('btn-zi').addEventListener('click', () => {
+  const cx = W()/2, cy = H()/2;
+  const newK = Math.min(3, camK * 1.25);
+  camX = cx - (cx - camX) * (newK / camK);
+  camY = cy - (cy - camY) * (newK / camK);
+  camK = newK;
+});
+document.getElementById('btn-zo').addEventListener('click', () => {
+  const cx = W()/2, cy = H()/2;
+  const newK = Math.max(0.15, camK * 0.8);
+  camX = cx - (cx - camX) * (newK / camK);
+  camY = cy - (cy - camY) * (newK / camK);
+  camK = newK;
+});
+document.getElementById('btn-zr').addEventListener('click', () => {
+  camX = 0; camY = 0; camK = 0.82;
+});
+
+// ═══════════════════════════════════════════════════════════
+//  SEARCH
+// ═══════════════════════════════════════════════════════════
+document.getElementById('search').addEventListener('input', function() {
+  searchQ = this.value.trim().toLowerCase();
+  if (!searchQ) { highlightIds = null; highlightEdgeIdx = null; selectedId = null; return; }
+  const match = nodes.find(n => n.label.toLowerCase().includes(searchQ) || n.sub.toLowerCase().includes(searchQ));
+  if (match) selectNode(match);
+});
+
+// ═══════════════════════════════════════════════════════════
+//  LEGEND BUTTONS
+// ═══════════════════════════════════════════════════════════
+const catLeg = document.getElementById('cat-legend');
+Object.entries(CATS).forEach(([k, v]) => {
+  const btn = document.createElement('button');
+  btn.className = 'leg-btn on';
+  btn.innerHTML = `<span class="leg-dot" style="background:${v.color}"></span>${v.label}`;
+  btn.style.color = v.color;
+  btn.addEventListener('click', () => {
+    if (hiddenCats.has(k)) { hiddenCats.delete(k); btn.classList.add('on'); btn.style.color = v.color; }
+    else { hiddenCats.add(k); btn.classList.remove('on'); btn.style.color = '#4a5580'; }
+  });
+  catLeg.appendChild(btn);
+});
+
+const relLeg = document.getElementById('rel-legend');
+Object.entries(RELS).forEach(([k, v]) => {
+  const btn = document.createElement('button');
+  btn.className = 'leg-btn on';
+  const dashStyle = v.dash
+    ? `background:repeating-linear-gradient(90deg,${v.color} 0,${v.color} 5px,transparent 5px,transparent 8px)`
+    : `background:${v.color}`;
+  btn.innerHTML = `<span class="leg-line" style="${dashStyle}"></span>${k}`;
+  btn.style.color = v.color;
+  btn.addEventListener('click', () => {
+    if (hiddenRels.has(k)) { hiddenRels.delete(k); btn.classList.add('on'); btn.style.color = v.color; }
+    else { hiddenRels.add(k); btn.classList.remove('on'); btn.style.color = '#4a5580'; }
+  });
+  relLeg.appendChild(btn);
+});
+
+// Panel close on outside click (but not if clicking canvas nodes)
+document.getElementById('panel').addEventListener('click', e => e.stopPropagation());
+</script>
+</body>
+</html>

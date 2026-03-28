@@ -52,32 +52,36 @@
   .tab-bar {
     background: #131827;
     border-bottom: 1px solid #243050;
-    display: flex;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     flex-shrink: 0;
-    scrollbar-width: none;
   }
-  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-row-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: #243050;
+  }
 
   .tab {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.4rem;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.5rem;
     cursor: pointer;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: #6b7fa0;
     border-bottom: 3px solid transparent;
     white-space: nowrap;
     transition: color 0.2s, border-color 0.2s, background 0.2s;
     user-select: none;
-    flex-shrink: 0;
     font-family: 'Noto Sans KR', sans-serif;
     background: none;
     border-top: none;
     border-left: none;
     border-right: none;
+    text-align: center;
   }
   .tab:hover { color: #e4eaf8; background: rgba(255,255,255,0.03); }
   .tab.active { color: #fff; }
@@ -88,6 +92,9 @@
   .tab[data-tab="3"].active { border-color: #b48bff; color: #b48bff; }
   .tab[data-tab="4"].active { border-color: #ff4f72; color: #ff4f72; }
   .tab[data-tab="5"].active { border-color: #5b9cf6; color: #5b9cf6; }
+  .tab[data-tab="6"].active { border-color: #5b9cf6; color: #5b9cf6; }
+  .tab[data-tab="7"].active { border-color: #2ee8c4; color: #2ee8c4; }
+  .tab[data-tab="8"].active { border-color: #b48bff; color: #b48bff; }
 
   .tab-icon { font-size: 1rem; }
 
@@ -214,7 +221,7 @@
 <body>
 
 <div class="author-bar">
-  작성 - 에듀아토즈 : www.eduatoz.kr, 윤소영(imbgirl@naver.com), 최근 갱신일 : 2026-03-28 20시
+  작성 - 에듀아토즈 : www.eduatoz.kr, 윤소영(<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc5c1cecbc5dec0ecc2cddac9de82cfc3c1">[email&#160;protected]</a>)
 </div>
 
 
@@ -226,29 +233,41 @@
   </div>
 </header>
 
-<!-- ── 탭 바 ── -->
+<!-- ── 탭 바 (2행) ── -->
 <div class="tab-bar">
+  <!-- 1행 -->
   <button class="tab active" data-tab="0" onclick="switchTab(0)">
     <span class="tab-icon">🏠</span> 홈
   </button>
   <button class="tab" data-tab="1" onclick="switchTab(1)">
-    <span class="tab-icon">🤖</span> 4과목 통합 암기앱
+    <span class="tab-icon">📘</span> 1과목 기획
   </button>
   <button class="tab" data-tab="2" onclick="switchTab(2)">
-    <span class="tab-icon">📘</span> 1과목 빅데이터 기획
+    <span class="tab-icon">📐</span> 2과목 탐색
   </button>
   <button class="tab" data-tab="3" onclick="switchTab(3)">
-    <span class="tab-icon">📐</span> 2과목 빅데이터 탐색
+    <span class="tab-icon">🧠</span> 3과목 모델링
   </button>
-  <button class="tab" data-tab="4" onclick="switchTab(4)">
-    <span class="tab-icon">🧠</span> 3과목 빅데이터 모델링
+  <button class="tab" data-tab="4" onclick="switchTab(4)">    
+    <span class="tab-icon">📊</span> 4과목 평가·활용
   </button>
+  <!-- 행 구분선 -->
+  <div class="tab-row-divider"></div>
+  <!-- 2행 -->
+  <div class="tab" style="pointer-events:none; visibility:hidden;"></div>
   <button class="tab" data-tab="5" onclick="switchTab(5)">
-    <span class="tab-icon">📊</span> 4과목 모델 평가·활용
+        <span class="tab-icon">🤖</span> 통합 암기앱
   </button>
   <button class="tab" data-tab="6" onclick="switchTab(6)">
     <span class="tab-icon">📐</span> 필수 공식 암기
   </button>
+  <button class="tab" data-tab="7" onclick="switchTab(7)">
+    <span class="tab-icon">🗺️</span> 지식 지도
+  </button>
+  <button class="tab" data-tab="8" onclick="switchTab(8)">
+    <span class="tab-icon">🌐</span> 지식 그래프
+  </button>
+
 </div>
 
 <!-- ── 콘텐츠 영역 ── -->
@@ -263,40 +282,52 @@
       </div>
       <div class="home-grid">
         <div class="home-card" onclick="switchTab(1)">
-          <div class="hc-icon">🤖</div>
-          <div class="hc-title">4과목 통합 암기앱</div>
-          <div class="hc-desc">플래시카드·OX퀴즈·빈칸채우기로 4과목 핵심 키워드 암기</div>
-          <div class="hc-badge" style="background:rgba(245,200,66,.15);color:#f5c842;">게임형 학습</div>
-        </div>
-        <div class="home-card" onclick="switchTab(2)">
           <div class="hc-icon">📘</div>
           <div class="hc-title">1과목 — 빅데이터 기획</div>
           <div class="hc-desc">빅데이터 개요, 데이터 유형·척도, 개인정보보호, 분석 방법론</div>
           <div class="hc-badge" style="background:rgba(245,200,66,.15);color:#f5c842;">키워드 카드</div>
         </div>
-        <div class="home-card" onclick="switchTab(3)">
+        <div class="home-card" onclick="switchTab(2)">
           <div class="hc-icon">📐</div>
           <div class="hc-title">2과목 — 빅데이터 탐색</div>
           <div class="hc-desc">통계 기초, 확률분포, 시각화, 전처리, 결측값·이상값 처리</div>
           <div class="hc-badge" style="background:rgba(46,232,196,.12);color:#2ee8c4;">키워드 카드</div>
         </div>
-        <div class="home-card" onclick="switchTab(4)">
+        <div class="home-card" onclick="switchTab(3)">
           <div class="hc-icon">🧠</div>
           <div class="hc-title">3과목 — 빅데이터 모델링</div>
           <div class="hc-desc">머신러닝·딥러닝, 회귀·분류·군집, 시계열, 자연어 분석</div>
           <div class="hc-badge" style="background:rgba(180,139,255,.12);color:#b48bff;">키워드 카드</div>
         </div>
-        <div class="home-card" onclick="switchTab(5)">
+        <div class="home-card" onclick="switchTab(4)">
           <div class="hc-icon">📊</div>
           <div class="hc-title">4과목 — 모델 평가·활용</div>
           <div class="hc-desc">혼동행렬, ROC, 하이퍼파라미터, 인포그래픽, 분석 결과 활용</div>
           <div class="hc-badge" style="background:rgba(255,79,114,.12);color:#ff4f72;">키워드 카드</div>
+        </div>
+        <div class="home-card" onclick="switchTab(5)">
+          <div class="hc-icon">🤖</div>
+          <div class="hc-title">4과목 통합 암기앱</div>
+          <div class="hc-desc">플래시카드·OX퀴즈·빈칸채우기로 4과목 핵심 키워드 암기</div>
+          <div class="hc-badge" style="background:rgba(245,200,66,.15);color:#f5c842;">게임형 학습</div>
         </div>
         <div class="home-card" onclick="switchTab(6)">
           <div class="hc-icon">📐</div>
           <div class="hc-title">필수 공식 암기</div>
           <div class="hc-desc">MathJax 수식 렌더링, 플래시카드 암기, 전체 공식 표</div>
           <div class="hc-badge" style="background:rgba(91,156,246,.12);color:#5b9cf6;">공식 정리</div>
+        </div>
+        <div class="home-card" onclick="switchTab(7)">
+          <div class="hc-icon">🗺️</div>
+          <div class="hc-title">지식 지도</div>
+          <div class="hc-desc">데이터 분석 핵심 개념을 카드 형태로 탐색하고 설명 확인</div>
+          <div class="hc-badge" style="background:rgba(46,232,196,.12);color:#2ee8c4;">개념 탐색</div>
+        </div>
+        <div class="home-card" onclick="switchTab(8)">
+          <div class="hc-icon">🌐</div>
+          <div class="hc-title">지식 그래프</div>
+          <div class="hc-desc">인터랙티브 네트워크 그래프로 개념 간 연결 관계 시각화</div>
+          <div class="hc-badge" style="background:rgba(180,139,255,.12);color:#b48bff;">네트워크 시각화</div>
         </div>
       </div>
     </div>
@@ -305,57 +336,61 @@
   <!-- iframe 패널들 -->
   <div class="frame-panel" id="panel-1">
     <div class="loading" id="loading-1"><div class="spinner"></div><p>불러오는 중...</p></div>
-    <iframe id="frame-1" title="4과목 통합 암기앱"></iframe>
+    <iframe id="frame-1" title="1과목 빅데이터 기획"></iframe>
   </div>
   <div class="frame-panel" id="panel-2">
     <div class="loading" id="loading-2"><div class="spinner"></div><p>불러오는 중...</p></div>
-    <iframe id="frame-2" title="1과목 빅데이터 기획"></iframe>
+    <iframe id="frame-2" title="2과목 빅데이터 탐색"></iframe>
   </div>
   <div class="frame-panel" id="panel-3">
     <div class="loading" id="loading-3"><div class="spinner"></div><p>불러오는 중...</p></div>
-    <iframe id="frame-3" title="2과목 빅데이터 탐색"></iframe>
+    <iframe id="frame-3" title="3과목 빅데이터 모델링"></iframe>
   </div>
   <div class="frame-panel" id="panel-4">
     <div class="loading" id="loading-4"><div class="spinner"></div><p>불러오는 중...</p></div>
-    <iframe id="frame-4" title="3과목 빅데이터 모델링"></iframe>
+    <iframe id="frame-4" title="4과목 모델 평가·활용"></iframe>
   </div>
   <div class="frame-panel" id="panel-5">
     <div class="loading" id="loading-5"><div class="spinner"></div><p>불러오는 중...</p></div>
-    <iframe id="frame-5" title="4과목 모델 평가·활용"></iframe>
+    <iframe id="frame-5" title="4과목 통합 암기앱"></iframe>
   </div>
   <div class="frame-panel" id="panel-6">
     <div class="loading" id="loading-6"><div class="spinner"></div><p>불러오는 중...</p></div>
     <iframe id="frame-6" title="필수 공식 암기"></iframe>
   </div>
+  <div class="frame-panel" id="panel-7">
+    <div class="loading" id="loading-7"><div class="spinner"></div><p>불러오는 중...</p></div>
+    <iframe id="frame-7" title="지식 지도"></iframe>
+  </div>
+  <div class="frame-panel" id="panel-8">
+    <div class="loading" id="loading-8"><div class="spinner"></div><p>불러오는 중...</p></div>
+    <iframe id="frame-8" title="지식 그래프"></iframe>
+  </div>
 
 </div>
 
 <script>
-  // 탭별 파일 경로 — main.html과 같은 폴더에 아래 파일들이 있어야 합니다
-  const FILES = {
-    1: 'bigdata_study_app.html',
-    2: 'bigdata_study_1.html',
-    3: 'bigdata_study_2.html',
-    4: 'bigdata_study_3.html',
-    5: 'bigdata_study_4.html',
+  const FILES = {    
+    1: 'bigdata_study_1.html',
+    2: 'bigdata_study_2.html',
+    3: 'bigdata_study_3.html',
+    4: 'bigdata_study_4.html',
+    5: 'bigdata_study_app.html',
     6: 'bigdata_formula_study.html',
+    7: 'data-analysis-map.html',
+    8: 'data-analysis-graph.html',
   };
 
   const loaded = {};
   let currentTab = 0;
 
   function switchTab(idx) {
-    // 탭 버튼 활성화
     document.querySelectorAll('.tab').forEach(t =>
       t.classList.toggle('active', +t.dataset.tab === idx)
     );
-
-    // 패널 전환
     document.querySelectorAll('.frame-panel').forEach(p =>
       p.classList.toggle('active', p.id === 'panel-' + idx)
     );
-
-    // iframe 지연 로딩 (처음 열 때만)
     if (idx > 0 && !loaded[idx]) {
       loaded[idx] = true;
       const iframe = document.getElementById('frame-' + idx);
@@ -365,7 +400,6 @@
         if (loadingEl) loadingEl.classList.add('done');
       }, { once: true });
     }
-
     currentTab = idx;
   }
 </script>
