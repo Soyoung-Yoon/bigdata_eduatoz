@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매일 한 문제 - EduAtoZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Pretendard', "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 48px 16px;
+  }
+  .card {
+    background: #ffffff;
+    max-width: 720px;
+    width: 100%;
+    border-radius: 20px;
+    border: 1px solid #ececf5;
+    box-shadow: 0 12px 32px rgba(30,39,97,0.10);
+    overflow: hidden;
+  }
+  .header {
+    background: linear-gradient(120deg, #1E2761 0%, #2c3480 55%, #3d4699 100%);
+    color: #fff;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header .title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .header .badge {
+    background: linear-gradient(120deg, #FFC24B, #F5A623);
+    color: #1E2761;
+    font-weight: 800;
+    font-size: 12.5px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(245,166,35,0.4);
+  }
+  .body {
+    padding: 30px 28px 28px;
+  }
+  .question {
+    font-family: 'Gowun Batang', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: #1E2761;
+    line-height: 1.65;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ececf5;
+  }
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  @media (max-width: 480px) {
+    .choices { grid-template-columns: 1fr; }
+  }
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    border: 2px solid #e4e8f5;
+    border-radius: 12px;
+    padding: 13px 15px;
+    background: #fafbff;
+    cursor: pointer;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: #2b3266;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .choice:hover:not(.disabled) {
+    border-color: #6b7bd6;
+    background: #f2f4ff;
+    transform: translateY(-1px);
+  }
+  .choice .num {
+    flex: none;
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    background: #1E2761;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .choice.correct {
+    border-color: #2fa66d;
+    background: #eafaf1;
+  }
+  .choice.correct .num { background: #2fa66d; }
+  .choice.wrong {
+    border-color: #e0555a;
+    background: #fdeced;
+  }
+  .choice.wrong .num { background: #e0555a; }
+  .choice.disabled {
+    cursor: default;
+  }
+  .choice.disabled:not(.correct):not(.wrong) {
+    opacity: 0.45;
+  }
+  .result-banner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .result-banner.show { display: flex; }
+  .result-banner.correct-banner {
+    background: linear-gradient(90deg, #eafaf1, #f2fdf6);
+    color: #1f9d55;
+  }
+  .result-banner.wrong-banner {
+    background: linear-gradient(90deg, #fdeced, #fef5f5);
+    color: #d64545;
+  }
+  .explanation {
+    display: none;
+    background: #f6f7fc;
+    border-radius: 14px;
+    padding: 18px 20px;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #3c4368;
+  }
+  .explanation.show { display: block; }
+  .explanation .highlight {
+    color: #d6455f;
+    font-weight: 700;
+  }
+  .explanation ul {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+  }
+  .explanation li { margin-bottom: 5px; }
+  .retry-btn {
+    display: none;
+    margin-top: 20px;
+    width: 100%;
+    background: linear-gradient(120deg, #1E2761, #2c3480);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(30,39,97,0.3);
+  }
+  .retry-btn.show { display: block; }
+  .retry-btn:hover { background: linear-gradient(120deg, #2c3480, #3d4699); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <span class="title">📌 매일 한 문제 · EduAtoZ</span>
+    <span class="badge">확률과 통계</span>
+  </div>
+  <div class="body">
+    <div class="question">
+      기존의 확률변수 X를 aX + b (단, a &gt; 0)로 선형 변환(Linear Transformation)하였을 때,
+      그 값이 변하지 않는 통계량은?
+    </div>
+
+    <div class="choices" id="choices">
+      <div class="choice" data-choice="1" data-correct="true">
+        <span class="num">1</span> 왜도 (Skewness)
+      </div>
+      <div class="choice" data-choice="2" data-correct="false">
+        <span class="num">2</span> 표준편차 (Standard Deviation)
+      </div>
+      <div class="choice" data-choice="3" data-correct="false">
+        <span class="num">3</span> 평균 (Mean)
+      </div>
+      <div class="choice" data-choice="4" data-correct="false">
+        <span class="num">4</span> 중앙값 (Median)
+      </div>
+    </div>
+
+    <div class="result-banner" id="resultBanner"></div>
+
+    <div class="explanation" id="explanation">
+      왜도(Skewness)와 첨도(Kurtosis)는 분포의 '형태(Shape)'를 나타내는 통계량으로, 데이터를 일정한 비율로
+      늘리거나(a) 이동시켜도(b) 전체적인 비대칭 구조나 모양은 유지되며, <span class="highlight">a &lt; 0이면 부호가 뒤집힌다.</span>
+      이 문제는 <span class="highlight">a &gt; 0</span>인 경우이므로 왜도의 부호까지 완전히 그대로 유지된다.
+      <ul>
+        <li>표준편차 : a배로 변한다. SD(aX + b) = |a| · SD(X)</li>
+        <li>평균 : a배 전개 후 b만큼 더해진다. E(aX + b) = a·E(X) + b</li>
+        <li>중앙값 : a배 전개 후 b만큼 더해진다. Median(aX + b) = a·Median(X) + b</li>
+      </ul>
+      <ul>
+        <li>위치 통계량(평균, 중앙값, 최빈값, 사분위수) : 덧셈/뺄셈(이동), 곱셈/나눗셈(척도)에 모두 영향을 받음</li>
+        <li>산포 통계량(표준편차, 분산, 범위, IQR) : 이동(b)에는 영향이 없고, 척도(a)에만 영향을 받음</li>
+        <li>형태 통계량(왜도, 첨도) : 이동과 척도 변환에 크기(절댓값)가 변하지 않음 (단, a &lt; 0일 때 왜도는 부호 반전, 첨도는 항상 불변)</li>
+        <li>관계 통계량(상관계수) : 이동과 척도 변환에 크기가 변하지 않음. 부호는 두 척도계수의 부호곱에 따름 (부호곱이 양수면 부호 유지, 음수면 부호 반전)</li>
+      </ul>
+    </div>
+
+    <button class="retry-btn" id="retryBtn">다시 풀기</button>
+  </div>
+</div>
+
+<script>
+  const choices = document.querySelectorAll('.choice');
+  const resultBanner = document.getElementById('resultBanner');
+  const explanation = document.getElementById('explanation');
+  const retryBtn = document.getElementById('retryBtn');
+  let answered = false;
+
+  choices.forEach(choice => {
+    choice.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+
+      const isCorrect = choice.getAttribute('data-correct') === 'true';
+
+      choices.forEach(c => {
+        c.classList.add('disabled');
+        if (c.getAttribute('data-correct') === 'true') {
+          c.classList.add('correct');
+        } else if (c === choice) {
+          c.classList.add('wrong');
+        }
+      });
+
+      resultBanner.classList.add('show');
+      if (isCorrect) {
+        resultBanner.classList.add('correct-banner');
+        resultBanner.innerHTML = '✅ 정답입니다!';
+      } else {
+        resultBanner.classList.add('wrong-banner');
+        resultBanner.innerHTML = '❌ 오답입니다. 정답은 ①번 왜도(Skewness)입니다.';
+      }
+
+      explanation.classList.add('show');
+      retryBtn.classList.add('show');
+    });
+  });
+
+  retryBtn.addEventListener('click', () => {
+    answered = false;
+    choices.forEach(c => {
+      c.classList.remove('disabled', 'correct', 'wrong');
+    });
+    resultBanner.classList.remove('show', 'correct-banner', 'wrong-banner');
+    resultBanner.innerHTML = '';
+    explanation.classList.remove('show');
+    retryBtn.classList.remove('show');
+  });
+</script>
+
+</body>
+</html>
